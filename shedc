@@ -1,0 +1,88 @@
+#!/bin/sh
+
+OldWorkDir=$PWD
+
+cd "${XDG_CONFIG_HOME}/shed/services"
+
+# GUISessionDir=/tmp/xsession_pid_${XSESSION}
+GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
+
+readpidfile() {
+  while read -r FilePid
+  do
+    printf '%s\n' "$FilePid"
+  done < "$1"
+}
+
+hupprocs() {
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
+  for i in "${GUISessionDir}"/*.pid ; do
+    s_pid=$(readpidfile "$i")
+    s_name=$(ps -p "$s_pid" -o comm=)
+    printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
+    [ -z "$dry_run" ] && kill -HUP "$s_pid"
+  done
+  fi
+  exit 0
+}
+
+killchilds() {
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
+  for i in "${GUISessionDir}"/*.pid ; do
+    s_pid=$(readpidfile "$i")
+    s_name=$(ps -p "$s_pid" -o comm=)
+    printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
+    [ -z "$dry_run" ] && kill "$s_pid"
+    [ -z "$dry_run" ] && rm -f "$i"
+  done
+  fi
+  exit 0
+}
+
+startchilds() {
+  printf 'start %s\n' "$1" > "${GUISessionDir}/socket"
+}
+
+kill_session() {
+  for i in "${GUISessionDir}"/*.pid ; do
+    s_pid=$(readpidfile "$i")
+    s_name=$(ps -p "$s_pid" -o comm=)
+    printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
+    [ -z "$dry_run" ] && kill "$s_pid"
+    printf 'removing %s\n' "$i"
+    [ -z "$dry_run" ] && rm -f "$i"
+  done
+  [ -z "$dry_run" ] && rm -rf "${GUISessionDir}/socket"
+  [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
+  [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
+}
+
+show_help() {
+  name=$(basename "$0")
+  printf 'Usage: %s [options] { hup | kill | start } [service name] | logout \n' "$name"
+  printf '\t -n\t dry run.\\n \\t -h \\t show this help.\n'
+  printf '\t hup\t send hup to the session children\n'
+  printf '\t kill\t send term to the session children\n'
+  printf '\t start\t send request to start the session children\n'
+  printf '\t logout\t send term to the session children and the xsession process\n'
+}
+
+OPTIND=1
+while getopts nh o; do case "${o}" in
+  h) help=1 ;;
+  n) dry_run=1 ;;
+  *) help=1 ;;
+esac done
+shift $(( OPTIND - 1 ))
+
+[ -z "$invalid" ] || { show_help ; exit 1 ;}
+[ -z "$help" ] || { show_help ; exit; }
+case $1 in
+  kill) killchilds "$2" ;;
+  hup) hupprocs "$2" ;;
+  start) startchilds "$2" ;;
+  logout) kill_session ;;
+  *) show_help ; exit 1 ;;
+esac
+
+cd "$OldWorkDir"

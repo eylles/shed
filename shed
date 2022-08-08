@@ -1,0 +1,30 @@
+#!/bin/sh
+
+
+GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
+mkdir -p "$GUISessionDir"
+: > "${GUISessionDir}/socket"
+
+# XsessionPidsDir=/tmp/xsession_pid_${XSESSION}
+# mkdir -p "$XsessionPidsDir"
+
+# pid_file_prev_proc () {
+#   proc_pid=$!
+#   proc_name=$(ps -p $proc_pid -o comm=)
+#   echo $proc_pid > "${XsessionPidsDir}/${proc_name}.pid"
+# }
+
+cycle_start() {
+  Action=""
+  Argument=""
+  while inotifywait -e modify --format %0 "${GUISessionDir}/socket" ; do
+    while read -r SocAct SocArg; do
+      Action=$SocAct
+      Argument=$SocArg
+    done < "${GUISessionDir}/socket"
+    printf 'action: %s\n' $Action
+    printf 'argument: %s\n' $Argument
+  done
+}
+
+cycle_start
