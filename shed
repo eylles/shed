@@ -37,6 +37,8 @@ cycle_start() {
       Action=$SocAct
       Argument=$SocArg
     done < "${GUISessionDir}/socket"
+    # clear socket
+    : > "${GUISessionDir}/socket"
     # printf 'action: %s\n' $Action
     # printf 'argument: %s\n' $Argument
     case "${Action}" in
