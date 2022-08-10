@@ -3,10 +3,15 @@
 # if we reloaded then we set this to 0
 SHED_RELOAD=0
 
+# dir for the pid files
+# GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
+# to have the pid of the running graphical session
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 mkdir -p "$GUISessionDir"
+# create the empty socket file
 : > "${GUISessionDir}/socket"
 
+# directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME}/shed/services"
 # XsessionPidsDir=/tmp/xsession_pid_${XSESSION}
 # mkdir -p "$XsessionPidsDir"
@@ -15,11 +20,17 @@ start_services() {
   NAME=""
   EXEC=""
   E_ARGS=""
+  # if all the services should be started
   if [ "all" = "$1" ]; then
+    # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
+      # source the file to get the variables: NAME EXEC E_ARGS from the service
       . "$i"
+      # run the service command with the arguments
       $EXEC $E_ARGS &
+      # catch the pid of the process
       proc_pid=$!
+      # write the pid of the process to the pid file
       printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
       NAME=""
       EXEC=""
