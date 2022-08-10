@@ -1,10 +1,9 @@
 #!/bin/sh
 
-OldWorkDir=$PWD
+# OldWorkDir=$PWD
 
-cd "${XDG_CONFIG_HOME}/shed/services"
+# cd "${XDG_CONFIG_HOME}/shed/services"
 
-# GUISessionDir=/tmp/xsession_pid_${XSESSION}
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 
 readpidfile() {
@@ -18,7 +17,8 @@ hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
   for i in "${GUISessionDir}"/*.pid ; do
     s_pid=$(readpidfile "$i")
-    s_name=$(ps -p "$s_pid" -o comm=)
+    # s_name=$(ps -p "$s_pid" -o comm=)
+    s_name=$(basename "$i")
     printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
     [ -z "$dry_run" ] && kill -HUP "$s_pid"
   done
@@ -30,7 +30,8 @@ killchilds() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
   for i in "${GUISessionDir}"/*.pid ; do
     s_pid=$(readpidfile "$i")
-    s_name=$(ps -p "$s_pid" -o comm=)
+    # s_name=$(ps -p "$s_pid" -o comm=)
+    s_name=$(basename "$i")
     printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
     [ -z "$dry_run" ] && kill "$s_pid"
     [ -z "$dry_run" ] && rm -f "$i"
@@ -46,7 +47,8 @@ startchilds() {
 kill_session() {
   for i in "${GUISessionDir}"/*.pid ; do
     s_pid=$(readpidfile "$i")
-    s_name=$(ps -p "$s_pid" -o comm=)
+    # s_name=$(ps -p "$s_pid" -o comm=)
+    s_name=$(basename "$i")
     printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
     [ -z "$dry_run" ] && kill "$s_pid"
     printf 'removing %s\n' "$i"
@@ -82,7 +84,8 @@ case $1 in
   hup) hupprocs "$2" ;;
   start) startchilds "$2" ;;
   logout) kill_session ;;
+  reload) killchilds "all"; printf 'reload\n' > "${GUISessionDir}/socket" ;;
   *) show_help ; exit 1 ;;
 esac
 
-cd "$OldWorkDir"
+# cd "$OldWorkDir"
