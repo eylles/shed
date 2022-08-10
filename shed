@@ -28,28 +28,34 @@ start_services() {
   fi
 }
 
-cycle_start() {
+daemon_cycle() {
   Action=""
   Argument=""
+  # daemon cycle to run until we recieve a reload action in the socket
   until [ "$SHED_RELOAD" = 1 ] ; do
+    # wait until a write is done to the socket
     inotifywait -e modify --format %0 "${GUISessionDir}/socket"
+    # read the contents of the socket, action and argument
     while read -r SocAct SocArg; do
       Action=$SocAct
       Argument=$SocArg
     done < "${GUISessionDir}/socket"
     # clear socket
     : > "${GUISessionDir}/socket"
+    # debug prints
     # printf 'action: %s\n' $Action
     # printf 'argument: %s\n' $Argument
+    # decide what to do with the read action and argument
     case "${Action}" in
       reload) SHED_RELOAD=1 ;;
       start) start_services "$Argument" ;;
     esac
   done
 }
-
+# start all services on first run
 start_services "all"
 
-cycle_start
+daemon_cycle
 
+# reload shed
 [ -z "$SHED_RELOAD" ] || exec shed
