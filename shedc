@@ -4,8 +4,10 @@
 
 # cd "${XDG_CONFIG_HOME}/shed/services"
 
+# dir of the pid files for the current session
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 
+# read the contents of the pid file, cat but more "elegant"
 readpidfile() {
   while read -r FilePid
   do
@@ -67,6 +69,7 @@ show_help() {
   printf '\t kill\t send term to the session children\n'
   printf '\t start\t send request to start the session children\n'
   printf '\t logout\t send term to the session children and the xsession process\n'
+  printf '\t reload\t send term to the session children and reload shed\n'
 }
 
 OPTIND=1
