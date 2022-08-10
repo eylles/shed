@@ -1,12 +1,32 @@
 #!/bin/sh
 
+# if we reloaded then we set this to 0
+SHED_RELOAD=0
 
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 mkdir -p "$GUISessionDir"
 : > "${GUISessionDir}/socket"
 
+ServicesDir="${XDG_CONFIG_HOME}/shed/services"
 # XsessionPidsDir=/tmp/xsession_pid_${XSESSION}
 # mkdir -p "$XsessionPidsDir"
+
+start_services() {
+  NAME=""
+  EXEC=""
+  E_ARGS=""
+  if [ "all" = "$1" ]; then
+    for i in "${ServicesDir}"/* ; do
+      . "$i"
+      $EXEC $E_ARGS &
+      proc_pid=$!
+      printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+      NAME=""
+      EXEC=""
+      E_ARGS=""
+    done
+  fi
+}
 
 # pid_file_prev_proc () {
 #   proc_pid=$!
@@ -17,14 +37,23 @@ mkdir -p "$GUISessionDir"
 cycle_start() {
   Action=""
   Argument=""
-  while inotifywait -e modify --format %0 "${GUISessionDir}/socket" ; do
+  until [ "$SHED_RELOAD" = 1 ] ; do
+    inotifywait -e modify --format %0 "${GUISessionDir}/socket"
     while read -r SocAct SocArg; do
       Action=$SocAct
       Argument=$SocArg
     done < "${GUISessionDir}/socket"
-    printf 'action: %s\n' $Action
-    printf 'argument: %s\n' $Argument
+    # printf 'action: %s\n' $Action
+    # printf 'argument: %s\n' $Argument
+    case "${Action}" in
+      reload) SHED_RELOAD=1 ;;
+      start) start_services "$Argument" ;;
+    esac
   done
 }
 
+start_services "all"
+
 cycle_start
+
+[ -z "$SHED_RELOAD" ] || exec shed
