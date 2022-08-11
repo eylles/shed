@@ -12,7 +12,7 @@ mkdir -p "$GUISessionDir"
 : > "${GUISessionDir}/socket"
 
 # directory where we are loading the user services to start from
-ServicesDir="${XDG_CONFIG_HOME}/shed/services"
+ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 # XsessionPidsDir=/tmp/xsession_pid_${XSESSION}
 # mkdir -p "$XsessionPidsDir"
 
