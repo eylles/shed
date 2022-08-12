@@ -25,7 +25,6 @@ hupprocs() {
     [ -z "$dry_run" ] && kill -HUP "$s_pid"
   done
   fi
-  exit 0
 }
 
 killchilds() {
@@ -39,7 +38,6 @@ killchilds() {
     [ -z "$dry_run" ] && rm -f "$i"
   done
   fi
-  exit 0
 }
 
 startchilds() {
