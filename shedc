@@ -7,11 +7,29 @@
 # dir of the pid files for the current session
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 
+# directory where we are loading the user services to start from
+ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
+
 # read the contents of the pid file, cat but more "elegant"
 readpidfile() {
   while read -r FilePid
   do
     printf '%s\n' "$FilePid"
+  done < "$1"
+}
+
+readservicename(){
+  # Setting 'IFS' tells 'read' where to split the string.
+  while IFS='=' read -r key val; do
+    # Skip over lines containing comments.
+    # (Lines starting with '#').
+    [ "${key##\#*}" ] || continue
+
+    # '$key' stores the key.
+    # '$val' stores the value.
+    if [ "$key" = "NAME" ]; then
+    printf '%s\n' "$val"
+    fi
   done < "$1"
 }
 
@@ -24,6 +42,16 @@ hupprocs() {
     printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
     [ -z "$dry_run" ] && kill -HUP "$s_pid"
   done
+  else
+    for i in "${ServicesDir}"/* ; do
+      ServiceFileName=$(basename "$i")
+      if [ "$ServiceFileName" = "$1" ]; then
+        s_name=$(readservicename "$i")
+        s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+        printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
+        [ -z "$dry_run" ] && kill -HUP "$s_pid"
+      fi
+    done
   fi
 }
 
@@ -37,6 +65,17 @@ killchilds() {
     [ -z "$dry_run" ] && kill "$s_pid"
     [ -z "$dry_run" ] && rm -f "$i"
   done
+  else
+    for i in "${ServicesDir}"/* ; do
+      ServiceFileName=$(basename "$i")
+      if [ "$ServiceFileName" = "$1" ]; then
+        s_name=$(readservicename "$i")
+        s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+        printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
+        [ -z "$dry_run" ] && kill "$s_pid"
+        [ -z "$dry_run" ] && rm -f "$i"
+      fi
+    done
   fi
 }
 
