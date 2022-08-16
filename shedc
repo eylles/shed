@@ -106,6 +106,7 @@ show_help() {
   printf '\t kill\t send term to the session children\n'
   printf '\t stop\t send term to the session children\n'
   printf '\t start\t send request to start the session children\n'
+  printf '\t restart\t send term to the session children and then send request to start the children\n'
   printf '\t logout\t send term to the session children and the xsession process\n'
   printf '\t reload\t send term to the session children and reload shed\n'
 }
@@ -123,6 +124,7 @@ shift $(( OPTIND - 1 ))
 case $1 in
   kill) killchilds "$2" ;;
   stop) killchilds "$2" ;;
+  restart) killchilds "$2"; startchilds "$2" ;;
   hup) hupprocs "$2" ;;
   start) startchilds "$2" ;;
   logout) kill_session ;;
