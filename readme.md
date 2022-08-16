@@ -34,9 +34,11 @@ shedc meanwhile is intended to hup the services, kill them, signal shed to start
 
 
 TODO:
--[ ] rewrite readme, perhaps move the details of how shed works to another .md file
--[ ] add checks the service being active in start, kill and hup
--[ ] add service status action to shedc
--[ ] add service restart action to shedc
--[ ] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
--[ ] write bash and maybe zsh completion scripts
+
+- [ ] rewrite readme, perhaps move the details of how shed works to another .md file
+- [ ] add checks the service being active in start, kill and hup
+- [ ] add service status action to shedc
+- [ ] add service restart action to shedc
+- [ ] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
+- [ ] write bash and maybe zsh completion scripts
+- [ ] draw a logo/icon for shed to use in the repo
