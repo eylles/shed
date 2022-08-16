@@ -73,7 +73,7 @@ killchilds() {
         s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
         printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
         [ -z "$dry_run" ] && kill "$s_pid"
-        [ -z "$dry_run" ] && rm -f "$i"
+        [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
       fi
     done
   fi
