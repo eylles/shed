@@ -104,6 +104,7 @@ show_help() {
   printf '\t -n\t dry run.\\n \\t -h \\t show this help.\n'
   printf '\t hup\t send hup to the session children\n'
   printf '\t kill\t send term to the session children\n'
+  printf '\t stop\t send term to the session children\n'
   printf '\t start\t send request to start the session children\n'
   printf '\t logout\t send term to the session children and the xsession process\n'
   printf '\t reload\t send term to the session children and reload shed\n'
@@ -121,6 +122,7 @@ shift $(( OPTIND - 1 ))
 [ -z "$help" ] || { show_help ; exit; }
 case $1 in
   kill) killchilds "$2" ;;
+  stop) killchilds "$2" ;;
   hup) hupprocs "$2" ;;
   start) startchilds "$2" ;;
   logout) kill_session ;;
