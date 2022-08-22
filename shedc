@@ -43,7 +43,7 @@ procstat() {
           if kill -0 "$s_pid" 2>/dev/null; then
             s_state="+"
           else
-            s_state="x"
+            s_state="?"
           fi
         else
             s_state="-"
@@ -139,14 +139,19 @@ kill_session() {
 show_help() {
   name=$(basename "$0")
   printf 'Usage: %s [options] { hup | kill | start } [service name] | logout \n' "$name"
-  printf '\t -n\t dry run.\\n \\t -h \\t show this help.\n'
-  printf '\t hup\t send hup to the session children\n'
-  printf '\t kill\t send term to the session children\n'
-  printf '\t stop\t send term to the session children\n'
-  printf '\t start\t send request to start the session children\n'
-  printf '\t restart\t send term to the session children and then send request to start the children\n'
-  printf '\t logout\t send term to the session children and the xsession process\n'
-  printf '\t reload\t send term to the session children and reload shed\n'
+  printf '  -n\t dry run.\n  -h \t show this help.\n'
+  printf '  hup    \t send hup to the session children\n'
+  printf '  kill   \t send term to the session children\n'
+  printf '  stop   \t send term to the session children\n'
+  printf '  start  \t send request to start the session children\n'
+  printf '  restart\t send term to the session children and then send request to start the children\n'
+  printf '  logout \t send term to the session children and the xsession process\n'
+  printf '  reload \t send term to the session children and reload shed\n'
+  printf '  status \t shows the status of the desired service'
+  printf 'for all services the status is shown with a symbol as follows:\n'
+  printf '\t\t [ + ] means the service is running\n'
+  printf '\t\t [ - ] means the service is not running\n'
+  printf '\t\t [ ? ] means the service was started but the pid was not among the active processes\n'
 }
 
 OPTIND=1
