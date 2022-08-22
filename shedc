@@ -33,6 +33,44 @@ readservicename(){
   done < "$1"
 }
 
+procstat() {
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
+    for i in "${ServicesDir}"/* ; do
+      ServiceFileName=$(basename "$i")
+        s_name=$(readservicename "$i")
+        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          if kill -0 "$s_pid" 2>/dev/null; then
+            s_state="+"
+          else
+            s_state="x"
+          fi
+        else
+            s_state="-"
+        fi
+        printf ' [ %s ]  %s\n' "$s_state" "$s_name"
+    done
+  else
+    for i in "${ServicesDir}"/* ; do
+      ServiceFileName=$(basename "$i")
+      if [ "$ServiceFileName" = "$1" ]; then
+        s_name=$(readservicename "$i")
+        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          if kill -0 "$s_pid" 2>/dev/null; then
+            s_state="running with pid: ${s_pid}"
+          else
+            s_state="was started"
+          fi
+        else
+            s_state="not running"
+        fi
+        printf '  %s\tstatus: %s\n' "$s_name" "$s_state"
+      fi
+    done
+  fi
+}
+
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -126,6 +164,7 @@ case $1 in
   stop) killchilds "$2" ;;
   restart) killchilds "$2"; startchilds "$2" ;;
   hup) hupprocs "$2" ;;
+  status) procstat "$2" ;;
   start) startchilds "$2" ;;
   logout) kill_session ;;
   reload) killchilds "all"; printf 'reload\n' > "${GUISessionDir}/socket" ;;
