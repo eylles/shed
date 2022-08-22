@@ -139,19 +139,19 @@ kill_session() {
 show_help() {
   name=$(basename "$0")
   printf 'Usage: %s [options] { hup | kill | start } [service name] | logout \n' "$name"
-  printf '  -n\t dry run.\n  -h \t show this help.\n'
-  printf '  hup    \t send hup to the session children\n'
-  printf '  kill   \t send term to the session children\n'
-  printf '  stop   \t send term to the session children\n'
-  printf '  start  \t send request to start the session children\n'
-  printf '  restart\t send term to the session children and then send request to start the children\n'
-  printf '  logout \t send term to the session children and the xsession process\n'
-  printf '  reload \t send term to the session children and reload shed\n'
-  printf '  status \t shows the status of the desired service'
+  printf '  -n        dry run.\n  -h        show this help.\n'
+  printf '   hup      send hup to the session children\n'
+  printf '   kill     send term to the session children\n'
+  printf '   stop     send term to the session children\n'
+  printf '   start    send request to start the session children\n'
+  printf '   restart  send term to the session children and then send request to start the children\n'
+  printf '   logout   send term to the session children and the xsession process\n'
+  printf '   reload   send term to the session children and reload shed\n'
+  printf '   status   shows the status of the desired service'
   printf 'for all services the status is shown with a symbol as follows:\n'
-  printf '\t\t [ + ] means the service is running\n'
-  printf '\t\t [ - ] means the service is not running\n'
-  printf '\t\t [ ? ] means the service was started but the pid was not among the active processes\n'
+  printf '\t     [ + ] means the service is running\n'
+  printf '\t     [ - ] means the service is not running\n'
+  printf '\t     [ ? ] means the service was started but the pid was not among the active processes\n'
 }
 
 OPTIND=1
