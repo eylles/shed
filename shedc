@@ -108,7 +108,9 @@ killchilds() {
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name=$(basename "$i")
       printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
+      if kill -0 "$s_pid" 2>/dev/null; then
       [ -z "$dry_run" ] && kill "$s_pid"
+      fi
       [ -z "$dry_run" ] && rm -f "$i"
     done
   else
@@ -116,10 +118,16 @@ killchilds() {
       ServiceFileName=$(basename "$i")
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readservicename "$i")
-        s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
-        printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
-        [ -z "$dry_run" ] && kill "$s_pid"
-        [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
+        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
+          if kill -0 "$s_pid" 2>/dev/null; then
+          [ -z "$dry_run" ] && kill "$s_pid"
+          fi
+          [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
+        else
+          printf 'service %s not running\n' "$s_name"
+        fi
       fi
     done
   fi
