@@ -26,12 +26,17 @@ start_services() {
     for i in "${ServicesDir}"/* ; do
       # source the file to get the variables: NAME EXEC E_ARGS from the service
       . "$i"
-      # run the service command with the arguments
-      $EXEC $E_ARGS &
-      # catch the pid of the process
-      proc_pid=$!
-      # write the pid of the process to the pid file
-      printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+      # check if service is already running
+      if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
+        printf 'service %s already running\n' "$NAME"
+      else
+        # run the service command with the arguments
+        $EXEC $E_ARGS &
+        # catch the pid of the process
+        proc_pid=$!
+        # write the pid of the process to the pid file
+        printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+      fi
       NAME=""
       EXEC=""
       E_ARGS=""
@@ -42,12 +47,17 @@ start_services() {
       if [ "$ServiceFileName" = "$1" ]; then
         # source the file to get the variables: NAME EXEC E_ARGS from the service
         . "$i"
+        # check if service is already running
+        if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
+          printf 'service %s already running\n' "$NAME"
+        else
         # run the service command with the arguments
         $EXEC $E_ARGS &
         # catch the pid of the process
         proc_pid=$!
         # write the pid of the process to the pid file
         printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+        fi
         NAME=""
         EXEC=""
         E_ARGS=""
