@@ -7,14 +7,13 @@ SHED_RELOAD=0
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
-mkdir -p "$GUISessionDir"
-# create the empty socket file
-: > "${GUISessionDir}/socket"
+# create the session dir if it doesn't exist
+[ -d "$GUISessionDir" ] || mkdir -p "$GUISessionDir"
+# create the empty socket file if necesary
+[ -f "${GUISessionDir}socket" ] || : > "${GUISessionDir}/socket"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
-# XsessionPidsDir=/tmp/xsession_pid_${XSESSION}
-# mkdir -p "$XsessionPidsDir"
 
 start_services() {
   NAME=""
