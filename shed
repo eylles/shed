@@ -30,7 +30,8 @@ start_services() {
         printf 'service %s already running\n' "$NAME"
       else
         # run the service command with the arguments
-        $EXEC $E_ARGS &
+        s_run="exec $EXEC $E_ARGS"
+        eval "$s_run" &
         # catch the pid of the process
         proc_pid=$!
         # write the pid of the process to the pid file
@@ -51,7 +52,8 @@ start_services() {
           printf 'service %s already running\n' "$NAME"
         else
         # run the service command with the arguments
-        $EXEC "$E_ARGS" &
+        s_run="exec $EXEC $E_ARGS"
+        eval "$s_run" &
         # catch the pid of the process
         proc_pid=$!
         # write the pid of the process to the pid file
