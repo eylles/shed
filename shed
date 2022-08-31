@@ -70,9 +70,9 @@ daemon_cycle() {
   Action=""
   Argument=""
   # daemon cycle to run until we recieve a reload action in the socket
-  until [ "$SHED_RELOAD" = 1 ] ; do
+  while [ "$SHED_RELOAD" = 0 ] ; do
     # wait until a write is done to the socket
-    inotifywait -e modify --format %0 "${GUISessionDir}/socket"
+    inotifywait -e modify --format %0 "/tmp/GUISession${GUI_SESSION_PID}/socket"
     # read the contents of the socket, action and argument
     while read -r SocAct SocArg; do
       Action=$SocAct
@@ -96,4 +96,4 @@ start_services "all"
 daemon_cycle
 
 # reload shed
-[ -z "$SHED_RELOAD" ] || exec shed
+[ "$SHED_RELOAD" = 0 ] || exec shed
