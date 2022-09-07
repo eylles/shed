@@ -52,13 +52,13 @@ start_services() {
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i"
+      serv_start "$i" &
     done
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName=$(basename "$i")
       if [ "$ServiceFileName" = "$1" ]; then
-        serv_start "$i"
+        serv_start "$i" &
       fi
     done
   fi
