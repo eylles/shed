@@ -26,7 +26,7 @@ TODO:
 
 - [ ] rewrite readme
 - [x] move the details of how shed works to another .md file
-- [ ] add check if the service is running in start, kill and hup
+- [x] add check if the service is running in start, kill and hup
 - [x] add service status action to shedc
 - [x] add service restart action to shedc
 - [ ] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
