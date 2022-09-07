@@ -11,6 +11,10 @@ GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 [ -d "$GUISessionDir" ] || mkdir -p "$GUISessionDir"
 # create the empty socket file if necesary
 [ -f "${GUISessionDir}socket" ] || : > "${GUISessionDir}/socket"
+# create the empty reply file if necesary
+[ -f "${GUISessionDir}reply" ] || : > "${GUISessionDir}/reply"
+# write started for when shedc requests a reload
+printf '%s\n' "shed started" > "${GUISessionDir}/reply"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
@@ -25,19 +29,25 @@ serv_start() {
   . "$s_file"
   # check if service is already running
   if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
-    printf 'service %s already running\n' "$NAME"
+    printf 'service %s already running\n' "$NAME" >> "${GUISessionDir}/reply"
   else
     # run the service command with the arguments
     s_run="exec $EXEC $E_ARGS"
     eval "$s_run" &
     # catch the pid of the process
     proc_pid=$!
+    # start date
+    start_date=$(date '+%Y-%m-%d--%H:%M:%S')
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+    printf '%s\n' "$start_date started $s_file" >> "${GUISessionDir}/reply"
   fi
 }
 
 start_services() {
+  # start date
+  start_date=$(date '+%Y-%m-%d--%H:%M:%S')
+  printf '%s\n' "$start_date starting services" > "${GUISessionDir}/reply"
   # if all the services should be started
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
