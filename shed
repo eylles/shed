@@ -3,6 +3,12 @@
 # if we reloaded then we set this to 0
 SHED_RELOAD=0
 
+# check if GUI_SESSION_PID is set
+if [ -z "$GUI_SESSION_PID" ]; then
+  # it wasnt set, so we will use the PID of the parent
+  export GUI_SESSION_PID=$PPID
+fi
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
