@@ -11,10 +11,10 @@ GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
 # read the contents of the pid file, cat but more "elegant"
-readpidfile() {
-  while read -r FilePid
+read_file() {
+  while read -r FileLine
   do
-    printf '%s\n' "$FilePid"
+    printf '%s\n' "$FileLine"
   done < "$1"
 }
 
@@ -39,7 +39,7 @@ procstat() {
       ServiceFileName=$(basename "$i")
         s_name=$(readservicename "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           if kill -0 "$s_pid" 2>/dev/null; then
             s_state="+"
           else
@@ -56,7 +56,7 @@ procstat() {
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readservicename "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           if kill -0 "$s_pid" 2>/dev/null; then
             s_state="running with pid: ${s_pid}"
           else
@@ -74,7 +74,7 @@ procstat() {
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
-      s_pid=$(readpidfile "$i")
+      s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name=$(basename "$i")
       printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
@@ -88,7 +88,7 @@ hupprocs() {
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readservicename "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill -HUP "$s_pid"
@@ -104,7 +104,7 @@ hupprocs() {
 killchilds() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
-      s_pid=$(readpidfile "$i")
+      s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name=$(basename "$i")
       printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
@@ -119,7 +119,7 @@ killchilds() {
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readservicename "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(readpidfile "${GUISessionDir}/${s_name}.pid")
+          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill "$s_pid"
@@ -139,7 +139,7 @@ startchilds() {
 
 kill_session() {
   for i in "${GUISessionDir}"/*.pid ; do
-    s_pid=$(readpidfile "$i")
+    s_pid=$(read_file "$i")
     # s_name=$(ps -p "$s_pid" -o comm=)
     s_name=$(basename "$i")
     printf 'sending term to %s\t%s\n' "$s_pid" "$s_name"
