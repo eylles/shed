@@ -18,6 +18,65 @@ read_file() {
   done < "$1"
 }
 
+progressbar() {
+  count=0
+  spinSymbol=0
+  progressBar=0
+  progressBarPrefix="$1"
+  if [ -z "$2" ]; then
+    totaltime=2
+  else
+    totaltime="$2"
+  fi
+  steptime=$(printf '%s\n' "scale=2; $totaltime / 20" | bc)
+
+  while [ "$count" -le 20 ]; do
+    case "$spinSymbol" in
+      0) spin="-" ;;
+      1) spin="\\" ;;
+      2) spin="|" ;;
+      3) spin="/" ;;
+    esac
+    printf ' %s%3d%s\r' "$progressBarPrefix $spin   [" "$progressBar" "%]"
+    sleep "$steptime"
+    count=$(( count + 1 ))
+    spinSymbol=$(( spinSymbol + 1 ))
+    progressBar=$(( progressBar + 5 ))
+    [ "$spinSymbol" -gt 3 ] && spinSymbol=0
+  done
+  printf '  %s%3d%s\r' "$progressBarPrefix    [" "100" "%]"
+  sleep 0.1
+  printf '\n'
+}
+
+pretty_print() {
+    awk '
+      {
+        if (NR==1) {
+          printf " ┌"; for(c=0;c<60;c++) printf"─"; printf "┐\n" ;
+          printf " │ %58s │\n", $0 ; 
+          printf " ├"; for(c=0;c<9;c++) printf"─"; printf "┬";
+          for(c=0;c<32;c++) printf"─"; printf "┬";
+          for(c=0;c<17;c++) printf"─"; printf "┤\n" ; 
+          }
+        else { printf " │ %s │ %30s │ %s %s │\n", $1, $2, $3, $4 };
+      }
+      END { printf " └"; for(c=0;c<9;c++) printf"─"; printf "┴";
+          for(c=0;c<32;c++) printf"─"; printf "┴";
+          for(c=0;c<17;c++) printf"─"; printf "┘\n" ;}
+      ' "$1"
+
+}
+
+read_reply() {
+  progressbar "retrieving status:"
+  if [ -z "$PrettyPrint" ]; then
+    read_file "${GUISessionDir}/reply"
+  else
+    pretty_print "${GUISessionDir}/reply"
+  fi
+}
+
 readservicename(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
@@ -171,9 +230,10 @@ show_help() {
 }
 
 OPTIND=1
-while getopts nh o; do case "${o}" in
+while getopts nhp o; do case "${o}" in
   h) help=1 ;;
   n) dry_run=1 ;;
+  p) PrettyPrint=1 ;;
   *) help=1 ;;
 esac done
 shift $(( OPTIND - 1 ))
@@ -181,14 +241,37 @@ shift $(( OPTIND - 1 ))
 [ -z "$invalid" ] || { show_help ; exit 1 ;}
 [ -z "$help" ] || { show_help ; exit; }
 case $1 in
-  kill) killchilds "$2" ;;
-  stop) killchilds "$2" ;;
-  restart) killchilds "$2"; startchilds "$2" ;;
-  hup) hupprocs "$2" ;;
-  status) procstat "$2" ;;
-  start) startchilds "$2" ;;
-  logout) kill_session ;;
-  reload) killchilds "all"; printf 'reload\n' > "${GUISessionDir}/socket" ;;
+  kill)
+    killchilds "$2"
+  ;;
+  stop)
+    killchilds "$2"
+  ;;
+  restart)
+    killchilds "$2"
+    progressbar "restarting service(s)" 1
+    startchilds "$2"
+    read_reply
+  ;;
+  hup)
+    hupprocs "$2"
+  ;;
+  status)
+    procstat "$2"
+  ;;
+  start)
+    startchilds "$2"
+    read_reply
+  ;;
+  logout)
+    kill_session
+  ;;
+  reload)
+    killchilds "all"
+    progressbar "reloading shed" 2
+    printf 'reload\n' > "${GUISessionDir}/socket"
+    read_reply
+  ;;
   *) show_help ; exit 1 ;;
 esac
 
