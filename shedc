@@ -53,17 +53,21 @@ pretty_print() {
     awk '
       {
         if (NR==1) {
-          printf " ┌"; for(c=0;c<60;c++) printf"─"; printf "┐\n" ;
-          printf " │ %58s │\n", $0 ; 
-          printf " ├"; for(c=0;c<9;c++) printf"─"; printf "┬";
-          for(c=0;c<32;c++) printf"─"; printf "┬";
-          for(c=0;c<17;c++) printf"─"; printf "┤\n" ; 
+          printf " ┌"; for(c=0;c<65;c++) printf"─"; printf "┐\n" ;
+          printf " │ %63s │\n", $0 ; 
+          printf " ├"; for(c=0;c<32;c++) printf"─"; printf "┬";
+          for(c=0;c<22;c++) printf"─"; printf "┬";
+          for(c=0;c<9;c++) printf"─"; printf "┤\n" ; 
+          printf " │ %30s │ %20s │ %7s │\n", "service           ", "date        ", "status ";
+          printf " ├"; for(c=0;c<32;c++) printf"─"; printf "┼";
+          for(c=0;c<22;c++) printf"─"; printf "┼";
+          for(c=0;c<9;c++) printf"─"; printf "┤\n" ; 
           }
-        else { printf " │ %s │ %30s │ %s %s │\n", $1, $2, $3, $4 };
+        else { printf " │ %30s │ %20s │ %7s │\n", $1, $2, $3 };
       }
-      END { printf " └"; for(c=0;c<9;c++) printf"─"; printf "┴";
-          for(c=0;c<32;c++) printf"─"; printf "┴";
-          for(c=0;c<17;c++) printf"─"; printf "┘\n" ;}
+      END { printf " └"; for(c=0;c<32;c++) printf"─"; printf "┴";
+          for(c=0;c<22;c++) printf"─"; printf "┴";
+          for(c=0;c<9;c++) printf"─"; printf "┘\n" ;}
       ' "$1"
 
 }
