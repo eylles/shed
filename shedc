@@ -217,16 +217,15 @@ kill_session() {
 
 show_help() {
   name=$(basename "$0")
-  printf 'Usage: %s [options] { hup | kill | start } [service name] | logout \n' "$name"
+  printf 'Usage: %s [options] { hup | start | stop | restart } [service name] | logout \n' "$name"
   printf '  -n        dry run.\n  -h        show this help.\n'
   printf '  -p        pretty print from reply socket.\n'
-  printf '   hup      send hup to the session children\n'
-  printf '   kill     send term to the session children\n'
-  printf '   stop     send term to the session children\n'
-  printf '   start    send request to start the session children\n'
-  printf '   restart  send term to the session children and then send request to start the children\n'
-  printf '   logout   send term to the session children and the xsession process\n'
-  printf '   reload   send term to the session children and reload shed\n'
+  printf '   hup      send hup to the session service(s)\n'
+  printf '   stop     send term to the session service(s)\n'
+  printf '   start    send request to start the session service(s)\n'
+  printf '   restart  send term to the session service(s) and then send request to start the service(s)\n'
+  printf '   logout   send term to the session services and the xsession process\n'
+  printf '   reload   send term to the session services and reload shed\n'
   printf '   status   shows the status of the desired service'
   printf 'for all services the status is shown with a symbol as follows:\n'
   printf '\t     [ + ] means the service is running\n'
