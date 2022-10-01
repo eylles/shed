@@ -245,9 +245,6 @@ shift $(( OPTIND - 1 ))
 [ -z "$invalid" ] || { show_help ; exit 1 ;}
 [ -z "$help" ] || { show_help ; exit; }
 case $1 in
-  kill)
-    killchilds "$2"
-  ;;
   stop)
     killchilds "$2"
   ;;
