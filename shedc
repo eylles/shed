@@ -219,6 +219,7 @@ show_help() {
   name=$(basename "$0")
   printf 'Usage: %s [options] { hup | kill | start } [service name] | logout \n' "$name"
   printf '  -n        dry run.\n  -h        show this help.\n'
+  printf '  -p        pretty print from reply socket.\n'
   printf '   hup      send hup to the session children\n'
   printf '   kill     send term to the session children\n'
   printf '   stop     send term to the session children\n'
