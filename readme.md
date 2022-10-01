@@ -30,7 +30,7 @@ TODO:
 - [x] add service status action to shedc
 - [x] add service restart action to shedc
 - [x] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
-- [ ] make shedc tail and read the reply socket
+- [x] make shedc tail and read the reply socket
 - [ ] write bash completion scripts
 - [ ] write zsh completion scripts
 - [ ] draw a logo/icon for shed to use in the repo
