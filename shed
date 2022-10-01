@@ -35,7 +35,8 @@ serv_start() {
   . "$s_file"
   # check if service is already running
   if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
-    printf 'service %s already running\n' "$NAME" >> "${GUISessionDir}/reply"
+    start_date=$(date '+%Y-%m-%d-%H:%M:%S')
+    printf '%s\n' "$NAME $start_date running" >> "${GUISessionDir}/reply"
   else
     # run the service command with the arguments
     s_run="exec $EXEC $E_ARGS"
@@ -43,16 +44,16 @@ serv_start() {
     # catch the pid of the process
     proc_pid=$!
     # start date
-    start_date=$(date '+%Y-%m-%d--%H:%M:%S')
+    start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
-    printf '%s\n' "$start_date started $s_file" >> "${GUISessionDir}/reply"
+    printf '%s\n' "$NAME $start_date started" >> "${GUISessionDir}/reply"
   fi
 }
 
 start_services() {
   # start date
-  start_date=$(date '+%Y-%m-%d--%H:%M:%S')
+  start_date=$(date '+%Y-%m-%d-%H:%M:%S')
   printf '%s\n' "$start_date starting services" > "${GUISessionDir}/reply"
   # if all the services should be started
   if [ "all" = "$1" ]; then
