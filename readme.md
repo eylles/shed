@@ -14,6 +14,13 @@ an init and service manager for user services
 session services, programs that run as part of your graphical session, for example in x11 you have the compositor, keyring, maybe a clipboard daemon and perhaps pulseaudio or pipewire
 
 
+## dependencies
+
+- a posix compatible shell interpreter
+- core unix utilities (date, mkdir, awk, kill)
+- inotifywait from the inotify-tools package (i know freebsd got the program but not what to use in other unices)
+
+
 ## why ?
 
 some programs have the tendency to missbehave when started in a session process in non systemd distros, the prime example right now being pipewire which has spawned this [pipewire #1099](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1099) and this [pipewire #1135](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1135) as the issue comments say, this problem forced gentoo to write a wrapper and slackware to roll out a custom [daemon](https://github.com/raforg/daemon) program written in C, in my opinion both of these solutions are less than ideal, on gentoo's case they now have to roll out similar wrappers for other missbehaving programs, the slackware program looks unnecesarily overengineered as it still needs more programs to be started correctly.
