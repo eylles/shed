@@ -12,9 +12,14 @@ ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
 # read the contents of the pid file, cat but more "elegant"
 read_file() {
+  if [ $# -gt 1 ]; then
+    prefix=$2
+  else
+    prefix=""
+  fi
   while read -r FileLine
   do
-    printf '%s\n' "$FileLine"
+    printf '%s%s\n' "$prefix" "$FileLine"
   done < "$1"
 }
 
@@ -75,7 +80,7 @@ pretty_print() {
 read_reply() {
   progressbar "retrieving status:"
   if [ -z "$PrettyPrint" ]; then
-    read_file "${GUISessionDir}/reply"
+    read_file "${GUISessionDir}/reply" "  "
   else
     pretty_print "${GUISessionDir}/reply"
   fi
