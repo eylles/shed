@@ -206,16 +206,7 @@ startchilds() {
 }
 
 kill_session() {
-  for i in "${GUISessionDir}"/*.pid ; do
-    s_pid=$(read_file "$i")
-    # s_name=$(ps -p "$s_pid" -o comm=)
-    s_name=$(basename "$i")
-    printf ' sending term to %s\t%s\n' "$s_pid" "$s_name"
-    [ -z "$dry_run" ] && kill "$s_pid"
-    printf 'removing %s\n' "$i"
-    [ -z "$dry_run" ] && rm -f "$i"
-  done
-  [ -z "$dry_run" ] && rm -rf "${GUISessionDir}/socket"
+  killchilds "all"
   [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
 }
