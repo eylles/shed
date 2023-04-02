@@ -30,6 +30,7 @@ serv_start() {
   NAME=""
   EXEC=""
   E_ARGS=""
+  DELAY=""
   s_file="$1"
   # source the file to get the variables: NAME EXEC E_ARGS from the service
   . "$s_file"
@@ -38,6 +39,7 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     printf '%s\n' "$NAME $start_date running" >> "${GUISessionDir}/reply"
   else
+    [ -z "$DELAY" ] || sleep "$DELAY"
     # run the service command with the arguments
     s_run="exec $EXEC $E_ARGS"
     eval "$s_run" &
