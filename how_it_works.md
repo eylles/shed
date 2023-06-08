@@ -54,3 +54,4 @@ shedc meanwhile is intended to hup the services, kill them, signal shed to start
 | NAME     | the name for the pid file of the service |
 | EXEC     | the program to be started as a service |
 | E_ARGS   | additional arguments for the daemon program, quote the argument string if it contains spaces |
+| DELAY    | delay the startup of the daemon program by the provided seconds, this is passed directly to sleep(1) |
