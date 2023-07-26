@@ -17,8 +17,8 @@ session services, programs that run as part of your graphical session, for examp
 ## dependencies
 
 - a posix compatible shell interpreter
-- core unix utilities (date, mkdir, awk, kill)
-- inotifywait from the inotify-tools package (i know freebsd got the program but not what to use in other unices)
+- core unix utilities (date, mkdir, awk, kill, mkfifo, cat)
+- ~~inotifywait from the inotify-tools package (i know freebsd got the program but not what to use in other unices)~~ no longer needed, now a named pipe is used.
 
 
 ## why ?
