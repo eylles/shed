@@ -1,5 +1,7 @@
 #!/bin/sh
 
+prog="${0##*/}"
+
 # if we reloaded then we set this to 0
 SHED_RELOAD=0
 
@@ -15,12 +17,24 @@ fi
 GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
 # create the session dir if it doesn't exist
 [ -d "$GUISessionDir" ] || mkdir -p "$GUISessionDir"
-# create the empty socket file if necesary
-[ -f "${GUISessionDir}socket" ] || : > "${GUISessionDir}/socket"
+# defined as: /tmp/GUISession${GUI_SESSION_PID}/socket
+msg_socket="${GUISessionDir}/socket"
+# defined as: /tmp/GUISession${GUI_SESSION_PID}/reply
+msg_reply="${GUISessionDir}/reply"
+# create the socket file if necesary
+if [ ! -p "$msg_socket" ]; then
+  if [ -f "$msg_socket" ]; then
+    rm "$msg_socket"
+  fi
+  mkfifo -m 600 "$msg_socket"
+fi
 # create the empty reply file if necesary
-[ -f "${GUISessionDir}reply" ] || : > "${GUISessionDir}/reply"
+if [ -f "$msg_reply" ]; then
+  : > "$msg_reply"
+fi
+
 # write started for when shedc requests a reload
-printf '%s\n' "shed started" > "${GUISessionDir}/reply"
+printf '%s\n' "$prog started" > "${GUISessionDir}/reply"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
@@ -79,14 +93,13 @@ daemon_cycle() {
   # daemon cycle to run until we recieve a reload action in the socket
   while [ "$SHED_RELOAD" = 0 ] ; do
     # wait until a write is done to the socket
-    inotifywait -e modify --format %0 "/tmp/GUISession${GUI_SESSION_PID}/socket"
     # read the contents of the socket, action and argument
-    while read -r SocAct SocArg; do
-      Action=$SocAct
-      Argument=$SocArg
-    done < "${GUISessionDir}/socket"
-    # clear socket
-    : > "${GUISessionDir}/socket"
+    # drain the named pipe $msg_socket
+    SocInput=$(cat "$msg_socket")
+    # from the socket, first column separated by space
+    Action="${SocInput%% *}"
+    # from the socket, second column separated by space
+    Argument="${SocInput##* }"
     # debug prints
     # printf 'action: %s\n' $Action
     # printf 'argument: %s\n' $Argument
