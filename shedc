@@ -35,7 +35,7 @@ progressbar() {
   else
     totaltime="$2"
   fi
-  steptime=$(printf '%s\n' "scale=2; $totaltime / 20" | bc)
+  steptime=$(awk -v CONVFMT='%.2f' BEGIN'{print sprintf('"$totaltime"'/20)}')
 
   while [ "$count" -le 20 ]; do
     case "$spinSymbol" in
