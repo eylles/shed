@@ -34,7 +34,7 @@ if [ -f "$msg_reply" ]; then
 fi
 
 # write started for when shedc requests a reload
-printf '%s\n' "$prog started" > "${GUISessionDir}/reply"
+printf '%s\n' "$prog started" > "$msg_reply"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
@@ -51,7 +51,7 @@ serv_start() {
   # check if service is already running
   if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
-    printf '%s\n' "$NAME $start_date running" >> "${GUISessionDir}/reply"
+    printf '%s\n' "$NAME $start_date running" >> "$msg_reply"
   else
     [ -z "$DELAY" ] || sleep "$DELAY"
     # run the service command with the arguments
@@ -63,14 +63,14 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
-    printf '%s\n' "$NAME $start_date started" >> "${GUISessionDir}/reply"
+    printf '%s\n' "$NAME $start_date started" >> "$msg_reply"
   fi
 }
 
 start_services() {
   # start date
   start_date=$(date '+%Y-%m-%d-%H:%M:%S')
-  printf '%s\n' "$start_date starting services" > "${GUISessionDir}/reply"
+  printf '%s\n' "$start_date starting services" > "$msg_reply"
   # if all the services should be started
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
