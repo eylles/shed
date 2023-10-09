@@ -6,8 +6,12 @@ myname="${0##*/}"
 
 # cd "${XDG_CONFIG_HOME}/shed/services"
 
+# result of: id -u $USER
+# cuz $UID is not POSIX ¯\_(ツ)_/¯
+UserID=$(id -u "$USER")
+
 # dir of the pid files for the current session
-GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
+GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services

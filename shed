@@ -11,15 +11,19 @@ if [ -z "$GUI_SESSION_PID" ]; then
   export GUI_SESSION_PID=$PPID
 fi
 
+# result of: id -u $USER
+# cuz $UID is not POSIX ¯\_(ツ)_/¯
+UserID=$(id -u "$USER")
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
-GUISessionDir=/tmp/GUISession${GUI_SESSION_PID}
+GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
 # create the session dir if it doesn't exist
 [ -d "$GUISessionDir" ] || mkdir -p "$GUISessionDir"
-# defined as: /tmp/GUISession${GUI_SESSION_PID}/socket
+# defined as: /run/user/${UserID}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
-# defined as: /tmp/GUISession${GUI_SESSION_PID}/reply
+# defined as: /run/user/${UserID}/GUISession${GUI_SESSION_PID}/reply
 msg_reply="${GUISessionDir}/reply"
 # create the socket file if necesary
 if [ ! -p "$msg_socket" ]; then
