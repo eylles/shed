@@ -96,22 +96,27 @@ daemon_cycle() {
   Argument=""
   # daemon cycle to run until we recieve a reload action in the socket
   while [ "$SHED_RELOAD" = 0 ] ; do
-    # wait until a write is done to the socket
-    # read the contents of the socket, action and argument
-    # drain the named pipe $msg_socket
-    SocInput=$(cat "$msg_socket")
-    # from the socket, first column separated by space
-    Action="${SocInput%% *}"
-    # from the socket, second column separated by space
-    Argument="${SocInput##* }"
-    # debug prints
-    # printf 'action: %s\n' $Action
-    # printf 'argument: %s\n' $Argument
-    # decide what to do with the read action and argument
-    case "${Action}" in
-      reload) SHED_RELOAD=1 ;;
-      start) start_services "$Argument" ;;
-    esac
+    # check that the GUISessionDir exists
+    if [ -d "${GUISessionDir}" ]; then
+      # wait until a write is done to the socket
+      # read the contents of the socket, action and argument
+      # drain the named pipe $msg_socket
+      SocInput=$(cat "$msg_socket")
+      # from the socket, first column separated by space
+      Action="${SocInput%% *}"
+      # from the socket, second column separated by space
+      Argument="${SocInput##* }"
+      # debug prints
+      # printf 'action: %s\n' $Action
+      # printf 'argument: %s\n' $Argument
+      # decide what to do with the read action and argument
+      case "${Action}" in
+        reload) SHED_RELOAD=1 ;;
+        start) start_services "$Argument" ;;
+      esac
+    else
+      SHED_RELOAD=2
+    fi
   done
 }
 # start all services on first run
@@ -120,4 +125,4 @@ start_services "all"
 daemon_cycle
 
 # reload shed
-[ "$SHED_RELOAD" = 0 ] || exec shed
+[ "$SHED_RELOAD" = 1 ] && exec shed
