@@ -92,6 +92,43 @@ read_reply() {
   fi
 }
 
+read_pipe() {
+  # all messages read will be stored here
+  varfile="/tmp/$myname"
+  # pipe we read from
+  pipe="${1}"
+  # we wait max 10 seconds without reply
+  waittime=10
+  # we cycle twice per second
+  cycles=$((waittime * 2))
+
+  cont=0
+  while [ "$cont" = 0 ]; do
+    : > "$varfile"
+    var=""
+    cat "$pipe" > "$varfile" &
+    catpid=$!
+    var=$(cat "$varfile")
+    if [ -z "$var" ]; then
+      count=0
+      while [ "$count" -le "$cycles" ] && [ -z "$var" ]; do
+        sleep 0.5
+        var=$(cat "$varfile")
+        count=$((count + 1))
+      done
+      kill $catpid 2>/dev/null
+    fi
+    if [ -z "$var" ]; then
+      # echo "timeout: no message recieved"
+      cont=1
+    else
+      printf '%s\n' "$var"
+    fi
+  done
+
+  rm "$varfile"
+}
+
 readservicename(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
