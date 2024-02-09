@@ -2,8 +2,7 @@
 
 prog="${0##*/}"
 
-# if we reloaded then we set this to 0
-SHED_RELOAD=0
+shed_pid="${$}"
 
 # check if GUI_SESSION_PID is set
 if [ -z "$GUI_SESSION_PID" ]; then
@@ -32,23 +31,46 @@ if [ ! -p "$msg_socket" ]; then
   fi
   mkfifo -m 600 "$msg_socket"
 fi
-# create the empty reply file if necesary
-if [ -f "$msg_reply" ]; then
-  : > "$msg_reply"
+# create the reply socket file if necesary
+if [ ! -p "$msg_reply" ]; then
+  if [ -f "$msg_reply" ]; then
+    rm "$msg_reply"
+  fi
+  mkfifo -m 600 "$msg_reply"
+fi
+
+# shed start file, contains the pid of the shed process
+startfile="${GUISessionDir}/shed.started"
+
+# werether shed is a fresh start or a post reload
+reloaded=""
+
+# check if shed is reloading, writing to socket is not possible when starting
+# on a fresh session cuz no one is listening to the socket
+if [ -f "$startfile" ]; then
+  reloaded=1
+else
+  printf '%s\n' "$shed_pid" > "$startfile"
 fi
 
 # write started for when shedc requests a reload
-printf '%s\n' "$prog started" > "$msg_reply"
+[ -n "$reloaded" ] && printf '%s\n' "$prog started" > "$msg_reply"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
+# usage: serv_start service_name [nosock]
+#   nosock: if the nosock arg is passed then
+#   no message is sent to the reply socket
+#   any value passed will set no sock mode
 serv_start() {
   # clean up environment
+  NSck=""
   NAME=""
   EXEC=""
   E_ARGS=""
   DELAY=""
+  [ -n "${2}" ] && NSck="${2}"
   s_file="$1"
   # source the file to get the variables: NAME EXEC E_ARGS from the service
   . "$s_file"
@@ -67,7 +89,7 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
-    printf '%s\n' "$NAME $start_date started" >> "$msg_reply"
+    [ -z "$NSck" ] && printf '%s\n' "$NAME $start_date started" >> "$msg_reply"
   fi
 }
 
@@ -80,6 +102,11 @@ start_services() {
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
       serv_start "$i" &
+    done
+  elif [ "firstrun" = "$1" ]; then
+    # for every service file in the services dir
+    for i in "${ServicesDir}"/* ; do
+      serv_start "$i" "nosock" &
     done
   else
     for i in "${ServicesDir}"/* ; do
@@ -115,12 +142,19 @@ daemon_cycle() {
         start) start_services "$Argument" ;;
       esac
     else
+      # shed must exit
       SHED_RELOAD=2
     fi
   done
 }
 # start all services on first run
-start_services "all"
+start_str=""
+if [ "$reloaded" = 1 ]; then
+  start_str="all"
+else
+  start_str="firstrun"
+fi
+start_services "$start_str"
 
 daemon_cycle
 
