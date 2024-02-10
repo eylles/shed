@@ -41,3 +41,8 @@ TODO:
 - [ ] write bash completion scripts
 - [ ] write zsh completion scripts
 - [ ] draw a logo/icon for shed to use in the repo
+
+
+## DO NOT USE THE GIT MASTER EVER!
+
+the git master is unstable and may break without notice, always use shed from a release tag.
