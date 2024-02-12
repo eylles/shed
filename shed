@@ -72,10 +72,13 @@ fi
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
-# usage: serv_start service_name [nosock]
-#   nosock: if the nosock arg is passed then
+# usage: serv_start service_name nosock nodelay
+#   nosock: if the nosock arg is set then
 #   no message is sent to the reply socket
-#   any value passed will set no sock mode
+#   passing 1 will set no sock mode
+#   nodelay: if the nodelay arg is set then
+#   no delay is applied to starting the service
+#   passing 1 will set no delay mode
 serv_start() {
   # clean up environment
   NSck=""
@@ -83,7 +86,16 @@ serv_start() {
   EXEC=""
   E_ARGS=""
   DELAY=""
-  [ -n "${2}" ] && NSck="${2}"
+  if [ ! "${2}" = 1 ]; then
+    NSck=0
+  else
+    NSck="${2}"
+  fi
+  if [ ! "${3}" = 1 ]; then
+    NDlay=0
+  else
+    NDlay="${3}"
+  fi
   s_file="$1"
   # source the file to get the variables: NAME EXEC E_ARGS from the service
   . "$s_file"
@@ -92,7 +104,9 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     printf '%s\n' "$NAME $start_date running" >> "$msg_reply"
   else
-    [ -z "$DELAY" ] || sleep "$DELAY"
+    if [ -n "$DELAY" ] && [ "$NDlay" = 0 ]; then
+      sleep "$DELAY"
+    fi
     # run the service command with the arguments
     s_run="exec $EXEC $E_ARGS"
     eval "$s_run" &
@@ -114,18 +128,18 @@ start_services() {
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" &
+      serv_start "$i" "0" "1" &
     done
   elif [ "firstrun" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" "nosock" &
+      serv_start "$i" "1" &
     done
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName=$(basename "$i")
       if [ "$ServiceFileName" = "$1" ]; then
-        serv_start "$i" &
+        serv_start "$i" "0" "1" &
       fi
     done
   fi
