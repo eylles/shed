@@ -42,11 +42,15 @@ if [ ! -p "$msg_socket" ]; then
   mkfifo -m 600 "$msg_socket"
 fi
 # create the reply socket file if necesary
-if [ ! -p "$msg_reply" ]; then
-  if [ -f "$msg_reply" ]; then
-    rm "$msg_reply"
-  fi
-  mkfifo -m 600 "$msg_reply"
+# if [ ! -p "$msg_reply" ]; then
+#   if [ -f "$msg_reply" ]; then
+#     rm "$msg_reply"
+#   fi
+#   mkfifo -m 600 "$msg_reply"
+# fi
+# create the empty reply file if necesary
+if [ -f "$msg_reply" ]; then
+  : > "$msg_reply"
 fi
 
 # shed start file, contains the pid of the shed process
