@@ -1,6 +1,7 @@
 #!/bin/sh
 
 myname="${0##*/}"
+mypid="${$}"
 
 # OldWorkDir=$PWD
 
@@ -94,7 +95,7 @@ read_reply() {
 
 read_pipe() {
   # all messages read will be stored here
-  varfile="/tmp/$myname"
+  varfile="/tmp/${myname}_${mypid}"
   # pipe we read from
   pipe="${1}"
   # we wait max 10 seconds without reply
