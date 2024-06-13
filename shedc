@@ -66,14 +66,14 @@ pretty_print() {
       {
         if (NR==1) {
           printf " ┌"; for(c=0;c<65;c++) printf"─"; printf "┐\n" ;
-          printf " │ %63s │\n", $0 ; 
+          printf " │ %63s │\n", $0 ;
           printf " ├"; for(c=0;c<32;c++) printf"─"; printf "┬";
           for(c=0;c<22;c++) printf"─"; printf "┬";
-          for(c=0;c<9;c++) printf"─"; printf "┤\n" ; 
+          for(c=0;c<9;c++) printf"─"; printf "┤\n" ;
           printf " │ %30s │ %20s │ %7s │\n", "service           ", "date        ", "status ";
           printf " ├"; for(c=0;c<32;c++) printf"─"; printf "┼";
           for(c=0;c<22;c++) printf"─"; printf "┼";
-          for(c=0;c<9;c++) printf"─"; printf "┤\n" ; 
+          for(c=0;c<9;c++) printf"─"; printf "┤\n" ;
           }
         else { printf " │ %30s │ %20s │ %7s │\n", $1, $2, $3 };
       }
