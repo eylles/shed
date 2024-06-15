@@ -34,21 +34,21 @@ fi
 msg_socket="${GUISessionDir}/socket"
 # defined as: /run/user/${UserID}/GUISession${GUI_SESSION_PID}/reply
 msg_reply="${GUISessionDir}/reply"
-# create the socket file if necesary
+# create the socket file if necessary
 if [ ! -p "$msg_socket" ]; then
   if [ -f "$msg_socket" ]; then
     rm "$msg_socket"
   fi
   mkfifo -m 600 "$msg_socket"
 fi
-# create the reply socket file if necesary
+# create the reply socket file if necessary
 # if [ ! -p "$msg_reply" ]; then
 #   if [ -f "$msg_reply" ]; then
 #     rm "$msg_reply"
 #   fi
 #   mkfifo -m 600 "$msg_reply"
 # fi
-# create the empty reply file if necesary
+# create the empty reply file if necessary
 if [ -f "$msg_reply" ]; then
   : > "$msg_reply"
 fi
@@ -158,7 +158,7 @@ start_services() {
 daemon_cycle() {
   Action=""
   Argument=""
-  # daemon cycle to run until we recieve a reload action in the socket
+  # daemon cycle to run until we receive a reload action in the socket
   while [ "$SHED_RELOAD" = 0 ] ; do
     # check that the GUISessionDir exists
     if [ -d "${GUISessionDir}" ]; then
