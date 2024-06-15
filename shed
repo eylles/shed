@@ -124,6 +124,12 @@ serv_start() {
   fi
 }
 
+# usage: start_services all | firstrun | <service name>
+#   all: start all services
+#   firstrun: start all services on first run mode
+#   <service name>: the service name to start
+#
+#   only the first argument is acknowledged
 start_services() {
   # start date
   start_date=$(date '+%Y-%m-%d-%H:%M:%S')
