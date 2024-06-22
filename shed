@@ -155,6 +155,22 @@ start_services() {
   fi
 }
 
+# usage: readservicename service_file
+readservicename(){
+  # Setting 'IFS' tells 'read' where to split the string.
+  while IFS='=' read -r key val; do
+    # Skip over lines containing comments.
+    # (Lines starting with '#').
+    [ "${key##\#*}" ] || continue
+
+    # '$key' stores the key.
+    # '$val' stores the value.
+    if [ "$key" = "NAME" ]; then
+    printf '%s\n' "$val"
+    fi
+  done < "$1"
+}
+
 daemon_cycle() {
   Action=""
   Argument=""
