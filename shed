@@ -204,6 +204,41 @@ hupprocs() {
   fi
 }
 
+# usage: killprocs all | <service name>
+#   all: kill all services
+#   <service name>: service to kill
+killprocs() {
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
+    for i in "${GUISessionDir}"/*.pid ; do
+      s_pid=$(read_file "$i")
+      # s_name=$(ps -p "$s_pid" -o comm=)
+      s_name="${i##*/}"
+      printf 'sending term to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+      if kill -0 "$s_pid" 2>/dev/null; then
+      [ -z "$dry_run" ] && kill "$s_pid"
+      fi
+      [ -z "$dry_run" ] && rm -f "$i"
+    done
+  else
+    for i in "${ServicesDir}"/* ; do
+      ServiceFileName="${i##*/}"
+      if [ "$ServiceFileName" = "$1" ]; then
+        s_name=$(readservicename "$i")
+        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+          printf 'sending term to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+          if kill -0 "$s_pid" 2>/dev/null; then
+          [ -z "$dry_run" ] && kill "$s_pid"
+          fi
+          [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
+        else
+          printf 'service %s not running\n' "$s_name" >> "$msg_reply"
+        fi
+      fi
+    done
+  fi
+}
+
 daemon_cycle() {
   Action=""
   Argument=""
