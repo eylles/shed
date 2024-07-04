@@ -261,6 +261,8 @@ daemon_cycle() {
       case "${Action}" in
         reload) SHED_RELOAD=1 ;;
         start) start_services "$Argument" ;;
+        stop)  killprocs "$Argument" ;;
+        hup)   hupprocs "$Argument" ;;
       esac
     else
       # shed must exit
