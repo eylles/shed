@@ -249,6 +249,14 @@ startchilds() {
   printf 'start %s\n' "$1" > "${GUISessionDir}/socket"
 }
 
+# usage: daemon_send <action> all | <service name>
+#   <action>: hup, stop, start, restart
+#   all: apply action to all services
+#   <service name>: service to kill
+daemon_send() {
+  printf '%s %s\n' "$1" "$2" > "${GUISessionDir}/socket"
+}
+
 kill_session() {
   killchilds "all"
   [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
