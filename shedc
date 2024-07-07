@@ -18,6 +18,10 @@ GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
 # read the contents of the pid file, cat but more "elegant"
+
+# Usage: read_file file [prefix]
+#   [prefix]: if provided the characters here will be used a prefix when
+#   printing the contents of the file.
 read_file() {
   if [ $# -gt 1 ]; then
     prefix=$2
@@ -30,8 +34,10 @@ read_file() {
   done < "$1"
 }
 
-# Usage: progspinner [prefix]
+# Usage: progspinner prefix [time]
 #   prefix: the string the will appear before the progress spinner
+#   time: optional, amount of time the spinner will be spinning for, by default
+#         2 seconds,
 progspinner() {
   count=0
   spinSymbol=0
@@ -63,6 +69,8 @@ progspinner() {
   printf '\n'
 }
 
+# Usage: pretty_print file
+#   uses awk to print the contents of the passed file to the terminal.
 pretty_print() {
     awk '
       {
@@ -86,6 +94,9 @@ pretty_print() {
 
 }
 
+# Usage: read_reply
+#   it will read the contents of the reply file and print them to the terminal
+#   with either the pretty_print or a printf with a prefix from read_file.
 read_reply() {
   progspinner "retrieving status:"
   if [ -z "$PrettyPrint" ]; then
@@ -95,6 +106,11 @@ read_reply() {
   fi
 }
 
+# Usage: read_pipe pipe_file
+#   reads the contents of the passed named pipe, will time out in 10 seconds if
+#   nothing is written to the pipe.
+#
+#   this is rather in this implementation and needs more work.
 read_pipe() {
   # all messages read will be stored here
   varfile="/tmp/${myname}_${mypid}"
@@ -251,7 +267,7 @@ startchilds() {
   printf 'start %s\n' "$1" > "${GUISessionDir}/socket"
 }
 
-# usage: daemon_send <action> all | <service name>
+# Usage: daemon_send <action> all | <service name>
 #   <action>: hup, stop, start, restart
 #   all: apply action to all services
 #   <service name>: service to kill
