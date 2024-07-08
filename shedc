@@ -148,6 +148,8 @@ read_pipe() {
   rm "$varfile"
 }
 
+# Usage: readservicename file
+# Return: string containing the value of the NAME key from the passed file
 readservicename(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
@@ -163,6 +165,11 @@ readservicename(){
   done < "$1"
 }
 
+# Usage: procstat all | <service name>
+#   all: status for all services
+#   <service name>: status of service
+#
+# Return: string containing status
 procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${ServicesDir}"/* ; do
@@ -201,6 +208,11 @@ procstat() {
   fi
 }
 
+# Usage: hupprocs all | <service name>
+#   all: hup to all services
+#   <service name>: hup service
+#
+# Return: string
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -231,6 +243,11 @@ hupprocs() {
   fi
 }
 
+# Usage: killchilds all | <service name>
+#   all: status for all services
+#   <service name>: status of service
+#
+# Return: string
 killchilds() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -263,6 +280,11 @@ killchilds() {
   fi
 }
 
+# Usage: startchilds all | <service name>
+#   all: start all services
+#   <service name>: start service
+#
+# Return: void
 startchilds() {
   printf 'start %s\n' "$1" > "${GUISessionDir}/socket"
 }
@@ -275,6 +297,8 @@ daemon_send() {
   printf '%s %s\n' "$1" "$2" > "${GUISessionDir}/socket"
 }
 
+# Usage: kill_session
+# Return: void
 kill_session() {
   killchilds "all"
   [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
