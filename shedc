@@ -22,6 +22,8 @@ ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 # Usage: read_file file [prefix]
 #   [prefix]: if provided the characters here will be used a prefix when
 #   printing the contents of the file.
+#
+# Return: string '[prefix]line'
 read_file() {
   if [ $# -gt 1 ]; then
     prefix=$2
@@ -37,7 +39,9 @@ read_file() {
 # Usage: progspinner prefix [time]
 #   prefix: the string the will appear before the progress spinner
 #   time: optional, amount of time the spinner will be spinning for, by default
-#         2 seconds,
+#         2 seconds
+#
+# Return: string
 progspinner() {
   count=0
   spinSymbol=0
@@ -71,6 +75,8 @@ progspinner() {
 
 # Usage: pretty_print file
 #   uses awk to print the contents of the passed file to the terminal.
+#
+# Return: string
 pretty_print() {
     awk '
       {
@@ -97,6 +103,8 @@ pretty_print() {
 # Usage: read_reply
 #   it will read the contents of the reply file and print them to the terminal
 #   with either the pretty_print or a printf with a prefix from read_file.
+#
+# Return: string from called function
 read_reply() {
   progspinner "retrieving status:"
   if [ -z "$PrettyPrint" ]; then
