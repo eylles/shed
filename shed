@@ -14,6 +14,15 @@ fi
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
 UserID=$(id -u "$USER")
 
+# define XDG_RUNTIME_DIR if it doesn't exist
+if [ -z "${XDG_RUNTIME_DIR}" ]; then
+  export XDG_RUNTIME_DIR=/tmp/"${UserID}"-runtime-dir
+    if ! test -d "${XDG_RUNTIME_DIR}"; then
+        mkdir "${XDG_RUNTIME_DIR}"
+        chmod 0700 "${XDG_RUNTIME_DIR}"
+    fi
+fi
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
