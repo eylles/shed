@@ -26,7 +26,7 @@ fi
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
-GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
+GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 
 # werether or not the GUISessionDir was present at startup
 # 1=true btw
