@@ -10,9 +10,14 @@ if [ -z "$GUI_SESSION_PID" ]; then
   export GUI_SESSION_PID=$PPID
 fi
 
-# result of: id -u $USER
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
-UserID=$(id -u "$USER")
+# but it may be defined in the environment
+if [ -z "$UID" ]; then
+  # result of: id -u $USER
+  UserID=$(id -u "$USER")
+else
+  UserID="$UID"
+fi
 
 # define XDG_RUNTIME_DIR if it doesn't exist
 if [ -z "${XDG_RUNTIME_DIR}" ]; then
