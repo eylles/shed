@@ -21,11 +21,18 @@ fi
 
 # define XDG_RUNTIME_DIR if it doesn't exist
 if [ -z "${XDG_RUNTIME_DIR}" ]; then
-  export XDG_RUNTIME_DIR=/tmp/"${UserID}"-runtime-dir
+  # test if the usual location is writeable
+  if [ -w "/run/user/${UserID}" ]; then
+    # we can simply export it now
+    export XDG_RUNTIME_DIR="/run/user/${UserID}"
+  else
+    # welp, gotta define it as something
+    export XDG_RUNTIME_DIR=/tmp/"${UserID}"-runtime-dir
     if ! test -d "${XDG_RUNTIME_DIR}"; then
-        mkdir "${XDG_RUNTIME_DIR}"
-        chmod 0700 "${XDG_RUNTIME_DIR}"
+      mkdir "${XDG_RUNTIME_DIR}"
+      chmod 0700 "${XDG_RUNTIME_DIR}"
     fi
+  fi
 fi
 
 # dir for the pid files
