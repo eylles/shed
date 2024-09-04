@@ -83,8 +83,18 @@ reloaded=""
 # check if shed is reloading, writing to socket is not possible when starting
 # on a fresh session cuz no one is listening to the socket
 if [ "$sessdir" = 1 ]; then
-  reloaded=1
-  if [ ! -f "$startfile" ]; then
+  if [ -f "$startfile" ]; then
+    # the pid will not change when reloading as we use exec, so if the pid is
+    # different then we should not run at all since only one instance should run
+    # per session.
+    file_pid=$(cat "$startfile")
+    if [ "$file_pid" -eq "$shed_pid" ]; then
+      reloaded=1
+    else
+      printf '%s\n' "${prog}: instance with pid ${file_pid} already running!"
+      exit 1
+    fi
+  else
     printf '%s\n' "$shed_pid" > "$startfile"
   fi
 else
