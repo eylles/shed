@@ -173,6 +173,23 @@ readservicename(){
   done < "$1"
 }
 
+# Usage: readserviceexec file
+# Return: string containing the value of the EXEC key from the passed file
+readserviceexec(){
+  # Setting 'IFS' tells 'read' where to split the string.
+  while IFS='=' read -r key val; do
+    # Skip over lines containing comments.
+    # (Lines starting with '#').
+    [ "${key##\#*}" ] || continue
+
+    # '$key' stores the key.
+    # '$val' stores the value.
+    if [ "$key" = "EXEC" ]; then
+    printf '%s\n' "$val"
+    fi
+  done < "$1"
+}
+
 # Usage: procstat all | <service name>
 #   all: status for all services
 #   <service name>: status of service
@@ -183,6 +200,7 @@ procstat() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
         s_name=$(readservicename "$i")
+        s_exec=$(readserviceexec "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           if kill -0 "$s_pid" 2>/dev/null; then
@@ -193,7 +211,11 @@ procstat() {
         else
             s_state="-"
         fi
-        printf ' [ %s ]  %s\n' "$s_state" "$s_name"
+        if [ "$PrettyPrint" = 1 ]; then
+          printf ' [ %s ]  %30s %6s %s\n' "$s_state" "$s_name" "$s_pid" "$s_exec"
+        else
+          printf ' [ %s ]  %s\n' "$s_state" "$s_name"
+        fi
     done
   else
     for i in "${ServicesDir}"/* ; do
@@ -316,7 +338,7 @@ kill_session() {
 show_help() {
   printf 'Usage: %s [options] { hup | start | stop | restart } [service name] | logout \n' "$myname"
   printf '  -n        dry run.\n  -h        show this help.\n'
-  printf '  -p        pretty print from reply socket.\n'
+  printf '  -p        pretty print reply.\n'
   printf '   hup      send hup to the session service(s)\n'
   printf '   stop     send term to the session service(s)\n'
   printf '   start    send request to start the session service(s)\n'
