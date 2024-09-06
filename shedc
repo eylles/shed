@@ -146,7 +146,7 @@ read_pipe() {
       kill $catpid 2>/dev/null
     fi
     if [ -z "$var" ]; then
-      # echo "timeout: no message recieved"
+      # echo "timeout: no message received"
       cont=1
     else
       printf '%s\n' "$var"
@@ -168,7 +168,7 @@ readserviceprop(){
     # '$key' stores the key.
     # '$val' stores the value.
     if [ "$key" = "$1" ]; then
-    printf '%s\n' "$val"
+      printf '%s\n' "$val"
     fi
   done < "$2"
 }
@@ -195,9 +195,9 @@ procstat() {
             s_state="-"
         fi
         if [ "$PrettyPrint" = 1 ]; then
-          printf ' [ %s ]  %30s %6s %s\n' "$s_state" "$s_name" "$s_pid" "$s_exec"
+          printf ' [ %s ] %30s %6s %s\n' "$s_state" "$s_name" "$s_pid" "$s_exec"
         else
-          printf ' [ %s ]  %s\n' "$s_state" "$s_name"
+          printf ' [ %s ] %s\n' "$s_state" "$s_name"
         fi
     done
   else
