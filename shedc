@@ -293,19 +293,12 @@ killchilds() {
   fi
 }
 
-# Usage: startchilds all | <service name>
-#   all: start all services
-#   <service name>: start service
-#
-# Return: void
-startchilds() {
-  printf 'start %s\n' "$1" > "${GUISessionDir}/socket"
-}
-
 # Usage: daemon_send <action> all | <service name>
-#   <action>: hup, stop, start, restart
+#   <action>: hup, stop, start, reload
 #   all: apply action to all services
 #   <service name>: service to kill
+#
+# Return: void
 daemon_send() {
   printf '%s %s\n' "$1" "$2" > "${GUISessionDir}/socket"
 }
@@ -353,7 +346,7 @@ case $1 in
   restart)
     killchilds "$2"
     progspinner "restarting service(s)" 1
-    startchilds "$2"
+    daemon_send "start" "$2"
     read_reply
   ;;
   hup)
@@ -363,7 +356,7 @@ case $1 in
     procstat "$2"
   ;;
   start)
-    startchilds "$2"
+    daemon_send "start" "$2"
     read_reply
   ;;
   logout)
@@ -372,7 +365,7 @@ case $1 in
   reload)
     killchilds "all"
     progspinner "reloading shed" 2
-    printf 'reload\n' > "${GUISessionDir}/socket"
+    daemon_send "reload"
     read_reply
   ;;
   *) show_help ; exit 1 ;;
