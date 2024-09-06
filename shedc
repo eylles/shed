@@ -156,9 +156,9 @@ read_pipe() {
   rm "$varfile"
 }
 
-# Usage: readservicename file
-# Return: string containing the value of the NAME key from the passed file
-readservicename(){
+# Usage: readserviceprop "PROPERTY" file
+# Return: string containing the value of the PROPERTY key from the passed file
+readserviceprop(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
     # Skip over lines containing comments.
@@ -167,27 +167,10 @@ readservicename(){
 
     # '$key' stores the key.
     # '$val' stores the value.
-    if [ "$key" = "NAME" ]; then
+    if [ "$key" = "$1" ]; then
     printf '%s\n' "$val"
     fi
-  done < "$1"
-}
-
-# Usage: readserviceexec file
-# Return: string containing the value of the EXEC key from the passed file
-readserviceexec(){
-  # Setting 'IFS' tells 'read' where to split the string.
-  while IFS='=' read -r key val; do
-    # Skip over lines containing comments.
-    # (Lines starting with '#').
-    [ "${key##\#*}" ] || continue
-
-    # '$key' stores the key.
-    # '$val' stores the value.
-    if [ "$key" = "EXEC" ]; then
-    printf '%s\n' "$val"
-    fi
-  done < "$1"
+  done < "$2"
 }
 
 # Usage: procstat all | <service name>
@@ -199,8 +182,8 @@ procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
-        s_name=$(readservicename "$i")
-        s_exec=$(readserviceexec "$i")
+        s_name=$(readserviceprop "NAME" "$i")
+        s_exec=$(readserviceprop "EXEC" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           if kill -0 "$s_pid" 2>/dev/null; then
@@ -221,7 +204,7 @@ procstat() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readservicename "$i")
+        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           if kill -0 "$s_pid" 2>/dev/null; then
@@ -258,7 +241,7 @@ hupprocs() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readservicename "$i")
+        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
@@ -294,7 +277,7 @@ killchilds() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readservicename "$i")
+        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf ' sending term to %s\t%s\n' "$s_pid" "$s_name"
