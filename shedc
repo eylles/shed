@@ -17,6 +17,15 @@ GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
+# unix command line compatible booleans
+
+# Type: int
+# value: 0
+_true=0
+# Type: int
+# value: 1
+_false=1
+
 # read the contents of the pid file, cat but more "elegant"
 
 # Usage: read_file file [prefix]
