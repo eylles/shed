@@ -241,9 +241,32 @@ hupprocs() {
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
-      printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
-      if kill -0 "$s_pid" 2>/dev/null; then
-        [ -z "$dry_run" ] && kill -HUP "$s_pid"
+      for s in "${ServicesDir}"/* ; do
+        ServiceFileName="${s##*/}"
+        i_name=$(readserviceprop "NAME" "$s")
+        if [ "$s_name" = "$i_name" ]; then
+          s_nohup=$(readserviceprop "NOHUP" "$s")
+        fi
+      done
+      if [ -z "$s_nohup" ]; then
+        canhup="$_true"
+      else
+        case "$s_nohup" in
+          true|TRUE|1|yes|YES|y|Y)
+            canhup="$_false"
+            ;;
+          *)
+            canhup="$_true"
+            ;;
+        esac
+      fi
+      if [ "$canhup" -eq "$_false" ]; then
+        printf 'cannot hup service %s\n' "$s_name"
+      else
+        printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
+        if kill -0 "$s_pid" 2>/dev/null; then
+          [ -z "$dry_run" ] && kill -HUP "$s_pid"
+        fi
       fi
     done
   else
@@ -251,14 +274,31 @@ hupprocs() {
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
-          printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
-          if kill -0 "$s_pid" 2>/dev/null; then
-          [ -z "$dry_run" ] && kill -HUP "$s_pid"
-          fi
+        s_nohup=$(readserviceprop "NOHUP" "$i")
+        if [ -z "$s_nohup" ]; then
+          canhup="$_true"
         else
-          printf 'service %s not running\n' "$s_name"
+          case "$s_nohup" in
+            true|TRUE|1|yes|YES|y|Y)
+              canhup="$_false"
+              ;;
+            *)
+              canhup="$_true"
+              ;;
+          esac
+        fi
+        if [ "$canhup" -eq "$_false" ]; then
+          printf 'cannot hup service %s\n' "$s_name"
+        else
+          if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+            s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+            printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
+            if kill -0 "$s_pid" 2>/dev/null; then
+              [ -z "$dry_run" ] && kill -HUP "$s_pid"
+            fi
+          else
+            printf 'service %s not running\n' "$s_name"
+          fi
         fi
       fi
     done

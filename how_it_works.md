@@ -56,3 +56,4 @@ that is all to get shed to launch, the .xsessionrc file is loaded during the log
 | EXEC     | the program to be started as a service |
 | E_ARGS   | additional arguments for the daemon program, quote the argument string if it contains spaces |
 | DELAY    | delay the startup of the daemon program by the provided seconds, this is passed directly to sleep(1) |
+| NOHUP    | to prevent a service from being hupped set this to some of: yes, true, 1 |
