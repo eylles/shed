@@ -7,7 +7,54 @@ shed \- Session sHell Execution Daemon
 .RB { \fB start | stop | restart | hup \fP }
 .IR service | all | reload
 .SH DESCRIPTION
-shed is a completely init independient implementation of user services
+.P
+shed is a completely init independient implementation of user services.
+.P
+shed is a daemon intended to run early in the session or directly as the session
+process, it has no options.
+.P
+shedc is the command to control shed, start, stop, hup and gather the status of
+the running user session services.
+.SH OPTIONS
+.TP
+.B "\-h"
+Print brief usage information to standard output and exit.
+.TP
+.B "\-n"
+dry run, does not execute the action.
+.TP
+.B "\-p"
+Print reply from daemon and status information with prettyprint.
+.SH ACTIONS
+.TP
+.B "hup"
+send HUP to session service.
+.TP
+.B "stop"
+send TERM to the session service.
+.TP
+.B "start"
+send a request to start the session service.
+.TP
+.B "restart"
+stop the session service and then start it.
+.TP
+.B "logout"
+send TERM to the session services and then terminate the session.
+.TP
+.B "reload"
+send TERM to the session services and reload shed.
+.TP
+.B "status"
+show status for the services.
+.TP
+status for the services is shown as follows:
+.TP
+[ + ] means the service is running
+.TP
+[ - ] means the service is not running
+.TP
+[ ? ] means the service was started but the pid was not among the active processes
 .SH AUTHOR
 .EX
 eylles                 <ed.ylles1997 at gmail.com>
