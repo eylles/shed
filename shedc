@@ -189,6 +189,25 @@ readserviceprop(){
 # Return: string containing status
 procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
+    if [ "$PrettyPrint" = 1 ]; then
+      # default pid length
+      pw=6
+      # use per system pid length
+      os_type=$(uname -s)
+      case "${os_type}" in
+        Linux)
+          pw=$(wc -c /proc/sys/kernel/pid_max | awk '{ print $1 }')
+          ;;
+        NetBSD)
+          pidmax=30000
+          pw=$(printf '%s\n' "$pidmax" | wc -c)
+          ;;
+        OpenBSD|FreeBSD|*BSD)
+          pidmax=99999
+          pw=$(printf '%s\n' "$pidmax" | wc -c)
+          ;;
+      esac
+    fi
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
         s_name=$(readserviceprop "NAME" "$i")
@@ -204,7 +223,7 @@ procstat() {
             s_state="-"
         fi
         if [ "$PrettyPrint" = 1 ]; then
-          printf ' [ %s ] %30s %6s %s\n' "$s_state" "$s_name" "$s_pid" "$s_exec"
+          printf ' [ %s ] %30s %*s %s\n' "$s_state" "$s_name" "$pw" "$s_pid" "$s_exec"
         else
           printf ' [ %s ] %s\n' "$s_state" "$s_name"
         fi
