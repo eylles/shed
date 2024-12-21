@@ -165,8 +165,20 @@ read_pipe() {
   rm "$varfile"
 }
 
-# Usage: readserviceprop "PROPERTY" file
-# Return: string containing the value of the PROPERTY key from the passed file
+# Return type: string
+#       Usage: readserviceprop "PROPERTY" service_file
+#    property: key name
+#      Return: string containing the value of the
+#              PROPERTY key from the passed file.
+# --------------------------------------------------
+# the service files store properties as key=value
+# pairs, pass the name of the key to get the stored
+# value, valid key names are:
+#     NAME
+#     EXEC
+#     E_ARGS
+#     DELAY
+#     NOHUP
 readserviceprop(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do

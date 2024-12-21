@@ -189,6 +189,8 @@ start_services() {
 # Return type: string
 #       Usage: readserviceprop "PROPERTY" service_file
 #    property: key name
+#      Return: string containing the value of the
+#              PROPERTY key from the passed file.
 # --------------------------------------------------
 # the service files store properties as key=value
 # pairs, pass the name of the key to get the stored
