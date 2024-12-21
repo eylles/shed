@@ -186,8 +186,19 @@ start_services() {
   fi
 }
 
-# usage: readservicename service_file
-readservicename(){
+# Return type: string
+#       Usage: readserviceprop "PROPERTY" service_file
+#    property: key name
+# --------------------------------------------------
+# the service files store properties as key=value
+# pairs, pass the name of the key to get the stored
+# value, valid key names are:
+#     NAME
+#     EXEC
+#     E_ARGS
+#     DELAY
+#     NOHUP
+readserviceprop(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
     # Skip over lines containing comments.
@@ -196,10 +207,10 @@ readservicename(){
 
     # '$key' stores the key.
     # '$val' stores the value.
-    if [ "$key" = "NAME" ]; then
+    if [ "$key" = "$1" ]; then
     printf '%s\n' "$val"
     fi
-  done < "$1"
+  done < "$2"
 }
 
 # usage: hupprocs all | <service name>
@@ -220,7 +231,7 @@ hupprocs() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readservicename "$i")
+        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
@@ -254,7 +265,7 @@ killprocs() {
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readservicename "$i")
+        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
           printf 'sending term to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
