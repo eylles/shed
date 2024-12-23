@@ -107,13 +107,17 @@ fi
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
 
-# usage: serv_start service_name nosock nodelay
-#   nosock: if the nosock arg is set then
-#   no message is sent to the reply socket
-#   passing 1 will set no sock mode
-#   nodelay: if the nodelay arg is set then
-#   no delay is applied to starting the service
-#   passing 1 will set no delay mode
+# Return type: void
+#       Usage: serv_start service_name nosock nodelay
+#         nosock: if the nosock arg is set then
+#                 no message is sent to the reply socket
+#                 passing 1 will set no sock mode
+#        nodelay: if the nodelay arg is set then
+#                 no delay is applied to starting the
+#                 service passing 1 will set no delay mode
+# --------------------------------------------------
+# this function is not expected to have a return value as
+# all messages are sent to the reply socket unless specified
 serv_start() {
   # clean up environment
   NSck=""
@@ -155,12 +159,14 @@ serv_start() {
   fi
 }
 
-# usage: start_services all | firstrun | <service name>
-#   all: start all services
-#   firstrun: start all services on first run mode
-#   <service name>: the service name to start
-#
-#   only the first argument is acknowledged
+# Return type: void
+#       Usage: start_services all | firstrun | <service name>
+#            all: start all services
+#       firstrun: start all services on first run mode
+# <service name>: the service name to start
+# --------------------------------------------------
+# only one argument is acknowledged.
+# this function is not expected to have a return value.
 start_services() {
   # start date
   start_date=$(date '+%Y-%m-%d-%H:%M:%S')
@@ -188,9 +194,9 @@ start_services() {
 
 # Return type: string
 #       Usage: readserviceprop "PROPERTY" service_file
-#    property: key name
+#       property: key name
 #      Return: string containing the value of the
-#              PROPERTY key from the passed file.
+#                 PROPERTY key from the passed file.
 # --------------------------------------------------
 # the service files store properties as key=value
 # pairs, pass the name of the key to get the stored
@@ -215,9 +221,13 @@ readserviceprop(){
   done < "$2"
 }
 
-# usage: hupprocs all | <service name>
-#   all: hup all services
-#   <service name>: service to hup
+# Return type: void
+#       Usage: hupprocs all | <service name>
+#            all: hup all services
+# <service name>: service to hup
+# --------------------------------------------------
+# this function is not expected to have a return value as
+# all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -248,9 +258,13 @@ hupprocs() {
   fi
 }
 
-# usage: killprocs all | <service name>
-#   all: kill all services
-#   <service name>: service to kill
+# Return type: void
+#       Usage: killprocs all | <service name>
+#            all: kill all services
+# <service name>: service to kill
+# --------------------------------------------------
+# this function is not expected to have a return value as
+# all messages are sent to the reply socket
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -283,6 +297,10 @@ killprocs() {
   fi
 }
 
+# Return type: void
+#       Usage: daemon_cycle
+# --------------------------------------------------
+# this function does not return output whatsoever
 daemon_cycle() {
   Action=""
   Argument=""
