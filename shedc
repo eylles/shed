@@ -28,11 +28,11 @@ _false=1
 
 # read the contents of the pid file, cat but more "elegant"
 
-# Usage: read_file file [prefix]
-#   [prefix]: if provided the characters here will be used a prefix when
-#   printing the contents of the file.
-#
-# Return: string '[prefix]line'
+# Return type: string
+#       Usage: read_file file [prefix]
+#       [prefix]: if provided the characters here will be used a prefix when
+#                 printing the contents of the file.
+#      Return: '[prefix]line'
 read_file() {
   if [ $# -gt 1 ]; then
     prefix=$2
@@ -45,12 +45,12 @@ read_file() {
   done < "$1"
 }
 
-# Usage: progspinner prefix [time]
-#   prefix: the string the will appear before the progress spinner
-#   time: optional, amount of time the spinner will be spinning for, by default
-#         2 seconds
-#
-# Return: string
+# Return type: string
+#       Usage: progspinner prefix [time]
+#         prefix: the string the will appear before the progress spinner
+#           time: optional, amount of time the spinner will be spinning for,
+#                 by default 2 seconds
+#      Return: spinner
 progspinner() {
   count=0
   spinSymbol=0
@@ -82,10 +82,10 @@ progspinner() {
   printf '\n'
 }
 
-# Usage: pretty_print file
-#   uses awk to print the contents of the passed file to the terminal.
-#
-# Return: string
+# Return type: string
+#       Usage: pretty_print file
+# --------------------------------------------------
+# uses awk to print the contents of the passed file to the terminal.
 pretty_print() {
     awk '
       {
@@ -109,11 +109,13 @@ pretty_print() {
 
 }
 
-# Usage: read_reply
-#   it will read the contents of the reply file and print them to the terminal
-#   with either the pretty_print or a printf with a prefix from read_file.
-#
-# Return: string from called function
+# Return type: string
+#       Usage: read_reply
+#      Return: string from called function
+# --------------------------------------------------
+#  it will read the contents of the reply file and print them to the terminal
+#  with either the pretty_print or read_file with "  " as prefix, this is
+#  determined by $PrettyPrint being set or not.
 read_reply() {
   progspinner "retrieving status:"
   if [ -z "$PrettyPrint" ]; then
@@ -123,11 +125,12 @@ read_reply() {
   fi
 }
 
-# Usage: read_pipe pipe_file
-#   reads the contents of the passed named pipe, will time out in 10 seconds if
-#   nothing is written to the pipe.
-#
-#   this is rather in this implementation and needs more work.
+# Return type: string
+#       Usage: read_pipe pipe_file
+# --------------------------------------------------
+# reads the contents of the passed named pipe, will time out in 10 seconds if
+# nothing is written to the pipe.
+# this is somewhat unreliable in this implementation and needs more work.
 read_pipe() {
   # all messages read will be stored here
   varfile="/tmp/${myname}_${mypid}"
@@ -194,11 +197,25 @@ readserviceprop(){
   done < "$2"
 }
 
-# Usage: procstat all | <service name>
-#   all: status for all services
-#   <service name>: status of service
+# Return type: string
+#       Usage: procstat all | <service name>
+#            all: status for all services
+# <service name>: status of service
+#      Return: status string
+# --------------------------------------------------
+# for a specific process the status string is:
+#   <service name> status: stat
 #
-# Return: string containing status
+# for all processes the information is printed as:
+#   [ stat ] <service name>
+#
+# when PrettyPrint is set the print out is as follows:
+#   [ stat ] <service name> pid executable
+#
+#   stat  |  single proc             |   all procs
+#         |  not running             |      -
+#         |  running with pid: pid   |      +
+#         |  was started             |      ?
 procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     if [ "$PrettyPrint" = 1 ]; then
@@ -261,11 +278,12 @@ procstat() {
   fi
 }
 
-# Usage: hupprocs all | <service name>
-#   all: hup to all services
-#   <service name>: hup service
-#
-# Return: string
+# Return type: string
+#       Usage: hupprocs all | <service name>
+#            all: hup to all services
+# <service name>: service to hup
+# --------------------------------------------------
+# prints to terminal
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -336,11 +354,12 @@ hupprocs() {
   fi
 }
 
-# Usage: killchilds all | <service name>
-#   all: status for all services
-#   <service name>: status of service
-#
-# Return: string
+# Return type: string
+#       Usage: killchilds all | <service name>
+#            all: hup to all services
+# <service name>: service to kill
+# --------------------------------------------------
+# prints to terminal
 killchilds() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${GUISessionDir}"/*.pid ; do
@@ -373,24 +392,30 @@ killchilds() {
   fi
 }
 
-# Usage: daemon_send <action> all | <service name>
-#   <action>: hup, stop, start, reload
-#   all: apply action to all services
-#   <service name>: service to kill
-#
-# Return: void
+# Return type: void
+#       Usage: daemon_send <action> all | <service name>
+#       <action>: hup, stop, start, reload
+#            all: apply action to all services
+# <service name>: service to perform action on
+# --------------------------------------------------
+# sends requests to the shed daemon
 daemon_send() {
   printf '%s %s\n' "$1" "$2" > "${GUISessionDir}/socket"
 }
 
-# Usage: kill_session
-# Return: void
+# Return type: void
+#       Usage: kill_session
+# --------------------------------------------------
 kill_session() {
   killchilds "all"
   [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
 }
 
+# Return type: string
+#       Usage: show_help
+# --------------------------------------------------
+# prints to terminal
 show_help() {
   printf 'Usage: %s [options] { hup | start | stop | restart } [service name] | logout \n' "$myname"
   printf '  -n        dry run.\n  -h        show this help.\n'
