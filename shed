@@ -105,7 +105,7 @@ fi
 [ -n "$reloaded" ] && printf '%s\n' "$prog started" > "$msg_reply"
 
 # directory where we are loading the user services to start from
-ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
+ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay

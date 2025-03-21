@@ -15,7 +15,7 @@ UserID=$(id -u "$USER")
 GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
 
 # directory where we are loading the user services to start from
-ServicesDir="${XDG_CONFIG_HOME:-~/.config}"/shed/services
+ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
 # unix command line compatible booleans
 
