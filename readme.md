@@ -43,6 +43,12 @@ TODO:
 - [x] add service restart action to shedc
 - [x] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
 - [x] make shedc tail and read the reply socket
+- [ ] add support for `oneshot` type services that only run and then exit
+- [ ] add a `session` cathegory of services that are not affected by actions
+      (start, stop, restart) sent to all nor by reloads of shed, so that stuff
+      like window managers can be managed on this cathegory
+- [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
+      manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
 - [ ] write zsh completion scripts
 - [ ] draw a logo/icon for shed to use in the repo
@@ -50,4 +56,8 @@ TODO:
 
 ## DO NOT USE THE GIT MASTER EVER!
 
-The git master is unstable and may break without notice, always use shed from a release tag.
+Ehhhh not really but the git master is not stable and may break without notice,
+in which case specify you used the master branch and not a release tag, i tend
+to use changes that have not yet been merged to master first cuz i develop this
+for myself as target audience second cuz it will break on my machine first
+before breaking on someone else's.
