@@ -1,15 +1,36 @@
 .POSIX:
 PREFIX = ${HOME}/.local
-.PHONY: install uninstall
+BIN_LOC = $(DESTDIR)$(PREFIX)/bin
+LIB_LOC = $(DESTDIR)$(PREFIX)/lib/shed
+.PHONY: all install uninstall clean
+GITTAG = $(shell git describe --tags 2>/dev/null)
+VERS = v0.2.0
+VERSION = $(if $(GITTAG),$(GITTAG),$(VERS))
+SHED = shed.$(VERSION)
+SHEDC = shedc.$(VERSION)
 
+all: $(SHED) $(SHEDC)
+
+$(SHED):
+	cp shed $@
+	chmod 755 $@
+
+$(SHEDC):
+	cp shedc $@
+	chmod 755 $@
 
 install:
-	mkdir -p ${DESTDIR}${PREFIX}/bin
-	chmod 755 shed
-	cp -vf shed ${DESTDIR}${PREFIX}/bin/shed
-	chmod 755 shedc
-	cp -vf shedc ${DESTDIR}${PREFIX}/bin/shedc
-uninstall:
-	rm -vf ${DESTDIR}${PREFIX}/bin/shed
-	rm -vf ${DESTDIR}${PREFIX}/bin/shedc
+	mkdir -p $(BIN_LOC)
+	mkdir -p $(LIB_LOC)
+	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
+	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
+	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
+	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
 
+uninstall:
+	rm -vf $(BIN_LOC)/shed
+	rm -vf $(BIN_LOC)/shedc
+
+clean:
+	rm $(SHED)
+	rm $(SHEDC)
