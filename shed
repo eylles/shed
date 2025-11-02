@@ -239,6 +239,32 @@ read_file() {
 }
 
 # Return type: void
+#       Usage: sig_proc <service name> <signal>
+# <service name>: service to send signal
+#         signal: term kill hup usr1 usr2
+# --------------------------------------------------
+# this function is not expected to have a return value as
+# all messages are sent to the reply socket
+sig_proc() {
+  s_file="${ServicesDir}/$1"
+  if [ -f "$s_file" ]; then
+    sig_use=$(printf '%s' "$2" | tr '[:lower:]' '[:upper:]')
+    sig_str=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
+    s_name=$(readserviceprop "NAME" "$s_file")
+    if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+      s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+      if kill -0 "$s_pid" 2>/dev/null; then
+        printf 'sending %s to %s\t%s\n' \
+          "$s_pid" "$sig_str" "$s_name" >> "$msg_reply"
+        [ -z "$dry_run" ] && kill "-${sig_use}" "$s_pid"
+      fi
+    else
+      printf 'service %s not running\n' "$s_name" >> "$msg_reply"
+    fi
+  fi
+}
+
+# Return type: void
 #       Usage: hupprocs all | <service name>
 #            all: hup all services
 # <service name>: service to hup
