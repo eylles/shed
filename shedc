@@ -244,7 +244,11 @@ procstat() {
       s_pid=""
       s_state=""
       s_name=$(readserviceprop "NAME" "$i")
-      s_exec=$(readserviceprop "EXEC" "$i")
+      s_exec="$(readserviceprop "EXEC" "$i")"
+      # needed for services that got $HOME/path/service in their EXEC def
+      s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
+      # get the full path of the binary
+      s_exec=$(command -v "$s_exec")
       if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
         s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
         if kill -0 "$s_pid" 2>/dev/null; then
