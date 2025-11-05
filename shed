@@ -35,6 +35,23 @@ if [ -z "${XDG_RUNTIME_DIR}" ]; then
   fi
 fi
 
+# should return shed's cgroup, hopefully it is compatible with *BSD
+get_shed_cgroup() {
+  ps ax -o'pid,cgroup,cmd=CMD' | \
+    grep -v "grep" | \
+    grep "shed" | \
+    grep "^ *${shed_pid}" | \
+    awk '{ print $2 }' | \
+    sed 's@.*::/@@'
+}
+
+# do we got an XDG_SESSION_ID ?
+if [ -z "$XDG_SESSION_ID" ]; then
+  # okay, since we don't it will be shed's cgroup
+  XDG_SESSION_ID="$(get_shed_cgroup)"
+  export XDG_SESSION_ID
+fi
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
