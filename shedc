@@ -198,6 +198,39 @@ readserviceprop(){
 }
 
 # Return type: string
+#       Usage: get_servstatus sfile
+#       sfile: full path to the service definition file
+get_servstatus() {
+  ServiceFile="$1"
+  ServiceFileName="${ServiceFile##*/}"
+  s_name=""
+  s_exec=""
+  s_pid=""
+  s_state=""
+  s_name=$(readserviceprop "NAME" "$ServiceFile")
+  s_exec="$(readserviceprop "EXEC" "$ServiceFile")"
+  # needed for services that got $HOME/path/service in their EXEC def
+  s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
+  # get the full path of the binary
+  s_exec=$(command -v "$s_exec")
+  if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
+    s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+    if kill -0 "$s_pid" 2>/dev/null; then
+      s_state="+"
+    else
+      s_state="?"
+    fi
+  else
+      s_state="-"
+  fi
+  if [ "$PrettyPrint" = 1 ]; then
+    printf ' [ %s ] %30s %*s %s\n' "$s_state" "$s_name" "$pw" "$s_pid" "$s_exec"
+  else
+    printf ' [ %s ] %s\n' "$s_state" "$s_name"
+  fi
+}
+
+# Return type: string
 #       Usage: procstat all | <service name>
 #            all: status for all services
 # <service name>: status of service
