@@ -1,8 +1,9 @@
 #!/bin/sh
 
 prog="${0##*/}"
-
 shed_pid="${$}"
+# version @VERSION@
+prog_v="@VERSION@"
 
 # check if GUI_SESSION_PID is set
 if [ -z "$GUI_SESSION_PID" ]; then
@@ -119,7 +120,7 @@ else
 fi
 
 # write started for when shedc requests a reload
-[ -n "$reloaded" ] && printf '%s\n' "$prog started" > "$msg_reply"
+[ -n "$reloaded" ] && printf '%s\n' "$prog $prog_v started" > "$msg_reply"
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"

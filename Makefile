@@ -12,11 +12,11 @@ SHEDC = shedc.$(VERSION)
 all: $(SHED) $(SHEDC)
 
 $(SHED):
-	cp shed $@
+	sed "s|@VERSION@|$(VERSION)|g" shed > $@
 	chmod 755 $@
 
 $(SHEDC):
-	cp shedc $@
+	sed "s|@VERSION@|$(VERSION)|g" shedc > $@
 	chmod 755 $@
 
 install:

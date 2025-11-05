@@ -1,7 +1,9 @@
 #!/bin/sh
 
-myname="${0##*/}"
+prog="${0##*/}"
 mypid="${$}"
+# version @VERSION@
+prog_v="@VERSION@"
 
 # OldWorkDir=$PWD
 
@@ -133,7 +135,7 @@ read_reply() {
 # this is somewhat unreliable in this implementation and needs more work.
 read_pipe() {
   # all messages read will be stored here
-  varfile="/tmp/${myname}_${mypid}"
+  varfile="/tmp/${prog}_${mypid}"
   # pipe we read from
   pipe="${1}"
   # we wait max 10 seconds without reply
@@ -417,13 +419,18 @@ kill_session() {
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
 }
 
+show_version() {
+  printf '%s\n' "$prog_v"
+}
+
 # Return type: string
 #       Usage: show_help
 # --------------------------------------------------
 # prints to terminal
 show_help() {
-  printf 'Usage: %s [options] { hup | start | stop | restart } [service name] | logout \n' "$myname"
+  printf 'Usage: %s [options] { hup | start | stop | restart | status } [service name] | reload | logout \n' "$prog"
   printf '  -n        dry run.\n  -h        show this help.\n'
+  printf '  -V        show version.\n'
   printf '  -p        pretty print reply.\n'
   printf '   hup      send hup to the session service(s)\n'
   printf '   stop     send term to the session service(s)\n'
@@ -439,16 +446,18 @@ show_help() {
 }
 
 OPTIND=1
-while getopts nhp o; do case "${o}" in
+while getopts nhpV o; do case "${o}" in
   h) help=1 ;;
   n) dry_run=1 ;;
   p) PrettyPrint=1 ;;
+  V) version=1 ;;
   *) help=1 ;;
 esac done
 shift $(( OPTIND - 1 ))
 
 [ -z "$invalid" ] || { show_help ; exit 1 ;}
 [ -z "$help" ] || { show_help ; exit; }
+[ -z "$version" ] || { show_version ; exit; }
 case $1 in
   stop)
     killchilds "$2"
