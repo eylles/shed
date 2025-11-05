@@ -160,6 +160,10 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     printf '%s\n' "$NAME $start_date running" >> "$msg_reply"
   else
+    # needed for services that got $HOME/path/service in their EXEC def
+    EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
+    # get the full path of the binary
+    EXEC=$(command -v "$EXEC")
     if [ -n "$DELAY" ] && [ "$NDlay" = 0 ]; then
       sleep "$DELAY"
     fi
