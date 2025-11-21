@@ -36,19 +36,23 @@ if [ -z "${XDG_RUNTIME_DIR}" ]; then
   fi
 fi
 
-# should return shed's cgroup, hopefully it is compatible with *BSD
+# should return shed's cgroup, cgroup is a linux only feature tho
 get_shed_cgroup() {
-  ps ax -o'pid,cgroup,cmd=CMD' | \
-    grep -v "grep" | \
-    grep "shed" | \
-    grep "^ *${shed_pid}" | \
-    awk '{ print $2 }' | \
-    sed 's@.*::/@@'
+  # so we can just wing it and use /proc/ directly
+  sed 's@.*::/@@' /proc/"${shed_pid}"/cgroup
 }
 
 # do we got an XDG_SESSION_ID ?
 if [ -z "$XDG_SESSION_ID" ]; then
   # okay, since we don't it will be shed's cgroup
+  # other kernels like the bsd families, illumos, darwin, etc ought to have
+  # something similar-ish or some property that gets assigned to processes and
+  # propagated to their children that we can get and use to define an
+  # XDG_SESSION_ID, at least i know bsd got the jails system but got no idea if
+  # that would be the correct property to use for this, no idea if people in
+  # other unices and unix-like os even care about something like shed to begin
+  # with as i'd assume they already got something better and is just we linux
+  # folk whom are stuck in the obscurantism of systemd...
   XDG_SESSION_ID="$(get_shed_cgroup)"
   export XDG_SESSION_ID
 fi
