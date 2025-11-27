@@ -14,6 +14,12 @@ An init and service manager for user services
 <a href="https://liberapay.com/eylles/donate"><img alt="Donate using Liberapay" src="https://img.shields.io/liberapay/patrons/eylles.svg?logo=liberapay"></a>
 </p>
 
+Follow the shed development and feedback threads:
+<p align="center">
+<a href="https://dev1galaxy.org/viewtopic.php?id=5160"><img src="https://img.shields.io/badge/devuan%20forum-00509F?style=for-the-badge"></a>
+<a href="https://forum.artixlinux.org/index.php/topic,4410.new.html"><img src="https://img.shields.io/badge/artix%20forum-07A1CD?style=for-the-badge"></a>
+</p>
+
 ## what?
 
 Session services, programs that run as part of your graphical session, for example in x11 you have the compositor, keyring, maybe a clipboard daemon and perhaps pulseaudio or pipewire
