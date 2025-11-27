@@ -129,6 +129,14 @@ fi
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
+# directory where we are loading the shed specific config
+ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/conf"
+Config="${ConfDir}/shed.rc"
+
+if [ -r "$Config" ]; then
+  . "$Config"
+fi
+
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay
 #         nosock: if the nosock arg is set then
