@@ -14,7 +14,7 @@ prog_v="@VERSION@"
 UserID=$(id -u "$USER")
 
 # dir of the pid files for the current session
-GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}
+GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
