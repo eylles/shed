@@ -59,6 +59,26 @@ if [ -z "$XDG_SESSION_ID" ]; then
   export XDG_SESSION_ID
 fi
 
+# directory where we are loading the shed specific config
+ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/conf"
+Config="${ConfDir}/shed.rc"
+
+if [ -r "$Config" ]; then
+  . "$Config"
+fi
+
+if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
+  env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
+  if [ ! -d "$env_export_dir" ]; then
+    mkdir -p "$env_export_dir"
+  fi
+  cat << __ENV_EXPORT__ >> "$SHED_ENV_EXPORT_LOC"
+export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
+export XDG_SESSION_ID="$XDG_SESSION_ID"
+export GUI_SESSION_PID="$GUI_SESSION_PID"
+__ENV_EXPORT__
+fi
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
@@ -130,26 +150,6 @@ fi
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
-
-# directory where we are loading the shed specific config
-ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/conf"
-Config="${ConfDir}/shed.rc"
-
-if [ -r "$Config" ]; then
-  . "$Config"
-fi
-
-if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
-  env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
-  if [ ! -d "$env_export_dir" ]; then
-    mkdir -p "$env_export_dir"
-  fi
-  cat << __ENV_EXPORT__ >> "$SHED_ENV_EXPORT_LOC"
-export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
-export XDG_SESSION_ID="$XDG_SESSION_ID"
-export GUI_SESSION_PID="$GUI_SESSION_PID"
-__ENV_EXPORT__
-fi
 
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay
