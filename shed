@@ -5,6 +5,8 @@ shed_pid="${$}"
 # version @VERSION@
 prog_v="@VERSION@"
 
+SHED_ENV_EXPORT_LOC=""
+
 # check if GUI_SESSION_PID is set
 if [ -z "$GUI_SESSION_PID" ]; then
   # it wasnt set, so we will use the PID of the parent
@@ -135,6 +137,18 @@ Config="${ConfDir}/shed.rc"
 
 if [ -r "$Config" ]; then
   . "$Config"
+fi
+
+if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
+  env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
+  if [ ! -d "$env_export_dir" ]; then
+    mkdir -p "$env_export_dir"
+  fi
+  cat << __ENV_EXPORT__ >> "$SHED_ENV_EXPORT_LOC"
+export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
+export XDG_SESSION_ID="$XDG_SESSION_ID"
+export GUI_SESSION_PID="$GUI_SESSION_PID"
+__ENV_EXPORT__
 fi
 
 # Return type: void
