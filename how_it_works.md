@@ -8,7 +8,7 @@ EXEC=pipewire
 
 shedc meanwhile is intended to hup the services, kill them, signal shed to start them and finally log out, for all of this it uses the pid files in the `${GUISessionDir}/` dir.
 
-the directory is defined as `GUISessionDir=/run/user/${UserID}/GUISession${GUI_SESSION_PID}`
+the directory is defined as `GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}`
 
 
 ## setting up
