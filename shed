@@ -389,6 +389,17 @@ killprocs() {
 }
 
 # Return type: void
+#       Usage: wait_exit
+# --------------------------------------------------
+# this function does not return output whatsoever
+# sleep 1 second while the GUISessionDir exists
+wait_exit () {
+  while [ -d "$GUISessionDir" ]; do
+    sleep 1
+  done
+}
+
+# Return type: void
 #       Usage: daemon_cycle
 # --------------------------------------------------
 # this function does not return output whatsoever
@@ -416,6 +427,7 @@ daemon_cycle() {
         start) start_services "$Argument" ;;
         stop)  killprocs "$Argument" ;;
         hup)   hupprocs "$Argument" ;;
+        wait-logout)  wait_exit ;;
       esac
     else
       # shed must exit

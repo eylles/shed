@@ -407,6 +407,7 @@ daemon_send() {
 # --------------------------------------------------
 kill_session() {
   killchilds "all"
+  daemon_send "wait-logout"
   [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
 }
