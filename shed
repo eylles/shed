@@ -95,9 +95,9 @@ else
   # create the session dir if it doesn't exist
   mkdir -p "$GUISessionDir"
 fi
-# defined as: /run/user/${UserID}/GUISession${GUI_SESSION_PID}/socket
+# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
-# defined as: /run/user/${UserID}/GUISession${GUI_SESSION_PID}/reply
+# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
 msg_reply="${GUISessionDir}/reply"
 # create the socket file if necessary
 if [ ! -p "$msg_socket" ]; then
