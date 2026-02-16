@@ -84,9 +84,24 @@ fi
 # to have the pid of the running graphical session
 GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 
+# directory where we are loading the user services to start from
+ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
+
+# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
+msg_socket="${GUISessionDir}/socket"
+# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
+msg_reply="${GUISessionDir}/reply"
+
 # werether or not the GUISessionDir was present at startup
 # 1=true btw
 sessdir=0
+
+# shed start file, contains the pid of the shed process
+startfile="${GUISessionDir}/shed.started"
+
+# werether shed is a fresh start or a post reload
+reloaded=""
+
 # check if the session dir exists
 if [ -d "$GUISessionDir" ]; then
   # let the program knows the dir exists
@@ -95,10 +110,6 @@ else
   # create the session dir if it doesn't exist
   mkdir -p "$GUISessionDir"
 fi
-# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
-msg_socket="${GUISessionDir}/socket"
-# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
-msg_reply="${GUISessionDir}/reply"
 # create the socket file if necessary
 if [ ! -p "$msg_socket" ]; then
   if [ -f "$msg_socket" ]; then
@@ -117,12 +128,6 @@ fi
 if [ -f "$msg_reply" ]; then
   : > "$msg_reply"
 fi
-
-# shed start file, contains the pid of the shed process
-startfile="${GUISessionDir}/shed.started"
-
-# werether shed is a fresh start or a post reload
-reloaded=""
 
 # check if shed is reloading, writing to socket is not possible when starting
 # on a fresh session cuz no one is listening to the socket
@@ -147,9 +152,6 @@ fi
 
 # write started for when shedc requests a reload
 [ -n "$reloaded" ] && printf '%s\n' "$prog $prog_v started" > "$msg_reply"
-
-# directory where we are loading the user services to start from
-ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay
