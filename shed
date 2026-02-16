@@ -6,6 +6,7 @@ shed_pid="${$}"
 prog_v="@VERSION@"
 
 SHED_ENV_EXPORT_LOC=""
+SHED_RELOAD=""
 
 # check if GUI_SESSION_PID is set
 if [ -z "$GUI_SESSION_PID" ]; then
