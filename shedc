@@ -99,9 +99,9 @@ pretty_print() {
 read_reply() {
   progspinner "retrieving status:"
   if [ -z "$PrettyPrint" ]; then
-    read_file "${GUISessionDir}/reply" "  "
+    read_file "$msg_reply" "  "
   else
-    pretty_print "${GUISessionDir}/reply"
+    pretty_print "$msg_reply"
   fi
 }
 
