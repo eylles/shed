@@ -8,15 +8,20 @@ VERS = v0.2.0
 VERSION = $(if $(GITTAG),$(GITTAG),$(VERS))
 SHED = shed.$(VERSION)
 SHEDC = shedc.$(VERSION)
+LIBSHED = libshed.$(VERSION)
 
-all: $(SHED) $(SHEDC)
+all: $(SHED) $(SHEDC) $(LIBSHED)
 
 $(SHED):
-	sed "s|@VERSION@|$(VERSION)|g" shed > $@
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shed > $@
 	chmod 755 $@
 
 $(SHEDC):
-	sed "s|@VERSION@|$(VERSION)|g" shedc > $@
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc > $@
+	chmod 755 $@
+
+$(LIBSHED):
+	sed "s|@VERSION@|$(VERSION)|g" libshed.sh > $@
 	chmod 755 $@
 
 install:
@@ -24,6 +29,7 @@ install:
 	mkdir -p $(LIB_LOC)
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
 	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
+	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
 	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
 
@@ -34,3 +40,4 @@ uninstall:
 clean:
 	rm $(SHED)
 	rm $(SHEDC)
+	rm $(LIBSHED)
