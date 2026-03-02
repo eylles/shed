@@ -204,22 +204,21 @@ procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     if [ "$PrettyPrint" = 1 ]; then
       # default pid length
-      pw=6
+      pidmax=30000
       # use per system pid length
       os_type=$(uname -s)
       case "${os_type}" in
         Linux)
-          pw=$(wc -c /proc/sys/kernel/pid_max | awk '{ print $1 }')
+          pidmax=$(head /proc/sys/kernel/pid_max)
           ;;
         NetBSD)
           pidmax=30000
-          pw=$(printf '%s\n' "$pidmax" | wc -c)
           ;;
         OpenBSD|FreeBSD|*BSD)
           pidmax=99999
-          pw=$(printf '%s\n' "$pidmax" | wc -c)
           ;;
       esac
+      pw=$(printf '%s\n' "$pidmax" | wc -c)
     fi
     for i in "${ServicesDir}"/* ; do
       get_servstatus "$i"
