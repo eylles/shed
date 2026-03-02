@@ -1,12 +1,13 @@
 # SHED
 
-An init and service manager for user services
+A manager for user services and session process
 
 
 <p align="center">
 <a href="https://github.com/eylles/shed" alt="GitHub"><img src="https://img.shields.io/badge/Github-2B3137?style=for-the-badge&logo=Github&logoColor=FFFFFF"></a>
 <a href="https://gitlab.com/eylles/shed" alt="GitLab"><img src="https://img.shields.io/badge/Gitlab-380D75?style=for-the-badge&logo=Gitlab"></a>
 <a href="https://codeberg.org/eylles/shed" alt="CodeBerg"><img src="https://img.shields.io/badge/Codeberg-2185D0?style=for-the-badge&logo=codeberg&logoColor=F2F8FC"></a>
+<a href="https://git.devuan.org/eylles/shed" alt="Devuan"><img src="https://img.shields.io/badge/Devuan-6A6578?style=for-the-badge&logo=devuan&logoColor=F2F2F2"></a>
 <br>
 <br>
 <a href="./LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-green.svg"></a>
@@ -24,12 +25,13 @@ Follow the shed development and feedback threads:
 
 Session services, programs that run as part of your graphical session, for example in x11 you have the compositor, keyring, maybe a clipboard daemon and perhaps pulseaudio or pipewire
 
+The eventual intention is to not just implement user services but also the spec
+of the x-session-manager as defined (altho loosely) by debian.
 
 ## dependencies
 
 - a posix compatible shell interpreter
 - core unix utilities (date, mkdir, awk, kill, mkfifo, cat)
-- ~~inotifywait from the inotify-tools package (i know freebsd got the program but not what to use in other unices)~~ no longer needed, now a named pipe is used.
 
 
 ## why ?
@@ -40,16 +42,21 @@ And the elephant in the room, both these solutions come out as inferior to the l
 
 That is why i came up with this solution that takes a lot of inspiration from the sysvinit architecture with the aim of keeping simple, intuitive and completely agnostic from any window manager and desktop environment, potentially even agnostic to any graphical environment (altho i personally only care or x11)
 
-TODO:
+## ROADMAP
 
-- [ ] rewrite readme
+### done
 - [x] move the details of how shed works to another .md file
 - [x] add check if the service is running in start, kill and hup
 - [x] add service status action to shedc
 - [x] add service restart action to shedc
 - [x] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
 - [x] make shedc tail and read the reply socket
+- [x] introduce libshed for shaded code between shed and shedc
+
+### pending
 - [ ] add support for `oneshot` type services that only run and then exit
+- [ ] add info action to shedc to show info of the running shed daemon
+- [ ] move service .pid files to their own subdir inside GUISessionDir
 - [ ] add a `session` cathegory of services that are not affected by actions
       (start, stop, restart) sent to all nor by reloads of shed, so that stuff
       like window managers can be managed on this cathegory
@@ -60,10 +67,13 @@ TODO:
 - [ ] draw a logo/icon for shed to use in the repo
 
 
-## DO NOT USE THE GIT MASTER EVER!
+## DO NOT USE THE GIT MASTER EVER! or maybe DO!
 
-Ehhhh not really but the git master is not stable and may break without notice,
-in which case specify you used the master branch and not a release tag, i tend
+Currently the master branch functions in a more consistent way than the stuff in
+the release tags do but it isn't really a stable work per se and things may
+break without notice altho i do try to test all commits before pushing i do not
+know what your config and setup are like so if you have an issue, bug or
+something broke specify you used the master branch and not a release tag, i tend
 to use changes that have not yet been merged to master first cuz i develop this
 for myself as target audience second cuz it will break on my machine first
-before breaking on someone else's.
+before breaking on someone else's, hopefully...
