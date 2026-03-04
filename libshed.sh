@@ -14,6 +14,10 @@ ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 # shed start file, contains the pid of the shed process
 startfile="${GUISessionDir}/shed.started"
 
+# contains version and start date
+# ${GUISessionDir}/shed.info
+shed_info="${GUISessionDir}/shed.info"
+
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply

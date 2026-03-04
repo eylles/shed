@@ -334,6 +334,18 @@ show_version() {
   printf '%s\n' "$prog_v"
 }
 
+show_info () {
+  if [ -r "$shed_info" ]; then
+    printf '%s=%s\n' "PID" "$(head "$startfile")"
+    head "$shed_info"
+    exit $_true
+  else
+    printf '%s\n' "running shed daemon does not support this option"
+    printf '%s\n' "run shedc reload to re-exec the shed daemon"
+    exit $_false
+  fi
+}
+
 # Return type: string
 #       Usage: show_help
 # --------------------------------------------------
@@ -349,6 +361,7 @@ show_help() {
   printf '   restart  send term to the session service(s) and then send request to start the service(s)\n'
   printf '   logout   send term to the session services and the xsession process\n'
   printf '   reload   send term to the session services and reload shed\n'
+  printf '   info     shows version, pid and started date of shed daemon\n'
   printf '   status   shows the status of the desired service'
   printf 'for all services the status is shown with a symbol as follows:\n'
   printf '\t     [ + ] means the service is running\n'
@@ -397,6 +410,9 @@ case $1 in
     progspinner "reloading shed" 2
     daemon_send "reload"
     read_reply
+  ;;
+  info)
+    show_info
   ;;
   *) show_help ; exit 1 ;;
 esac

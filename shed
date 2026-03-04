@@ -136,6 +136,13 @@ else
   printf '%s\n' "$shed_pid" > "$startfile"
 fi
 
+write_info () {
+  printf '%s=%s\n' "VERSION" "$prog_v"
+  printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
+}
+
+write_info > "$shed_info"
+
 # write started for when shedc requests a reload
 [ -n "$reloaded" ] && printf '%s\n' "$prog $prog_v started" > "$msg_reply"
 

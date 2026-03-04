@@ -52,10 +52,10 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [x] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
 - [x] make shedc tail and read the reply socket
 - [x] introduce libshed for shaded code between shed and shedc
+- [x] add info action to shedc to show info of the running shed daemon
 
 ### pending
 - [ ] add support for `oneshot` type services that only run and then exit
-- [ ] add info action to shedc to show info of the running shed daemon
 - [ ] move service .pid files to their own subdir inside GUISessionDir
 - [ ] add a `session` cathegory of services that are not affected by actions
       (start, stop, restart) sent to all nor by reloads of shed, so that stuff
