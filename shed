@@ -96,6 +96,11 @@ else
   # create the session dir if it doesn't exist
   mkdir -p "$GUISessionDir"
 fi
+
+if [ ! -d "$shed_logs_dir" ]; then
+  mkdir -p "$shed_logs_dir"
+fi
+
 # create the socket file if necessary
 if [ ! -p "$msg_socket" ]; then
   if [ -f "$msg_socket" ]; then

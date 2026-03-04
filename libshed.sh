@@ -18,6 +18,10 @@ startfile="${GUISessionDir}/shed.started"
 # ${GUISessionDir}/shed.info
 shed_info="${GUISessionDir}/shed.info"
 
+# shed's logs dir, service logs may be redirected to their own file in here
+# ${GUISessionDir}/logs
+shed_logs_dir="${GUISessionDir}/logs"
+
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
@@ -50,7 +54,7 @@ serv_start() {
   EXEC=""
   E_ARGS=""
   DELAY=""
-  LOGFILE="/dev/null"
+  LOGFILE=""
   if [ ! "${2}" = 1 ]; then
     NSck=0
   else
@@ -64,6 +68,9 @@ serv_start() {
   s_file="$1"
   # source the file to get the variables: NAME EXEC E_ARGS from the service
   . "$s_file"
+  if [ -z "$LOGFILE" ]; then
+    LOGFILE="${shed_logs_dir}/${NAME}.log"
+  fi
   # check if service is already running
   if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
