@@ -11,6 +11,9 @@ GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
+# shed start file, contains the pid of the shed process
+startfile="${GUISessionDir}/shed.started"
+
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply

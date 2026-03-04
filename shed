@@ -85,9 +85,6 @@ fi
 # 1=true btw
 sessdir=0
 
-# shed start file, contains the pid of the shed process
-startfile="${GUISessionDir}/shed.started"
-
 # werether shed is a fresh start or a post reload
 reloaded=""
 
