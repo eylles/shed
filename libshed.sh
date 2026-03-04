@@ -50,6 +50,7 @@ serv_start() {
   EXEC=""
   E_ARGS=""
   DELAY=""
+  LOGFILE="/dev/null"
   if [ ! "${2}" = 1 ]; then
     NSck=0
   else
@@ -76,7 +77,7 @@ serv_start() {
       sleep "$DELAY"
     fi
     # run the service command with the arguments
-    s_run="exec $EXEC $E_ARGS"
+    s_run="exec $EXEC $E_ARGS 2>&1 >> $LOGFILE"
     eval "$s_run" &
     # catch the pid of the process
     proc_pid=$!
