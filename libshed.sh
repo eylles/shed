@@ -22,6 +22,10 @@ shed_info="${GUISessionDir}/shed.info"
 # ${GUISessionDir}/logs
 shed_logs_dir="${GUISessionDir}/logs"
 
+# logs for shed
+# ${shed_logs_dir}/shed.logs
+shed_log_file="${shed_logs_dir}/shed.logs"
+
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
@@ -35,6 +39,33 @@ _true=0
 # Type: int
 # value: 1
 _false=1
+
+# Return type: void
+# Usage: msg_log "level" "message"
+# log level can be:
+#     info
+#     error
+#     debug
+msg_log () {
+    loglevel="$1"
+    shift
+    message="$*"
+    case "$loglevel" in
+        info)
+          loglevel="inf"
+            ;;
+        err)
+          loglevel="err"
+            ;;
+        debug)
+          loglevel="dbg"
+            ;;
+    esac
+    printf '[%s] %s: %s\n' \
+      "$(date '+%Y-%m-%d-%H:%M:%S')" \
+      "$loglevel" "$message" >> "$shed_log_file"
+}
+
 
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay
