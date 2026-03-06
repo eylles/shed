@@ -113,6 +113,10 @@ serv_start() {
       mkdir -p "$logfile_path" || msg_log "error" \
         "could not create logfile dir for $NAME"
     fi
+    if [ ! -d "$logfile_path" ]; then
+      msg_log "info" "service $NAME not started"
+      return
+    fi
     # needed for services that got $HOME/path/service in their EXEC def
     EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
     # get the full path of the binary
