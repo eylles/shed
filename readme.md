@@ -19,6 +19,7 @@ Follow the shed development and feedback threads:
 <p align="center">
 <a href="https://dev1galaxy.org/viewtopic.php?id=5160"><img src="https://img.shields.io/badge/devuan%20forum-00509F?style=for-the-badge"></a>
 <a href="https://forum.artixlinux.org/index.php/topic,4410.new.html"><img src="https://img.shields.io/badge/artix%20forum-07A1CD?style=for-the-badge"></a>
+<a href="https://devuanusers.com/thread-shed-init-independient-agnostic-user-services--42"><img src="https://img.shields.io/badge/devuan%20users%20forum-800080?style=for-the-badge"></a>
 </p>
 
 ## what?
