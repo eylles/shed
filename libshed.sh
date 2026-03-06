@@ -86,6 +86,7 @@ serv_start() {
   E_ARGS=""
   DELAY=""
   LOGFILE=""
+  logfile_path=""
   if [ ! "${2}" = 1 ]; then
     NSck=0
   else
@@ -107,6 +108,11 @@ serv_start() {
     start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     printf '%s\n' "$NAME $start_date running" >> "$msg_reply"
   else
+    logfile_path="${LOGFILE%/*}"
+    if [ ! -d "$logfile_path" ]; then
+      mkdir -p "$logfile_path" || msg_log "error" \
+        "could not create logfile dir for $NAME"
+    fi
     # needed for services that got $HOME/path/service in their EXEC def
     EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
     # get the full path of the binary
