@@ -125,7 +125,7 @@ serv_start() {
       sleep "$DELAY"
     fi
     # run the service command with the arguments
-    s_run="exec $EXEC $E_ARGS 2>&1 >> $LOGFILE"
+    s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
     eval "$s_run" &
     # catch the pid of the process
     proc_pid=$!
