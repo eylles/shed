@@ -120,8 +120,7 @@ serv_start() {
   fi
   # check if service is already running
   if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
-    start_date=$(date '+%Y-%m-%d-%H:%M:%S')
-    printf '%s\n' "$NAME $start_date running" >> "$msg_reply"
+    msg_send "$NAME running"
   else
     logfile_path="${LOGFILE%/*}"
     if [ ! -d "$logfile_path" ]; then
@@ -144,11 +143,9 @@ serv_start() {
     eval "$s_run" &
     # catch the pid of the process
     proc_pid=$!
-    # start date
-    start_date=$(date '+%Y-%m-%d-%H:%M:%S')
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
-    [ -z "$NSck" ] && printf '%s\n' "$NAME $start_date started" >> "$msg_reply"
+    [ -z "$NSck" ] && msg_send "$NAME started"
   fi
 }
 
@@ -247,12 +244,11 @@ sig_proc() {
     if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
-        printf 'sending %s to %s\t%s\n' \
-          "$s_pid" "$sig_str" "$s_name" >> "$msg_reply"
+        msg_send "sending $sig_str to $s_pid $s_name"
         [ -z "$dry_run" ] && kill "-${sig_use}" "$s_pid"
       fi
     else
-      printf 'service %s not running\n' "$s_name" >> "$msg_reply"
+      msg_send "service $s_name not running"
     fi
   fi
 }
@@ -270,7 +266,7 @@ hupprocs() {
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
-      printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+      msg_send "sending hup to $s_pid $s_name"
       if kill -0 "$s_pid" 2>/dev/null; then
         [ -z "$dry_run" ] && kill -HUP "$s_pid"
       fi
@@ -282,12 +278,12 @@ hupprocs() {
         s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
-          printf 'sending hup to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+          msg_send "sending hup to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill -HUP "$s_pid"
           fi
         else
-          printf 'service %s not running\n' "$s_name" >> "$msg_reply"
+          msg_send "service $s_name not running"
         fi
       fi
     done
@@ -307,7 +303,7 @@ killprocs() {
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
-      printf 'sending term to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+      msg_send "sending term to $s_pid $s_name"
       if kill -0 "$s_pid" 2>/dev/null; then
       [ -z "$dry_run" ] && kill "$s_pid"
       fi
@@ -320,13 +316,13 @@ killprocs() {
         s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
-          printf 'sending term to %s\t%s\n' "$s_pid" "$s_name" >> "$msg_reply"
+          msg_send "sending term to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill "$s_pid"
           fi
           [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
         else
-          printf 'service %s not running\n' "$s_name" >> "$msg_reply"
+          msg_send "service $s_name not running"
         fi
       fi
     done
@@ -345,7 +341,7 @@ killchilds() {
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
-      printf ' sending term to %s\t%s\n' "$s_pid" "$s_name"
+      msg_send "sending term to $s_pid $s_name"
       if kill -0 "$s_pid" 2>/dev/null; then
       [ -z "$dry_run" ] && kill "$s_pid"
       fi
@@ -358,13 +354,13 @@ killchilds() {
         s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
-          printf ' sending term to %s\t%s\n' "$s_pid" "$s_name"
+          msg_send "sending term to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill "$s_pid"
           fi
           [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
         else
-          printf 'service %s not running\n' "$s_name"
+          msg_send "service $s_name not running"
         fi
       fi
     done
