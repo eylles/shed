@@ -160,7 +160,7 @@ serv_start() {
 start_services() {
   # start date
   start_date=$(date '+%Y-%m-%d-%H:%M:%S')
-  printf '%s\n' "$start_date starting services" > "$msg_reply"
+  printf '[%s] %s\n' "$start_date" "starting services" > "$msg_reply"
   # if all the services should be started
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
