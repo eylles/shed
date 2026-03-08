@@ -66,6 +66,21 @@ msg_log () {
       "$loglevel" "$message" >> "$shed_log_file"
 }
 
+# Return type: void or string
+# Usage: msg_send "message"
+# --------------------------------------------------
+# This function will print to stdout if called from shedc and redirect the
+# message to the $msg_reply file if called from shed
+msg_send () {
+  case "$prog" in
+    shedc*)
+      printf '%s %s\n' "$(date '+%Y-%m-%d-%H:%M:%S')" "$*"
+      ;;
+    shed*)
+      printf '%s %s\n' "$(date '+%Y-%m-%d-%H:%M:%S')" "$*" >> "$msg_reply"
+      ;;
+  esac
+}
 
 # Return type: void
 #       Usage: serv_start service_name nosock nodelay
