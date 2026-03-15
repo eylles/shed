@@ -5,8 +5,9 @@ prog_v="@VERSION@"
 
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
-# to have the pid of the running graphical session
-ShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
+# to have the pid of the running session, otherwise shed will try to determine
+# and export said PID, usually the PID of the parent process that started shed
+ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
@@ -26,9 +27,9 @@ shed_logs_dir="${ShedSessionDir}/logs"
 # ${shed_logs_dir}/shed.logs
 shed_log_file="${shed_logs_dir}/shed.log"
 
-# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
+# defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/socket
 msg_socket="${ShedSessionDir}/socket"
-# defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
+# defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/reply
 msg_reply="${ShedSessionDir}/reply"
 
 # unix command line compatible booleans
