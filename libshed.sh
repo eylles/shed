@@ -158,9 +158,11 @@ serv_start() {
 # only one argument is acknowledged.
 # this function is not expected to have a return value.
 start_services() {
-  # start date
-  start_date=$(date '+%Y-%m-%d-%H:%M:%S')
-  printf '[%s] %s\n' "$start_date" "starting services" > "$msg_reply"
+  case "$prog" in
+    shedc*) : ;; # do nothing
+    shed*) : > "$msg_reply" ;; # blank msg_reply
+  esac
+  msg_send "starting services"
   # if all the services should be started
   if [ "all" = "$1" ]; then
     # for every service file in the services dir
