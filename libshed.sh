@@ -9,6 +9,16 @@ prog_v="@VERSION@"
 # and export said PID, usually the PID of the parent process that started shed
 ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
 
+# ShedSessionDir definition used on shed versions prior to this commit
+OldShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
+
+# the OldShedSessionDir will only exist if an older version of shed was the one
+# that started the session and was later reloaded onto a newer one, meaning the
+# new dir is not present so we have to use the old one.
+if [ -d "$OldShedSessionDir" ]; then
+  ShedSessionDir="$OldShedSessionDir"
+fi
+
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
