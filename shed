@@ -81,7 +81,7 @@ fi
 # source shed library
 . ./libshed.sh
 
-# werether or not the GUISessionDir was present at startup
+# werether or not the ShedSessionDir was present at startup
 # 1=true btw
 sessdir=0
 
@@ -89,12 +89,12 @@ sessdir=0
 reloaded=""
 
 # check if the session dir exists
-if [ -d "$GUISessionDir" ]; then
+if [ -d "$ShedSessionDir" ]; then
   # let the program knows the dir exists
   sessdir=1
 else
   # create the session dir if it doesn't exist
-  mkdir -p "$GUISessionDir"
+  mkdir -p "$ShedSessionDir"
 fi
 
 if [ ! -d "$shed_logs_dir" ]; then
@@ -155,9 +155,9 @@ write_info > "$shed_info"
 #       Usage: wait_exit
 # --------------------------------------------------
 # this function does not return output whatsoever
-# sleep 1 second while the GUISessionDir exists
+# sleep 1 second while the ShedSessionDir exists
 wait_exit () {
-  while [ -d "$GUISessionDir" ]; do
+  while [ -d "$ShedSessionDir" ]; do
     sleep 1
   done
 }
@@ -171,8 +171,8 @@ daemon_cycle() {
   Argument=""
   # daemon cycle to run until we receive a reload action in the socket
   while [ -z "$SHED_RELOAD" ] || [ "$SHED_RELOAD" = 0 ] ; do
-    # check that the GUISessionDir exists
-    if [ -d "${GUISessionDir}" ]; then
+    # check that the ShedSessionDir exists
+    if [ -d "${ShedSessionDir}" ]; then
       # wait until a write is done to the socket
       # read the contents of the socket, action and argument
       # drain the named pipe $msg_socket

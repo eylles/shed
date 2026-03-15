@@ -164,8 +164,8 @@ get_servstatus() {
   s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
   # get the full path of the binary
   s_exec=$(command -v "$s_exec")
-  if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-    s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+  if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+    s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
     if kill -0 "$s_pid" 2>/dev/null; then
       s_state="+"
     else
@@ -241,7 +241,7 @@ procstat() {
 # prints to terminal
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${GUISessionDir}"/*.pid ; do
+    for i in "${ShedSessionDir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
@@ -294,8 +294,8 @@ hupprocs() {
         if [ "$canhup" -eq "$_false" ]; then
           printf 'cannot hup service %s\n' "$s_name"
         else
-          if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-            s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+          if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+            s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
             printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
             if kill -0 "$s_pid" 2>/dev/null; then
               [ -z "$dry_run" ] && kill -HUP "$s_pid"
@@ -317,7 +317,7 @@ hupprocs() {
 # --------------------------------------------------
 # sends requests to the shed daemon
 daemon_send() {
-  printf '%s %s\n' "$1" "$2" > "${GUISessionDir}/socket"
+  printf '%s %s\n' "$1" "$2" > "${ShedSessionDir}/socket"
 }
 
 # Return type: void
@@ -326,7 +326,7 @@ daemon_send() {
 kill_session() {
   killchilds "all"
   daemon_send "wait-logout"
-  [ -z "$dry_run" ] && rm -rf "$GUISessionDir"
+  [ -z "$dry_run" ] && rm -rf "$ShedSessionDir"
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
 }
 

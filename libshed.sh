@@ -6,30 +6,30 @@ prog_v="@VERSION@"
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running graphical session
-GUISessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
+ShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 
 # directory where we are loading the user services to start from
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
 # shed start file, contains the pid of the shed process
-startfile="${GUISessionDir}/shed.started"
+startfile="${ShedSessionDir}/shed.started"
 
 # contains version and start date
-# ${GUISessionDir}/shed.info
-shed_info="${GUISessionDir}/shed.info"
+# ${ShedSessionDir}/shed.info
+shed_info="${ShedSessionDir}/shed.info"
 
 # shed's logs dir, service logs may be redirected to their own file in here
-# ${GUISessionDir}/logs
-shed_logs_dir="${GUISessionDir}/logs"
+# ${ShedSessionDir}/logs
+shed_logs_dir="${ShedSessionDir}/logs"
 
 # logs for shed
 # ${shed_logs_dir}/shed.logs
 shed_log_file="${shed_logs_dir}/shed.log"
 
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
-msg_socket="${GUISessionDir}/socket"
+msg_socket="${ShedSessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/reply
-msg_reply="${GUISessionDir}/reply"
+msg_reply="${ShedSessionDir}/reply"
 
 # unix command line compatible booleans
 
@@ -119,7 +119,7 @@ serv_start() {
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
   # check if service is already running
-  if [ -f "${GUISessionDir}/${NAME}.pid" ]; then
+  if [ -f "${ShedSessionDir}/${NAME}.pid" ]; then
     msg_send "$NAME running"
   else
     logfile_path="${LOGFILE%/*}"
@@ -136,6 +136,7 @@ serv_start() {
     # get the full path of the binary
     EXEC=$(command -v "$EXEC")
     if [ -n "$DELAY" ] && [ "$NDlay" = 0 ]; then
+      msg_log "info" "$NAME start delayed by $DELAY seconds"
       sleep "$DELAY"
     fi
     # run the service command with the arguments
@@ -144,7 +145,7 @@ serv_start() {
     # catch the pid of the process
     proc_pid=$!
     # write the pid of the process to the pid file
-    printf '%s\n' "$proc_pid" > "${GUISessionDir}/${NAME}.pid"
+    printf '%s\n' "$proc_pid" > "${ShedSessionDir}/${NAME}.pid"
     [ -z "$NSck" ] && msg_send "$NAME started"
   fi
 }
@@ -243,8 +244,8 @@ sig_proc() {
     sig_use=$(printf '%s' "$2" | tr '[:lower:]' '[:upper:]')
     sig_str=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
     s_name=$(readserviceprop "NAME" "$s_file")
-    if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-      s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+    if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+      s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
         msg_send "sending $sig_str to $s_pid $s_name"
         [ -z "$dry_run" ] && kill "-${sig_use}" "$s_pid"
@@ -264,7 +265,7 @@ sig_proc() {
 # all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${GUISessionDir}"/*.pid ; do
+    for i in "${ShedSessionDir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
@@ -278,8 +279,8 @@ hupprocs() {
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+        if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+          s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
           msg_send "sending hup to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill -HUP "$s_pid"
@@ -301,7 +302,7 @@ hupprocs() {
 # all messages are sent to the reply socket
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${GUISessionDir}"/*.pid ; do
+    for i in "${ShedSessionDir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
@@ -316,13 +317,13 @@ killprocs() {
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+        if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+          s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
           msg_send "sending term to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill "$s_pid"
           fi
-          [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
+          [ -z "$dry_run" ] && rm -f "${ShedSessionDir}/${s_name}.pid"
         else
           msg_send "service $s_name not running"
         fi
@@ -339,7 +340,7 @@ killprocs() {
 # prints to terminal
 killchilds() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${GUISessionDir}"/*.pid ; do
+    for i in "${ShedSessionDir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
@@ -354,13 +355,13 @@ killchilds() {
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${GUISessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${GUISessionDir}/${s_name}.pid")
+        if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
+          s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
           msg_send "sending term to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill "$s_pid"
           fi
-          [ -z "$dry_run" ] && rm -f "${GUISessionDir}/${s_name}.pid"
+          [ -z "$dry_run" ] && rm -f "${ShedSessionDir}/${s_name}.pid"
         else
           msg_send "service $s_name not running"
         fi
