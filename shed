@@ -205,6 +205,9 @@ if [ "$reloaded" = 1 ]; then
 else
   start_str="firstrun"
 fi
+
+msg_log "info" "$prog $prog_v initiated"
+
 start_services "$start_str"
 
 daemon_cycle
