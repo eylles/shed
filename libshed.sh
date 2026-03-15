@@ -24,7 +24,7 @@ shed_logs_dir="${GUISessionDir}/logs"
 
 # logs for shed
 # ${shed_logs_dir}/shed.logs
-shed_log_file="${shed_logs_dir}/shed.logs"
+shed_log_file="${shed_logs_dir}/shed.log"
 
 # defined as: ${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}/socket
 msg_socket="${GUISessionDir}/socket"
