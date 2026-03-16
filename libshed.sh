@@ -3,6 +3,15 @@
 # version @VERSION@
 prog_v="@VERSION@"
 
+# unix command line compatible booleans
+
+# Type: int
+# value: 0
+_true=0
+# Type: int
+# value: 1
+_false=1
+
 # dir for the pid files
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running session, otherwise shed will try to determine
@@ -12,11 +21,14 @@ ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
 # ShedSessionDir definition used on shed versions prior to this commit
 OldShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
 
+UsingOldShedDir="$_false"
+
 # the OldShedSessionDir will only exist if an older version of shed was the one
 # that started the session and was later reloaded onto a newer one, meaning the
 # new dir is not present so we have to use the old one.
 if [ -d "$OldShedSessionDir" ]; then
   ShedSessionDir="$OldShedSessionDir"
+  UsingOldShedDir="$_true"
 fi
 
 # directory where we are loading the user services to start from
@@ -41,15 +53,6 @@ shed_log_file="${shed_logs_dir}/shed.log"
 msg_socket="${ShedSessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/reply
 msg_reply="${ShedSessionDir}/reply"
-
-# unix command line compatible booleans
-
-# Type: int
-# value: 0
-_true=0
-# Type: int
-# value: 1
-_false=1
 
 # Return type: void
 # Usage: msg_log "level" "message"
