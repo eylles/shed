@@ -360,7 +360,8 @@ show_help() {
   printf '   start    send request to start the session service(s)\n'
   printf '   restart  send term to the session service(s) and then send request to start the service(s)\n'
   printf '   logout   send term to the session services and the xsession process\n'
-  printf '   reload   send term to the session services and reload shed\n'
+  printf '   reload   re-exec shed to run a newe version\n'
+  printf '   relaunch send term to the session services and reload shed\n'
   printf '   info     shows version, pid and started date of shed daemon\n'
   printf '   status   shows the status of the desired service'
   printf 'for all services the status is shown with a symbol as follows:\n'
@@ -406,6 +407,12 @@ case $1 in
     kill_session
   ;;
   reload)
+    daemon_send "reload"
+    read_reply
+  ;;
+  relaunch)
+    killchilds "all"
+    progspinner "reloading shed" 2
     daemon_send "reload"
     read_reply
   ;;
