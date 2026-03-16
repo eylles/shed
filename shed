@@ -144,6 +144,7 @@ fi
 write_info () {
   printf '%s=%s\n' "VERSION" "$prog_v"
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
+  printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
 }
 
 write_info > "$shed_info"
