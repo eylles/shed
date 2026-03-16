@@ -406,8 +406,6 @@ case $1 in
     kill_session
   ;;
   reload)
-    killchilds "all"
-    progspinner "reloading shed" 2
     daemon_send "reload"
     read_reply
   ;;
