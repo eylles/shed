@@ -2,6 +2,9 @@
 
 # version @VERSION@
 prog_v="@VERSION@"
+# empty definition so that the lsp won't complain, this SHOULD be defined by the
+# program that loads libshed AFTER loading libshed
+prog=""
 
 # unix command line compatible booleans
 

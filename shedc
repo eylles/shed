@@ -1,10 +1,14 @@
 #!/bin/sh
 
-prog="${0##*/}"
 mypid="${$}"
 
 # source shed library
 . ./libshed.sh
+
+# shedc
+# ---------------------------------
+# the SHell Execution Daemon Client
+prog="${0##*/}"
 
 # read the contents of the pid file, cat but more "elegant"
 

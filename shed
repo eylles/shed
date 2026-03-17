@@ -1,6 +1,5 @@
 #!/bin/sh
 
-prog="${0##*/}"
 shed_pid="${$}"
 
 SHED_ENV_EXPORT_LOC=""
@@ -80,6 +79,11 @@ fi
 
 # source shed library
 . ./libshed.sh
+
+# shed
+# --------------------------
+# the SHell Execution Daemon
+prog="${0##*/}"
 
 # werether or not the ShedSessionDir was present at startup
 # 1=true btw
