@@ -344,6 +344,7 @@ show_info () {
   fi
   if [ -r "$shed_info" ]; then
     printf '%s=%s\n' "PID" "$(head "$startfile")"
+    printf '%s=%s\n' "CLIENTV" "$prog_v"
     head "$shed_info"
     exit $_true
   else
