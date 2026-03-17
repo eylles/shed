@@ -24,7 +24,7 @@ $(LIBSHED):
 	sed "s|@VERSION@|$(VERSION)|g" libshed.sh > $@
 	chmod 755 $@
 
-install:
+install: all
 	mkdir -p $(BIN_LOC)
 	mkdir -p $(LIB_LOC)
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
