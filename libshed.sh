@@ -264,14 +264,35 @@ sig_proc() {
     if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
-        msg_send "sending $sig_str to $s_pid $s_name"
-        if [ -z "$dry_run" ]; then
-          kill "-${sig_use}" "$s_pid"
-          case "$sig_str" in
-            term|kill)
-              rm -f "${ShedSessionDir}/${s_name}.pid"
-              ;;
-          esac
+        if [ "hup" = "$sig_str" ]; then
+          # Read NOHUP property from service file
+          s_nohup=$(readserviceprop "NOHUP" "$s_file")
+          # Determine if signal can be sent
+          if [ -z "$s_nohup" ]; then
+            canhup="$_true"
+          else
+            case "$s_nohup" in
+              true|TRUE|1|yes|YES|y|Y)
+                canhup="$_false"
+                ;;
+              *)
+                canhup="$_true"
+                ;;
+            esac
+          fi
+        fi
+        if [ "hup" = "$sig_str" ] && [ "$_false" -eq "$canhup" ]; then
+          msg_send "cannot hup service $s_name"
+        else
+          msg_send "sending $sig_str to $s_pid $s_name"
+          if [ -z "$dry_run" ]; then
+            kill "-${sig_use}" "$s_pid"
+            case "$sig_str" in
+              term|kill)
+                rm -f "${ShedSessionDir}/${s_name}.pid"
+                ;;
+            esac
+          fi
         fi
       fi
     else
