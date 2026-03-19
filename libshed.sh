@@ -277,6 +277,8 @@ sig_proc() {
     else
       msg_send "service $s_name not running"
     fi
+  else
+    msg_send "no service $1 found in $ServicesDir"
   fi
 }
 
