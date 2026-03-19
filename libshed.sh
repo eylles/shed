@@ -265,7 +265,14 @@ sig_proc() {
       s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
         msg_send "sending $sig_str to $s_pid $s_name"
-        [ -z "$dry_run" ] && kill "-${sig_use}" "$s_pid"
+        if [ -z "$dry_run" ]; then
+          kill "-${sig_use}" "$s_pid"
+          case "$sig_str" in
+            term|kill)
+              rm -f "${ShedSessionDir}/${s_name}.pid"
+              ;;
+          esac
+        fi
       fi
     else
       msg_send "service $s_name not running"
