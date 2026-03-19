@@ -328,7 +328,7 @@ daemon_send() {
 #       Usage: kill_session
 # --------------------------------------------------
 kill_session() {
-  killchilds "all"
+  killprocs "all"
   daemon_send "wait-logout"
   [ -z "$dry_run" ] && rm -rf "$ShedSessionDir"
   [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
@@ -393,10 +393,10 @@ shift $(( OPTIND - 1 ))
 [ -z "$version" ] || { show_version ; exit; }
 case $1 in
   stop)
-    killchilds "$2"
+    killprocs "$2"
   ;;
   restart)
-    killchilds "$2"
+    killprocs "$2"
     progspinner "restarting service(s)" 1
     daemon_send "start" "$2"
     read_reply
@@ -419,7 +419,7 @@ case $1 in
     read_reply
   ;;
   relaunch)
-    killchilds "all"
+    killprocs "all"
     progspinner "reloading shed" 2
     daemon_send "reload"
     read_reply
