@@ -339,21 +339,6 @@ killprocs() {
       [ -z "$dry_run" ] && rm -f "$i"
     done
   else
-    for i in "${ServicesDir}"/* ; do
-      ServiceFileName="${i##*/}"
-      if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
-          msg_send "sending term to $s_pid $s_name"
-          if kill -0 "$s_pid" 2>/dev/null; then
-          [ -z "$dry_run" ] && kill "$s_pid"
-          fi
-          [ -z "$dry_run" ] && rm -f "${ShedSessionDir}/${s_name}.pid"
-        else
-          msg_send "service $s_name not running"
-        fi
-      fi
-    done
+    sig_proc "$1" "term"
   fi
 }
