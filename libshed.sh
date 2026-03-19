@@ -310,13 +310,13 @@ hupprocs() {
   fi
 }
 
-# Return type: void
+# Return type: void or string
 #       Usage: killprocs all | <service name>
 #            all: kill all services
 # <service name>: service to kill
 # --------------------------------------------------
-# this function is not expected to have a return value as
-# all messages are sent to the reply socket
+# when ran from shedc messages will be output to stdout
+# when ran from shed messages will be redirected to $msg_reply
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     for i in "${ShedSessionDir}"/*.pid ; do
