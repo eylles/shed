@@ -145,7 +145,7 @@ else
   printf '%s\n' "$shed_pid" > "$startfile"
 fi
 
-write_info () {
+write_info() {
   printf '%s=%s\n' "VERSION" "$prog_v"
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
@@ -161,7 +161,7 @@ write_info > "$shed_info"
 # --------------------------------------------------
 # this function does not return output whatsoever
 # sleep 1 second while the ShedSessionDir exists
-wait_exit () {
+wait_exit() {
   while [ -d "$ShedSessionDir" ]; do
     sleep 1
   done
@@ -191,11 +191,11 @@ daemon_cycle() {
       # printf 'argument: %s\n' $Argument
       # decide what to do with the read action and argument
       case "${Action}" in
-        reload) SHED_RELOAD=1 ;;
-        start) start_services "$Argument" ;;
-        stop)  killprocs "$Argument" ;;
-        hup)   hupprocs "$Argument" ;;
-        wait-logout)  wait_exit ;;
+        reload)      SHED_RELOAD=1              ;;
+        start)       start_services "$Argument" ;;
+        stop)        killprocs "$Argument"      ;;
+        hup)         hupprocs "$Argument"       ;;
+        wait-logout) wait_exit                  ;;
       esac
     else
       # shed must exit
@@ -203,6 +203,7 @@ daemon_cycle() {
     fi
   done
 }
+
 # start all services on first run
 start_str=""
 if [ "$reloaded" = 1 ]; then

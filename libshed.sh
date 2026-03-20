@@ -63,7 +63,7 @@ msg_reply="${ShedSessionDir}/reply"
 #     info
 #     error
 #     debug
-msg_log () {
+msg_log() {
     loglevel="$1"
     shift
     message="$*"
@@ -88,7 +88,7 @@ msg_log () {
 # --------------------------------------------------
 # This function will print to stdout if called from shedc and redirect the
 # message to the $msg_reply file if called from shed
-msg_send () {
+msg_send() {
   case "$prog" in
     shedc*)
       printf '%s %s\n' "$(date '+%Y-%m-%d-%H:%M:%S')" "$*"
@@ -226,7 +226,7 @@ readserviceprop(){
     # '$key' stores the key.
     # '$val' stores the value.
     if [ "$key" = "$1" ]; then
-    printf '%s\n' "$val"
+      printf '%s\n' "$val"
     fi
   done < "$2"
 }
@@ -253,7 +253,7 @@ read_file() {
 # ----------------------------------
 # Check if service allows HUP signal, if service can be hupped the return will
 # be $_true, else it will be $_false
-check_hup_allowed () {
+check_hup_allowed() {
   canhup="$_true"
   # Read NOHUP property from service file
   s_nohup=$(readserviceprop "NOHUP" "$1")

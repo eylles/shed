@@ -338,7 +338,7 @@ show_version() {
   printf '%s\n' "$prog_v"
 }
 
-show_info () {
+show_info() {
   if [ "$UsingOldShedDir" -eq "$_true" ]; then
     printf '%s\n' "$prog: shed is using the Old shed dir '$ShedSessionDir'"
   fi
