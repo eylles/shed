@@ -248,10 +248,11 @@ read_file() {
   done < "$1"
 }
 
-# Return type: int ($_true or $_false)
+# Return type: int bool ($_true or $_false)
 # Usage: check_hup_allowed service_file
 # ----------------------------------
-# Check if service allows HUP signal
+# Check if service allows HUP signal, if service can be hupped the return will
+# be $_true, else it will be $_false
 check_hup_allowed () {
   canhup="$_true"
   # Read NOHUP property from service file
