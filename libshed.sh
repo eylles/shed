@@ -248,6 +248,29 @@ read_file() {
   done < "$1"
 }
 
+# Return type: int ($_true or $_false)
+# Usage: check_hup_allowed service_file
+# ----------------------------------
+# Check if service allows HUP signal
+check_hup_allowed () {
+  # Read NOHUP property from service file
+  s_nohup=$(readserviceprop "NOHUP" "$1")
+  # Determine if signal can be sent
+  if [ -z "$s_nohup" ]; then
+    canhup="$_true"
+  else
+    case "$s_nohup" in
+      true|TRUE|1|yes|YES|y|Y)
+        canhup="$_false"
+        ;;
+      *)
+        canhup="$_true"
+        ;;
+    esac
+  fi
+  printf '%s\n' "$canhup"
+}
+
 # Return type: void
 #       Usage: sig_proc <service name> <signal>
 # <service name>: service to send signal
@@ -264,24 +287,8 @@ sig_proc() {
     if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
-        if [ "hup" = "$sig_str" ]; then
-          # Read NOHUP property from service file
-          s_nohup=$(readserviceprop "NOHUP" "$s_file")
-          # Determine if signal can be sent
-          if [ -z "$s_nohup" ]; then
-            canhup="$_true"
-          else
-            case "$s_nohup" in
-              true|TRUE|1|yes|YES|y|Y)
-                canhup="$_false"
-                ;;
-              *)
-                canhup="$_true"
-                ;;
-            esac
-          fi
-        fi
-        if [ "hup" = "$sig_str" ] && [ "$_false" -eq "$canhup" ]; then
+        if [ "hup" = "$sig_str" ] &&
+          [ "$_false" -eq "$(check_hup_allowed "$s_file")" ]; then
           msg_send "cannot hup service $s_name"
         else
           msg_send "sending $sig_str to $s_pid $s_name"
