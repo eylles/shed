@@ -264,7 +264,7 @@ check_hup_allowed () {
         ;;
     esac
   fi
-  printf '%s\n' "$canhup"
+  return "$canhup"
 }
 
 # Return type: void
@@ -283,8 +283,7 @@ sig_proc() {
     if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
-        if [ "hup" = "$sig_str" ] &&
-          [ "$_false" -eq "$(check_hup_allowed "$s_file")" ]; then
+        if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
           msg_send "cannot hup service $s_name"
         else
           msg_send "sending $sig_str to $s_pid $s_name"
