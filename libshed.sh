@@ -253,18 +253,13 @@ read_file() {
 # ----------------------------------
 # Check if service allows HUP signal
 check_hup_allowed () {
+  canhup="$_true"
   # Read NOHUP property from service file
   s_nohup=$(readserviceprop "NOHUP" "$1")
-  # Determine if signal can be sent
-  if [ -z "$s_nohup" ]; then
-    canhup="$_true"
-  else
+  if [ -n "$s_nohup" ]; then
     case "$s_nohup" in
       true|TRUE|1|yes|YES|y|Y)
         canhup="$_false"
-        ;;
-      *)
-        canhup="$_true"
         ;;
     esac
   fi
