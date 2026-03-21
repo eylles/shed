@@ -134,8 +134,9 @@ serv_start() {
     NDlay="${3}"
   fi
   s_file="$1"
-  # source the file to get the variables: NAME EXEC E_ARGS from the service
+  # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
+  NAME="${s_file}"
   if [ -z "$LOGFILE" ]; then
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
@@ -215,7 +216,6 @@ start_services() {
 # the service files store properties as key=value
 # pairs, pass the name of the key to get the stored
 # value, valid key names are:
-#     NAME
 #     EXEC
 #     E_ARGS
 #     DELAY
@@ -279,11 +279,11 @@ check_hup_allowed() {
 # this function is not expected to have a return value as
 # all messages are sent to the reply socket
 sig_proc() {
-  s_file="${ServicesDir}/$1"
+  s_name="$1"
+  s_file="${ServicesDir}/$s_name"
   if [ -f "$s_file" ]; then
     sig_use=$(printf '%s' "$2" | tr '[:lower:]' '[:upper:]')
     sig_str=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
-    s_name=$(readserviceprop "NAME" "$s_file")
     if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
@@ -330,8 +330,8 @@ hupprocs() {
   else
     for i in "${shed_service_pid_dir}"/* ; do
       ServiceFileName="${i##*/}"
+      s_name="$ServiceFileName"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readserviceprop "NAME" "$i")
         if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
           s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
           msg_send "sending hup to $s_pid $s_name"

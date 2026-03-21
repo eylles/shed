@@ -158,11 +158,10 @@ read_pipe() {
 get_servstatus() {
   ServiceFile="$1"
   ServiceFileName="${ServiceFile##*/}"
-  s_name=""
+  s_name="$ServiceFileName"
   s_exec=""
   s_pid=""
   s_state=""
-  s_name=$(readserviceprop "NAME" "$ServiceFile")
   s_exec="$(readserviceprop "EXEC" "$ServiceFile")"
   # needed for services that got $HOME/path/service in their EXEC def
   s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
@@ -251,7 +250,7 @@ hupprocs() {
       s_name="${i##*/}"
       for s in "${ServicesDir}"/* ; do
         ServiceFileName="${s##*/}"
-        i_name=$(readserviceprop "NAME" "$s")
+        i_name="$ServiceFileName"
         if [ "$s_name" = "$i_name" ]; then
           s_nohup=$(readserviceprop "NOHUP" "$s")
         fi
@@ -280,8 +279,8 @@ hupprocs() {
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
+      s_name="$ServiceFileName"
       if [ "$ServiceFileName" = "$1" ]; then
-        s_name=$(readserviceprop "NAME" "$i")
         s_nohup=$(readserviceprop "NOHUP" "$i")
         if [ -z "$s_nohup" ]; then
           canhup="$_true"
