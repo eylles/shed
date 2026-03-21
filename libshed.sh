@@ -19,6 +19,7 @@ _false=1
 # GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running session, otherwise shed will try to determine
 # and export said PID, usually the PID of the parent process that started shed
+# ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
 ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
 
 # ShedSessionDir definition used on shed versions prior to this commit
@@ -35,9 +36,11 @@ if [ -d "$OldShedSessionDir" ]; then
 fi
 
 # directory where we are loading the user services to start from
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
 # shed start file, contains the pid of the shed process
+# ${ShedSessionDir}/shed.started
 startfile="${ShedSessionDir}/shed.started"
 
 # contains version and start date
@@ -296,6 +299,8 @@ sig_proc() {
           fi
         fi
       fi
+      # remove the pid file even if process is not alive, this needs to be here
+      # so that the pid file for term/kill is always removed so long it exists
       if [ -z "$dry_run" ]; then
         case "$sig_str" in
           term|kill)
