@@ -218,6 +218,10 @@ fi
 
 msg_log "info" "$prog $prog_v initiated"
 
+if [ "$_true" -eq "$UsingOldShedDir" ]; then
+  msg_log "info" "$prog $prog_v using old shed dir $ShedSessionDir"
+fi
+
 start_services "$start_str"
 
 daemon_cycle
