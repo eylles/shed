@@ -190,7 +190,7 @@ start_services() {
   esac
   msg_send "starting services"
   # if all the services should be started
-  if [ "all" = "$1" ]; then
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
       serv_start "$i" "0" "1" &
