@@ -369,3 +369,21 @@ killprocs() {
     sig_proc "$1" "term"
   fi
 }
+
+# Return type: void or string
+#       Usage: old_kill_all_procs
+# --------------------------------------------------
+# special function to handle versions of shed from before
+# service pidfiles were stored in $shed_service_pid_dir,
+# it sends term to every process with a pidfile in $ShedSessionDir
+old_kill_all_procs() {
+  for i in "${ShedSessionDir}"/*.pid ; do
+    s_pid=$(read_file "$i")
+    s_name="${i##*/}"
+    msg_send "sending term to $s_pid $s_name"
+    if kill -0 "$s_pid" 2>/dev/null; then
+      [ -z "$dry_run" ] && kill "$s_pid"
+    fi
+    [ -z "$dry_run" ] && rm -f "$i"
+  done
+}

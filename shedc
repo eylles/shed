@@ -414,11 +414,20 @@ case $1 in
     kill_session
   ;;
   reload)
+    if [ ! -d "$shed_service_pid_dir" ]; then
+      msg_send "no $shed_service_pid_dir found, running migration routine"
+      old_kill_all_procs
+    fi
     daemon_send "reload"
     read_reply
   ;;
   relaunch)
-    killprocs "all"
+    if [ ! -d "$shed_service_pid_dir" ]; then
+      msg_send "no $shed_service_pid_dir found, running migration routine"
+      old_kill_all_procs
+    else
+      killprocs "all"
+    fi
     progspinner "reloading shed" 2
     daemon_send "reload"
     read_reply
