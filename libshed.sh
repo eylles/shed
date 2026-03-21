@@ -284,8 +284,8 @@ sig_proc() {
   if [ -f "$s_file" ]; then
     sig_use=$(printf '%s' "$2" | tr '[:lower:]' '[:upper:]')
     sig_str=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
-    if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
-      s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
+    if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
+      s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
         if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
           msg_send "cannot hup service $s_name"
@@ -293,13 +293,15 @@ sig_proc() {
           msg_send "sending $sig_str to $s_pid $s_name"
           if [ -z "$dry_run" ]; then
             kill "-${sig_use}" "$s_pid"
-            case "$sig_str" in
-              term|kill)
-                rm -f "${ShedSessionDir}/${s_name}.pid"
-                ;;
-            esac
           fi
         fi
+      fi
+      if [ -z "$dry_run" ]; then
+        case "$sig_str" in
+          term|kill)
+            rm -f "${shed_service_pid_dir}/${s_name}.pid"
+            ;;
+        esac
       fi
     else
       msg_send "service $s_name not running"
