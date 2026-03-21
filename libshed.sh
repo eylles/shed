@@ -136,7 +136,7 @@ serv_start() {
   s_file="$1"
   # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
-  NAME="${s_file}"
+  NAME="${s_file##*/}"
   if [ -z "$LOGFILE" ]; then
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
