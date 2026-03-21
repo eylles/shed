@@ -330,21 +330,7 @@ hupprocs() {
       fi
     done
   else
-    for i in "${shed_service_pid_dir}"/* ; do
-      ServiceFileName="${i##*/}"
-      s_name="$ServiceFileName"
-      if [ "$ServiceFileName" = "$1" ]; then
-        if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
-          msg_send "sending hup to $s_pid $s_name"
-          if kill -0 "$s_pid" 2>/dev/null; then
-          [ -z "$dry_run" ] && kill -HUP "$s_pid"
-          fi
-        else
-          msg_send "service $s_name not running"
-        fi
-      fi
-    done
+    sig_proc "$1" "hup"
   fi
 }
 

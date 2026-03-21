@@ -277,38 +277,7 @@ hupprocs() {
       fi
     done
   else
-    for i in "${ServicesDir}"/* ; do
-      ServiceFileName="${i##*/}"
-      s_name="$ServiceFileName"
-      if [ "$ServiceFileName" = "$1" ]; then
-        s_nohup=$(readserviceprop "NOHUP" "$i")
-        if [ -z "$s_nohup" ]; then
-          canhup="$_true"
-        else
-          case "$s_nohup" in
-            true|TRUE|1|yes|YES|y|Y)
-              canhup="$_false"
-              ;;
-            *)
-              canhup="$_true"
-              ;;
-          esac
-        fi
-        if [ "$canhup" -eq "$_false" ]; then
-          printf 'cannot hup service %s\n' "$s_name"
-        else
-          if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
-            s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
-            printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
-            if kill -0 "$s_pid" 2>/dev/null; then
-              [ -z "$dry_run" ] && kill -HUP "$s_pid"
-            fi
-          else
-            printf 'service %s not running\n' "$s_name"
-          fi
-        fi
-      fi
-    done
+    sig_proc "$1" "hup"
   fi
 }
 
