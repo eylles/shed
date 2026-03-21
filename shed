@@ -101,6 +101,10 @@ else
   mkdir -p "$ShedSessionDir"
 fi
 
+if [ ! -d "$shed_service_pid_dir" ]; then
+  mkdir -p "$shed_service_pid_dir"
+fi
+
 if [ ! -d "$shed_logs_dir" ]; then
   mkdir -p "$shed_logs_dir"
 fi

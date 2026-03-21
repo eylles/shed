@@ -52,6 +52,10 @@ shed_logs_dir="${ShedSessionDir}/logs"
 # ${shed_logs_dir}/shed.logs
 shed_log_file="${shed_logs_dir}/shed.log"
 
+# dir for service pid files
+# ${ShedSessionDir}/services
+shed_service_pid_dir="${ShedSessionDir}/services"
+
 # defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/socket
 msg_socket="${ShedSessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/reply
@@ -136,7 +140,7 @@ serv_start() {
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
   # check if service is already running
-  if [ -f "${ShedSessionDir}/${NAME}.pid" ]; then
+  if [ -f "${shed_service_pid_dir}/${NAME}.pid" ]; then
     msg_send "$NAME running"
   else
     logfile_path="${LOGFILE%/*}"
@@ -162,7 +166,7 @@ serv_start() {
     # catch the pid of the process
     proc_pid=$!
     # write the pid of the process to the pid file
-    printf '%s\n' "$proc_pid" > "${ShedSessionDir}/${NAME}.pid"
+    printf '%s\n' "$proc_pid" > "${shed_service_pid_dir}/${NAME}.pid"
     [ -z "$NSck" ] && msg_send "$NAME started"
   fi
 }
@@ -314,7 +318,7 @@ sig_proc() {
 # all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${ShedSessionDir}"/*.pid ; do
+    for i in "${shed_service_pid_dir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
@@ -324,12 +328,12 @@ hupprocs() {
       fi
     done
   else
-    for i in "${ServicesDir}"/* ; do
+    for i in "${shed_service_pid_dir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
         s_name=$(readserviceprop "NAME" "$i")
-        if [ -f "${ShedSessionDir}/${s_name}.pid" ]; then
-          s_pid=$(read_file "${ShedSessionDir}/${s_name}.pid")
+        if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
+          s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
           msg_send "sending hup to $s_pid $s_name"
           if kill -0 "$s_pid" 2>/dev/null; then
           [ -z "$dry_run" ] && kill -HUP "$s_pid"
@@ -351,7 +355,7 @@ hupprocs() {
 # when ran from shed messages will be redirected to $msg_reply
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${ShedSessionDir}"/*.pid ; do
+    for i in "${shed_service_pid_dir}"/*.pid ; do
       s_pid=$(read_file "$i")
       # s_name=$(ps -p "$s_pid" -o comm=)
       s_name="${i##*/}"
