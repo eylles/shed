@@ -236,51 +236,6 @@ procstat() {
   fi
 }
 
-# Return type: string
-#       Usage: hupprocs all | <service name>
-#            all: hup to all services
-# <service name>: service to hup
-# --------------------------------------------------
-# prints to terminal
-hupprocs() {
-  if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${shed_service_pid_dir}"/*.pid ; do
-      s_pid=$(read_file "$i")
-      # s_name=$(ps -p "$s_pid" -o comm=)
-      s_name="${i##*/}"
-      for s in "${ServicesDir}"/* ; do
-        ServiceFileName="${s##*/}"
-        i_name="$ServiceFileName"
-        if [ "$s_name" = "$i_name" ]; then
-          s_nohup=$(readserviceprop "NOHUP" "$s")
-        fi
-      done
-      if [ -z "$s_nohup" ]; then
-        canhup="$_true"
-      else
-        case "$s_nohup" in
-          true|TRUE|1|yes|YES|y|Y)
-            canhup="$_false"
-            ;;
-          *)
-            canhup="$_true"
-            ;;
-        esac
-      fi
-      if [ "$canhup" -eq "$_false" ]; then
-        printf 'cannot hup service %s\n' "$s_name"
-      else
-        printf ' sending hup to %s\t%s\n' "$s_pid" "$s_name"
-        if kill -0 "$s_pid" 2>/dev/null; then
-          [ -z "$dry_run" ] && kill -HUP "$s_pid"
-        fi
-      fi
-    done
-  else
-    sig_proc "$1" "hup"
-  fi
-}
-
 # Return type: void
 #       Usage: daemon_send <action> all | <service name>
 #       <action>: hup, stop, start, reload
