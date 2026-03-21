@@ -312,6 +312,21 @@ sig_proc() {
 }
 
 # Return type: void
+#       Usage: sig_all <signal>
+#      signal: term kill hup usr1 usr2
+# --------------------------------------------------
+# this function calls sig_proc for every pid file in
+# the $shed_service_pid_dir
+sig_all() {
+  sig="$1"
+  for i in "${shed_service_pid_dir}"/*.pid ; do
+    s_name="${i##*/}"
+    s_name="${s_name%.pid}"
+    sig_proc "$s_name" "$sig"
+  done
+}
+
+# Return type: void
 #       Usage: hupprocs all | <service name>
 #            all: hup all services
 # <service name>: service to hup
@@ -320,15 +335,7 @@ sig_proc() {
 # all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${shed_service_pid_dir}"/*.pid ; do
-      s_pid=$(read_file "$i")
-      # s_name=$(ps -p "$s_pid" -o comm=)
-      s_name="${i##*/}"
-      msg_send "sending hup to $s_pid $s_name"
-      if kill -0 "$s_pid" 2>/dev/null; then
-        [ -z "$dry_run" ] && kill -HUP "$s_pid"
-      fi
-    done
+    sig_all "hup"
   else
     sig_proc "$1" "hup"
   fi
@@ -343,16 +350,7 @@ hupprocs() {
 # when ran from shed messages will be redirected to $msg_reply
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    for i in "${shed_service_pid_dir}"/*.pid ; do
-      s_pid=$(read_file "$i")
-      # s_name=$(ps -p "$s_pid" -o comm=)
-      s_name="${i##*/}"
-      msg_send "sending term to $s_pid $s_name"
-      if kill -0 "$s_pid" 2>/dev/null; then
-      [ -z "$dry_run" ] && kill "$s_pid"
-      fi
-      [ -z "$dry_run" ] && rm -f "$i"
-    done
+    sig_all "term"
   else
     sig_proc "$1" "term"
   fi
