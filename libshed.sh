@@ -107,7 +107,7 @@ msg_send() {
 }
 
 # Return type: void
-#       Usage: serv_start service_file pid_dir nosock nodelay
+#       Usage: serv_start pid_dir service_file nosock nodelay
 #         nosock: if the nosock arg is set then
 #                 no message is sent to the reply socket
 #                 passing 1 will set no sock mode
@@ -126,8 +126,8 @@ serv_start() {
   DELAY=""
   LOGFILE=""
   logfile_path=""
-  s_file="$1"
-  p_dir="$2"
+  p_dir="$1"
+  s_file="$2"
   if [ ! "${3}" = 1 ]; then
     NSck=0
   else
@@ -194,18 +194,18 @@ start_services() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" "${shed_service_pid_dir}" "0" "1" &
+      serv_start "${shed_service_pid_dir}" "$i" "0" "1" &
     done
   elif [ "firstrun" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" "${shed_service_pid_dir}" "1" &
+      serv_start "${shed_service_pid_dir}" "$i" "1" &
     done
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName=$(basename "$i")
       if [ "$ServiceFileName" = "$1" ]; then
-        serv_start "$i" "${shed_service_pid_dir}" "0" "1" &
+        serv_start "${shed_service_pid_dir}" "$i" "0" "1" &
       fi
     done
   fi
