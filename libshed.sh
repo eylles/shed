@@ -107,7 +107,7 @@ msg_send() {
 }
 
 # Return type: void
-#       Usage: serv_start service_name nosock nodelay
+#       Usage: serv_start service_file pid_dir nosock nodelay
 #         nosock: if the nosock arg is set then
 #                 no message is sent to the reply socket
 #                 passing 1 will set no sock mode
@@ -126,17 +126,18 @@ serv_start() {
   DELAY=""
   LOGFILE=""
   logfile_path=""
-  if [ ! "${2}" = 1 ]; then
+  s_file="$1"
+  p_dir="$2"
+  if [ ! "${3}" = 1 ]; then
     NSck=0
   else
-    NSck="${2}"
+    NSck="${3}"
   fi
-  if [ ! "${3}" = 1 ]; then
+  if [ ! "${4}" = 1 ]; then
     NDlay=0
   else
-    NDlay="${3}"
+    NDlay="${4}"
   fi
-  s_file="$1"
   # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
   NAME="${s_file##*/}"
@@ -144,7 +145,7 @@ serv_start() {
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
   # check if service is already running
-  if [ -f "${shed_service_pid_dir}/${NAME}.pid" ]; then
+  if [ -f "${p_dir}/${NAME}.pid" ]; then
     msg_send "$NAME running"
   else
     logfile_path="${LOGFILE%/*}"
@@ -170,7 +171,7 @@ serv_start() {
     # catch the pid of the process
     proc_pid=$!
     # write the pid of the process to the pid file
-    printf '%s\n' "$proc_pid" > "${shed_service_pid_dir}/${NAME}.pid"
+    printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
     [ -z "$NSck" ] && msg_send "$NAME started"
   fi
 }
@@ -193,18 +194,18 @@ start_services() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" "0" "1" &
+      serv_start "$i" "${shed_service_pid_dir}" "0" "1" &
     done
   elif [ "firstrun" = "$1" ]; then
     # for every service file in the services dir
     for i in "${ServicesDir}"/* ; do
-      serv_start "$i" "1" &
+      serv_start "$i" "${shed_service_pid_dir}" "1" &
     done
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName=$(basename "$i")
       if [ "$ServiceFileName" = "$1" ]; then
-        serv_start "$i" "0" "1" &
+        serv_start "$i" "${shed_service_pid_dir}" "0" "1" &
       fi
     done
   fi
@@ -275,20 +276,27 @@ check_hup_allowed() {
 }
 
 # Return type: void
-#       Usage: sig_proc <service name> <signal>
+#       Usage: sig_proc <pids dir> <service dir> <service name> <signal>
 # <service name>: service to send signal
 #         signal: term kill hup usr1 usr2
 # --------------------------------------------------
 # this function is not expected to have a return value as
 # all messages are sent to the reply socket
 sig_proc() {
+  p_dir="$1"
+  shift
+  s_dir="$1"
+  shift
   s_name="$1"
-  s_file="${ServicesDir}/$s_name"
+  shift
+  signal="$1"
+  shift
+  s_file="${s_dir}/$s_name"
   if [ -f "$s_file" ]; then
-    sig_use=$(printf '%s' "$2" | tr '[:lower:]' '[:upper:]')
-    sig_str=$(printf '%s' "$2" | tr '[:upper:]' '[:lower:]')
-    if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
-      s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
+    sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
+    sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
+    if [ -f "${p_dir}/${s_name}.pid" ]; then
+      s_pid=$(read_file "${p_dir}/${s_name}.pid")
       if kill -0 "$s_pid" 2>/dev/null; then
         if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
           msg_send "cannot hup service $s_name"
@@ -304,7 +312,7 @@ sig_proc() {
       if [ -z "$dry_run" ]; then
         case "$sig_str" in
           term|kill)
-            rm -f "${shed_service_pid_dir}/${s_name}.pid"
+            rm -f "${p_dir}/${s_name}.pid"
             ;;
         esac
       fi
@@ -312,22 +320,27 @@ sig_proc() {
       msg_send "service $s_name not running"
     fi
   else
-    msg_send "no service $1 found in $ServicesDir"
+    msg_send "no service $1 found in $s_dir"
   fi
 }
 
 # Return type: void
-#       Usage: sig_all <signal>
+#       Usage: sig_all <pids dir> <service dir> <signal>
 #      signal: term kill hup usr1 usr2
 # --------------------------------------------------
 # this function calls sig_proc for every pid file in
 # the $shed_service_pid_dir
 sig_all() {
+  p_dir="$1"
+  shift
+  s_dir="$1"
+  shift
   sig="$1"
-  for i in "${shed_service_pid_dir}"/*.pid ; do
+  shift
+  for i in "${p_dir}"/*.pid ; do
     s_name="${i##*/}"
     s_name="${s_name%.pid}"
-    sig_proc "$s_name" "$sig"
+    sig_proc "${p_dir}" "${s_dir}" "$s_name" "$sig"
   done
 }
 
@@ -340,9 +353,9 @@ sig_all() {
 # all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    sig_all "hup"
+    sig_all "${shed_service_pid_dir}" "${ServicesDir}" "hup"
   else
-    sig_proc "$1" "hup"
+    sig_proc "${shed_service_pid_dir}" "${ServicesDir}" "$1" "hup"
   fi
 }
 
@@ -355,9 +368,9 @@ hupprocs() {
 # when ran from shed messages will be redirected to $msg_reply
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    sig_all "term"
+    sig_all "${shed_service_pid_dir}" "${ServicesDir}" "term"
   else
-    sig_proc "$1" "term"
+    sig_proc "${shed_service_pid_dir}" "${ServicesDir}" "$1" "term"
   fi
 }
 
