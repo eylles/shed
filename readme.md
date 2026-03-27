@@ -54,10 +54,10 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [x] make shedc tail and read the reply socket
 - [x] introduce libshed for shaded code between shed and shedc
 - [x] add info action to shedc to show info of the running shed daemon
+- [x] move service .pid files to their own subdir inside GUISessionDir
+- [x] add support for `oneshot` type services that only run and then exit
 
 ### pending
-- [ ] add support for `oneshot` type services that only run and then exit
-- [ ] move service .pid files to their own subdir inside GUISessionDir
 - [ ] add a `session` cathegory of services that are not affected by actions
       (start, stop, restart) sent to all nor by reloads of shed, so that stuff
       like window managers can be managed on this cathegory
@@ -68,7 +68,7 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [ ] draw a logo/icon for shed to use in the repo
 
 
-## DO NOT USE THE GIT MASTER EVER! or maybe DO!
+## use the git master but beware of changes!
 
 Currently the master branch functions in a more consistent way than the stuff in
 the release tags do but it isn't really a stable work per se and things may
@@ -77,4 +77,5 @@ know what your config and setup are like so if you have an issue, bug or
 something broke specify you used the master branch and not a release tag, i tend
 to use changes that have not yet been merged to master first cuz i develop this
 for myself as target audience second cuz it will break on my machine first
-before breaking on someone else's, hopefully...
+before breaking on someone else's, hopefully... still read the commit history
+after pulling the repo and before running make!

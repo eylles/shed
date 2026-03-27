@@ -106,24 +106,6 @@ msg_send() {
   esac
 }
 
-# Return type: int bool ($_true or $_false)
-# Usage: is_oneshot service_file
-# ----------------------------------
-# Check if service is a oneshot or a daemon, a oneshot will return $_true
-is_oneshot() {
-  isoneshot="$_false"
-  # Read TYPE property from service file
-  s_type=$(readserviceprop "TYPE" "$1")
-  if [ -n "$s_type" ]; then
-    case "$s_type" in
-      oneshot|one|ONESHOT|ONE)
-        isoneshot="$_true"
-        ;;
-    esac
-  fi
-  return "$isoneshot"
-}
-
 # Return type: void
 #       Usage: serv_start pid_dir service_file nosock nodelay
 #         nosock: if the nosock arg is set then
@@ -143,6 +125,8 @@ serv_start() {
   E_ARGS=""
   DELAY=""
   LOGFILE=""
+  TYPE=""
+  exit_status=""
   logfile_path=""
   p_dir="$1"
   s_file="$2"
@@ -164,7 +148,11 @@ serv_start() {
   fi
   # check if service is already running
   if [ -f "${p_dir}/${NAME}.pid" ]; then
-    msg_send "$NAME running"
+    message="$NAME running"
+    if [ -f "${p_dir}/${NAME}.est" ]; then
+      message="$NAME oneshot started"
+    fi
+    msg_send "$message"
   else
     logfile_path="${LOGFILE%/*}"
     if [ ! -d "$logfile_path" ]; then
@@ -175,6 +163,16 @@ serv_start() {
       msg_log "info" "service $NAME not started"
       return
     fi
+    case "$TYPE" in
+      # guard against possible stupid values
+      oneshot|one|ONESHOT|ONE)
+        TYPE="oneshot"
+        ;;
+      *)
+        # you're a daemon
+        TYPE="daemon"
+        ;;
+    esac
     # needed for services that got $HOME/path/service in their EXEC def
     EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
     # get the full path of the binary
@@ -183,6 +181,7 @@ serv_start() {
       msg_log "info" "$NAME start delayed by $DELAY seconds"
       sleep "$DELAY"
     fi
+    msg_log "info" "starting $TYPE $NAME"
     # run the service command with the arguments
     s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
     eval "$s_run" &
@@ -191,6 +190,13 @@ serv_start() {
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
     [ -z "$NSck" ] && msg_send "$NAME started"
+    case "$TYPE" in
+      oneshot)
+        wait "$proc_pid"
+        exit_status=$?
+        printf '%s\n' "$exit_status" > "${p_dir}/${NAME}.est"
+        ;;
+    esac
   fi
 }
 
@@ -242,6 +248,7 @@ start_services() {
 #     E_ARGS
 #     DELAY
 #     NOHUP
+#     TYPE
 readserviceprop(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
@@ -293,6 +300,24 @@ check_hup_allowed() {
   return "$canhup"
 }
 
+# Return type: int bool ($_true or $_false)
+# Usage: is_oneshot service_file
+# ----------------------------------
+# Check if service is a oneshot or a daemon, a oneshot will return $_true
+is_oneshot() {
+  isoneshot="$_false"
+  # Read TYPE property from service file
+  s_type=$(readserviceprop "TYPE" "$1")
+  if [ -n "$s_type" ]; then
+    case "$s_type" in
+      oneshot|one|ONESHOT|ONE)
+        isoneshot="$_true"
+        ;;
+    esac
+  fi
+  return "$isoneshot"
+}
+
 # Return type: void
 #       Usage: sig_proc <pids dir> <service dir> <service name> <signal>
 # <service name>: service to send signal
@@ -315,15 +340,17 @@ sig_proc() {
     sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
     if [ -f "${p_dir}/${s_name}.pid" ]; then
       s_pid=$(read_file "${p_dir}/${s_name}.pid")
-      if kill -0 "$s_pid" 2>/dev/null; then
+      if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$s_file"; then
         if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
-          msg_send "cannot hup service $s_name"
+          msg_send "cannot hup daemon $s_name"
         else
           msg_send "sending $sig_str to $s_pid $s_name"
           if [ -z "$dry_run" ]; then
             kill "-${sig_use}" "$s_pid"
           fi
         fi
+      else
+        msg_send "cannot send signals to oneshots"
       fi
       # remove the pid file even if process is not alive, this needs to be here
       # so that the pid file for term/kill is always removed so long it exists
@@ -331,6 +358,9 @@ sig_proc() {
         case "$sig_str" in
           term|kill)
             rm -f "${p_dir}/${s_name}.pid"
+            if [ -f "${p_dir}/${s_name}.est" ]; then
+              rm -f "${p_dir}/${s_name}.est"
+            fi
             ;;
         esac
       fi

@@ -57,3 +57,4 @@ that is all to get shed to launch, the .xsessionrc file is loaded during the log
 | DELAY    | delay the startup of the daemon program by the provided seconds, this is passed directly to sleep(1) |
 | NOHUP    | to prevent a service from being hupped set this to some of: yes, true, 1 |
 | LOGFILE  | file where all program output is redirected to, by default it will be in ${GUISessionDir}/logs/${NAME}.log |
+| TYPE     | if property is not present or set to something other than oneshot or daemon, it will be set as daemon |

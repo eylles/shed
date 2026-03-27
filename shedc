@@ -169,10 +169,13 @@ get_servstatus() {
   s_exec=$(command -v "$s_exec")
   if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
     s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
-    if kill -0 "$s_pid" 2>/dev/null; then
+    if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$ServiceFile"; then
       s_state="+"
     else
       s_state="?"
+    fi
+    if [ -f "${shed_service_pid_dir}/${s_name}.est" ]; then
+      s_state=$(head "${shed_service_pid_dir}/${s_name}.est")
     fi
   else
       s_state="-"
