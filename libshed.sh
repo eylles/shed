@@ -106,6 +106,24 @@ msg_send() {
   esac
 }
 
+# Return type: int bool ($_true or $_false)
+# Usage: is_oneshot service_file
+# ----------------------------------
+# Check if service is a oneshot or a daemon, a oneshot will return $_true
+is_oneshot() {
+  isoneshot="$_false"
+  # Read TYPE property from service file
+  s_type=$(readserviceprop "TYPE" "$1")
+  if [ -n "$s_type" ]; then
+    case "$s_type" in
+      oneshot|one|ONESHOT|ONE)
+        isoneshot="$_true"
+        ;;
+    esac
+  fi
+  return "$isoneshot"
+}
+
 # Return type: void
 #       Usage: serv_start pid_dir service_file nosock nodelay
 #         nosock: if the nosock arg is set then
