@@ -305,6 +305,8 @@ show_help() {
   printf '\t     [ + ] means the service is running\n'
   printf '\t     [ - ] means the service is not running\n'
   printf '\t     [ ? ] means the service was started but the pid was not among the active processes\n'
+  printf '\t     [ 0 ] means the oneshot service ran succesfully and termianted with exit status 0\n'
+  printf '\t     [ 1 ] means the oneshot service ran unsuccesfully and termianted with exit status 1\n'
 }
 
 OPTIND=1
