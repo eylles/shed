@@ -350,7 +350,14 @@ sig_proc() {
           fi
         fi
       else
-        msg_send "cannot send signals to oneshots"
+        case "$sig_str" in
+          term|kill)
+            msg_send "removing oneshot $s_name pid and exit status files"
+            ;;
+          *)
+            msg_send "cannot send signals to oneshots"
+            ;;
+        esac
       fi
       # remove the pid file even if process is not alive, this needs to be here
       # so that the pid file for term/kill is always removed so long it exists
