@@ -248,12 +248,10 @@ start_services() {
       serv_start "${shed_service_pid_dir}" "$i" "1" &
     done
   else
-    for i in "${ServicesDir}"/* ; do
-      ServiceFileName=$(basename "$i")
-      if [ "$ServiceFileName" = "$1" ]; then
-        serv_start "${shed_service_pid_dir}" "$i" "0" "1" &
-      fi
-    done
+    s_file="${ServicesDir}/${1}"
+    if [ -r "$s_file" ]; then
+      serv_start "${shed_service_pid_dir}" "$s_file" "0" "1" &
+    fi
   fi
 }
 
