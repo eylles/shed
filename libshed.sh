@@ -200,6 +200,28 @@ serv_start() {
   fi
 }
 
+# Return type: int bool
+# Usage: is_dir_empty directory
+# --------------------------------------------------
+# Check if directory is empty (no files matching any glob)
+# Returns $_true if empty or doesn't exist, $_false if has files
+is_dir_empty() {
+  dir="$1"
+  # Check if directory exists and has files
+  if [ -d "$dir" ]; then
+    # Use a simple glob test - if the glob doesn't expand, it returns the pattern
+    for _ in "$dir"/* ; do
+      # If we get here, at least one file exists
+      return "$_false"
+    done
+    # No files found
+    return "$_true"
+  else
+    # Directory doesn't exist
+    return "$_true"
+  fi
+}
+
 # Return type: void
 #       Usage: start_services all | firstrun | <service name>
 #            all: start all services
