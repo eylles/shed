@@ -235,6 +235,10 @@ start_services() {
     shedc*) : ;; # do nothing
     shed*) : > "$msg_reply" ;; # blank msg_reply
   esac
+  if is_dir_empty "$ServicesDir"; then
+    msg_log "no service definitions found in '$ServicesDir'"
+    return
+  fi
   msg_send "starting services"
   # if all the services should be started
   if [ -z "$1" ] || [ "all" = "$1" ]; then
@@ -412,6 +416,10 @@ sig_all() {
   shift
   sig="$1"
   shift
+  if is_dir_empty "$p_dir"; then
+    msg_log "no pid files found in $p_dir"
+    return
+  fi
   for i in "${p_dir}"/*.pid ; do
     s_name="${i##*/}"
     s_name="${s_name%.pid}"
