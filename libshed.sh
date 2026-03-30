@@ -150,7 +150,7 @@ serv_start() {
   if [ -f "${p_dir}/${NAME}.pid" ]; then
     message="$NAME running"
     if [ -f "${p_dir}/${NAME}.est" ]; then
-      message="$NAME oneshot started"
+      message="$NAME oneshot already ran"
     fi
     msg_send "$message"
   else
@@ -177,7 +177,7 @@ serv_start() {
     EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
     # get the full path of the binary
     EXEC=$(command -v "$EXEC")
-    if [ -n "$DELAY" ] && [ "$NDlay" = 0 ]; then
+    if [ -n "$DELAY" ] && [ "$NDlay" -eq 0 ]; then
       msg_log "info" "$NAME start delayed by $DELAY seconds"
       sleep "$DELAY"
     fi
@@ -189,7 +189,7 @@ serv_start() {
     proc_pid=$!
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
-    [ -z "$NSck" ] && msg_send "$NAME started"
+    [ "$NSck" -eq 0 ] && msg_send "$NAME started"
     case "$TYPE" in
       oneshot)
         wait "$proc_pid"
