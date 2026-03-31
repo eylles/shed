@@ -236,7 +236,9 @@ start_services() {
     shed*) : > "$msg_reply" ;; # blank msg_reply
   esac
   if is_dir_empty "$ServicesDir"; then
-    msg_log "no service definitions found in '$ServicesDir'"
+    errmsg="no service definitions found in '$ServicesDir'"
+    msg_send "$errmsg"
+    msg_log "error" "$errmsg"
     return
   fi
   msg_send "starting services"
@@ -417,7 +419,9 @@ sig_all() {
   sig="$1"
   shift
   if is_dir_empty "$p_dir"; then
-    msg_log "no pid files found in $p_dir"
+    errmsg="no pid files found in $p_dir"
+    msg_send "$errmsg"
+    msg_log "error" "$errmsg"
     return
   fi
   for i in "${p_dir}"/*.pid ; do
