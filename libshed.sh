@@ -108,18 +108,20 @@ msg_send() {
 
 # Return type: void
 #       Usage: serv_start pid_dir service_file nosock nodelay
-#         nosock: if the nosock arg is set then
-#                 no message is sent to the reply socket
-#                 passing 1 will set no sock mode
-#        nodelay: if the nodelay arg is set then
-#                 no delay is applied to starting the
-#                 service passing 1 will set no delay mode
+#         nosock: default $_false, if passed $_true will set
+#                 no sock mode and no message is sent to the
+#                 reply socket
+#        nodelay: default $_false, if passed $_true will set
+#                 no delay mode and no delay will be applied
+#                 to starting of the service
 # --------------------------------------------------
 # this function is not expected to have a return value as
 # all messages are sent to the reply socket unless specified
 serv_start() {
-  # clean up environment
-  NSck=""
+  # No Sock, default $_false
+  NSck="$_false"
+  # No Delay, default $_false
+  NDlay="$_false"
   NAME=""
   EXEC=""
   E_ARGS=""
@@ -130,14 +132,10 @@ serv_start() {
   logfile_path=""
   p_dir="$1"
   s_file="$2"
-  if [ ! "${3}" = 1 ]; then
-    NSck=0
-  else
+  if [ "${3}" -eq "$_true" ]; then
     NSck="${3}"
   fi
-  if [ ! "${4}" = 1 ]; then
-    NDlay=0
-  else
+  if [ "${4}" -eq "$_true" ]; then
     NDlay="${4}"
   fi
   # source the file to get the variables: EXEC E_ARGS from the service
@@ -177,7 +175,7 @@ serv_start() {
     EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
     # get the full path of the binary
     EXEC=$(command -v "$EXEC")
-    if [ -n "$DELAY" ] && [ "$NDlay" -eq 0 ]; then
+    if [ -n "$DELAY" ] && [ "$NDlay" -eq "$_false" ]; then
       msg_log "info" "$NAME start delayed by $DELAY seconds"
       sleep "$DELAY"
     fi
@@ -189,7 +187,7 @@ serv_start() {
     proc_pid=$!
     # write the pid of the process to the pid file
     printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
-    [ "$NSck" -eq 0 ] && msg_send "$NAME started"
+    [ "$NSck" -eq "$_false" ] && msg_send "$NAME started"
     case "$TYPE" in
       oneshot)
         wait "$proc_pid"
@@ -233,13 +231,13 @@ start_from_dir() {
   def_dir="$1"
   pid_dir="$2"
   start_s="$3"
-  nodelay=1
-  nosock=0
+  nodelay="$_true"
+  nosock="$_false"
   specific_name=""
   case "$start_s" in
     firstrun)
-      nosock=1  # do not write to msg_reply sock
-      nodelay=0 # have start delays
+      nosock="$_true"  # do not write to msg_reply sock
+      nodelay="$_false" # have start delays
       ;;
     all) : ;; # do nothing
     *) specific_name="$start_s" ;;
