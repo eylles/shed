@@ -277,30 +277,8 @@ start_services() {
     shedc*) : ;; # do nothing
     shed*) : > "$msg_reply" ;; # blank msg_reply
   esac
-  if is_dir_empty "$ServicesDir"; then
-    errmsg="no service definitions found in '$ServicesDir'"
-    msg_send "$errmsg"
-    msg_log "error" "$errmsg"
-    return
-  fi
   msg_send "starting services"
-  # if all the services should be started
-  if [ -z "$1" ] || [ "all" = "$1" ]; then
-    # for every service file in the services dir
-    for i in "${ServicesDir}"/* ; do
-      serv_start "${shed_service_pid_dir}" "$i" "0" "1" &
-    done
-  elif [ "firstrun" = "$1" ]; then
-    # for every service file in the services dir
-    for i in "${ServicesDir}"/* ; do
-      serv_start "${shed_service_pid_dir}" "$i" "1" &
-    done
-  else
-    s_file="${ServicesDir}/${1}"
-    if [ -r "$s_file" ]; then
-      serv_start "${shed_service_pid_dir}" "$s_file" "0" "1" &
-    fi
-  fi
+  start_from_dir "${ServicesDir}" "${shed_service_pid_dir}" "$1"
 }
 
 # Return type: string
