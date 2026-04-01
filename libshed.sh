@@ -223,6 +223,48 @@ is_dir_empty() {
 }
 
 # Return type: void
+#       Usage: start_from_dir def_dir pid_dir name_to_start
+#       def_dir: directory with service definitions
+#       pid_dir: directory to store pid files
+# name_to_start: can be a service name or one of the macros all and firstrun
+# --------------------------------------------------
+# Generic function to start services from definitions located in a directory
+start_from_dir() {
+  def_dir="$1"
+  pid_dir="$2"
+  start_s="$3"
+  nodelay=1
+  nosock=0
+  specific_name=""
+  case "$start_s" in
+    firstrun)
+      nosock=1  # do not write to msg_reply sock
+      nodelay=0 # have start delays
+      ;;
+    all) : ;; # do nothing
+    *) specific_name="$start_s" ;;
+  esac
+  if is_dir_empty "$def_dir"; then
+    errmsg="no definitions found in '$def_dir'"
+    msg_send "$errmsg"
+    msg_log "error" "$errmsg"
+    return
+  fi
+  if [ -n "$specific_name" ]; then
+    s_file="${def_dir}/${specific_name}"
+    if [ -r "$s_file" ]; then
+      serv_start "$pid_dir" "$s_file" "$nosock" "$nodelay" &
+    else
+      msg_send "definition for $start_s not found in $def_dir"
+    fi
+    return
+  fi
+  for i in "${def_dir}"/* ; do
+    serv_start "$pid_dir" "$i" "$nosock" "$nodelay" &
+  done
+}
+
+# Return type: void
 #       Usage: start_services all | firstrun | <service name>
 #            all: start all services
 #       firstrun: start all services on first run mode
