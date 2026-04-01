@@ -39,6 +39,10 @@ fi
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 
+# directory where we are loading the session components to start from
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
+ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
+
 # shed start file, contains the pid of the shed process
 # ${ShedSessionDir}/shed.started
 startfile="${ShedSessionDir}/shed.started"
@@ -58,6 +62,10 @@ shed_log_file="${shed_logs_dir}/shed.log"
 # dir for service pid files
 # ${ShedSessionDir}/services
 shed_service_pid_dir="${ShedSessionDir}/services"
+
+# dir for component pid files
+# ${ShedSessionDir}/components
+shed_component_pid_dir="${ShedSessionDir}/components"
 
 # defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/socket
 msg_socket="${ShedSessionDir}/socket"
@@ -279,6 +287,23 @@ start_services() {
   start_from_dir "${ServicesDir}" "${shed_service_pid_dir}" "$1"
 }
 
+# Return type: void
+#       Usage: start_components all | firstrun | <component name>
+#            all: start all services
+#       firstrun: start all services on first run mode
+# <component name>: the component name to start
+# --------------------------------------------------
+# only one argument is acknowledged.
+# components are only started once when shed first runs
+start_components() {
+  case "$prog" in
+    shedc*) : ;; # do nothing
+    shed*) : > "$msg_reply" ;; # blank msg_reply
+  esac
+  msg_send "starting components"
+  start_from_dir "${ComponentsDir}" "${shed_component_pid_dir}" "$1"
+}
+
 # Return type: string
 #       Usage: readserviceprop "PROPERTY" service_file
 #       property: key name
@@ -476,6 +501,22 @@ killprocs() {
     sig_all "${shed_service_pid_dir}" "${ServicesDir}" "term"
   else
     sig_proc "${shed_service_pid_dir}" "${ServicesDir}" "$1" "term"
+  fi
+}
+
+# Return type: void or string
+#       Usage: killcomps all | <component name>
+#            all: kill all services
+# <component name>: component to kill
+# --------------------------------------------------
+# when ran from shedc messages will be output to stdout
+# when ran from shed messages will be redirected to $msg_reply
+# components are only killed on logout
+killcomps() {
+  if [ -z "$1" ] || [ "all" = "$1" ]; then
+    sig_all "${shed_component_pid_dir}" "${ComponentsDir}" "term"
+  else
+    sig_proc "${shed_component_pid_dir}" "${ComponentsDir}" "$1" "term"
   fi
 }
 
