@@ -56,11 +56,15 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [x] add info action to shedc to show info of the running shed daemon
 - [x] move service .pid files to their own subdir inside GUISessionDir
 - [x] add support for `oneshot` type services that only run and then exit
-
-### pending
-- [ ] add a `session` cathegory of services that are not affected by actions
+- [x] add a `session` cathegory of services that are not affected by actions
       (start, stop, restart) sent to all nor by reloads of shed, so that stuff
       like window managers can be managed on this cathegory
+
+### pending
+- [ ] implement the shed_shallow->transient-shed_instance architecture, where in
+      a "shallow" shed instance sets the environment, executes the transient
+      process and later on the transient spawns a shed instance as a child
+      process, this architecture is required to support wayland sessions.
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
