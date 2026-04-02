@@ -79,7 +79,7 @@ pretty_print() {
           printf " ├"; for(c=0;c<22;c++) printf"─"; printf "┬";
           for(c=0;c<32;c++) printf"─"; printf "┬";
           for(c=0;c<9;c++) printf"─"; printf "┤\n" ;
-          printf " │ %20s │ %30s │ %7s │\n", "date        ", "service           ", "status ";
+          printf " │ %20s │ %30s │ %7s │\n", "date", "service", "status";
           printf " ├"; for(c=0;c<22;c++) printf"─"; printf "┼";
           for(c=0;c<32;c++) printf"─"; printf "┼";
           for(c=0;c<9;c++) printf"─"; printf "┤\n" ;
@@ -194,7 +194,7 @@ get_servstatus() {
 #      Return: status string
 # --------------------------------------------------
 # for a specific process the status string is:
-#   <service name> status: stat
+#   [ stat ] <service name>
 #
 # for all processes the information is printed as:
 #   [ stat ] <service name>
@@ -202,10 +202,12 @@ get_servstatus() {
 # when PrettyPrint is set the print out is as follows:
 #   [ stat ] <service name> pid executable
 #
-#   stat  |  single proc             |   all procs
-#         |  not running             |      -
-#         |  running with pid: pid   |      +
-#         |  was started             |      ?
+#   stat   |  meaning
+#    -     |  not running
+#    +     |  running
+#    ?     |  was started
+#    0     |  single shot terminated succesfully
+#    1     |  single shot terminated unsuccesfully
 procstat() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
     if [ "$PrettyPrint" = 1 ]; then
@@ -370,5 +372,3 @@ case $1 in
   ;;
   *) show_help ; exit 1 ;;
 esac
-
-# cd "$OldWorkDir"
