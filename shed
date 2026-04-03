@@ -6,9 +6,12 @@ SHED_ENV_EXPORT_LOC=""
 SHED_RELOAD=""
 
 # check if GUI_SESSION_PID is set
-if [ -z "$GUI_SESSION_PID" ]; then
-  # it wasnt set, so we will use the PID of the parent
-  export GUI_SESSION_PID=$PPID
+if [ -n "$GUI_SESSION_PID" ]; then
+  # since it exists that will be the SHED_SESSION_PID
+  export SHED_SESSION_PID="$GUI_SESSION_PID"
+else
+  # it wasnt set, so we will use the shed_pid
+  export SHED_SESSION_PID="$shed_pid"
 fi
 
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
@@ -73,7 +76,7 @@ if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
   cat << __ENV_EXPORT__ >> "$SHED_ENV_EXPORT_LOC"
 export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
 export XDG_SESSION_ID="$XDG_SESSION_ID"
-export GUI_SESSION_PID="$GUI_SESSION_PID"
+export SHED_SESSION_PID="$SHED_SESSION_PID"
 __ENV_EXPORT__
 fi
 

@@ -260,7 +260,7 @@ kill_session() {
   killcomps "all"
   daemon_send "wait-logout"
   [ -z "$dry_run" ] && rm -rf "$ShedSessionDir"
-  [ -z "$dry_run" ] && kill "$GUI_SESSION_PID"
+  [ -z "$dry_run" ] && kill "$SHED_SESSION_PID"
 }
 
 show_version() {

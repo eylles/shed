@@ -15,15 +15,29 @@ _true=0
 # value: 1
 _false=1
 
+# the SHED_SESSION_PID, this is hopefully the pid of the process that keeps the
+# session alive, aka the session leader, if shed was ran with exec as part of
+# the session startup process then it will be the PID of the running shed
+# instance, unless a GUI_SESSION_PID exists, meaning another process is the
+# session leader
+SHED_SESSION_PID="$SHED_SESSION_PID"
+# check if GUI_SESSION_PID is set
+if [ -n "$GUI_SESSION_PID" ]; then
+  # since it exists that will be the SHED_SESSION_PID
+  # this way we can reload from an older version of shed
+  # otherwise shed will be the one setting this env var
+  SHED_SESSION_PID="$GUI_SESSION_PID"
+fi
+
 # dir for the pid files
-# GUI_SESSION_PID=$$ must be exported in the xinitrc/xsession file
+# SHED_SESSION_PID=$$ must be exported in the xinitrc/xsession file
 # to have the pid of the running session, otherwise shed will try to determine
 # and export said PID, usually the PID of the parent process that started shed
-# ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
-ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}
+# ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}
+ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}
 
 # ShedSessionDir definition used on shed versions prior to this commit
-OldShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${GUI_SESSION_PID}
+OldShedSessionDir=${XDG_RUNTIME_DIR}/GUISession${SHED_SESSION_PID}
 
 UsingOldShedDir="$_false"
 
@@ -67,9 +81,9 @@ shed_service_pid_dir="${ShedSessionDir}/services"
 # ${ShedSessionDir}/components
 shed_component_pid_dir="${ShedSessionDir}/components"
 
-# defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/socket
+# defined as: ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}/socket
 msg_socket="${ShedSessionDir}/socket"
-# defined as: ${XDG_RUNTIME_DIR}/shed/${GUI_SESSION_PID}/reply
+# defined as: ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}/reply
 msg_reply="${ShedSessionDir}/reply"
 
 # Return type: void
