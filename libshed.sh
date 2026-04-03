@@ -49,6 +49,19 @@ if [ -d "$OldShedSessionDir" ]; then
   UsingOldShedDir="$_true"
 fi
 
+# if ShedSessionDir doesn't exist, detect it dynamically
+# needed for shedc which runs without SHED_SESSION_PID in environment
+if [ ! -d "$ShedSessionDir" ]; then
+  for _dir in $(ls -dt "${XDG_RUNTIME_DIR}/shed"/* 2>/dev/null); do
+    [ -d "$_dir" ] || continue
+    if [ -S "$_dir/socket" ] || [ -f "$_dir/socket" ]; then
+      ShedSessionDir="$_dir"
+      break
+    fi
+  done
+  unset _dir
+fi
+
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
