@@ -72,6 +72,15 @@ if [ -r "$Config" ]; then
   . "$Config"
 fi
 
+if [ -n "$set_xdg_desktop_vars" ]; then
+  export XDG_SESSION_DESKTOP="$session_desktop"
+  export XDG_CURRENT_DESKTOP="$current_desktop"
+fi
+
+if [ -n "$use_xdg_session_type" ]; then
+  export XDG_SESSION_TYPE="$use_xdg_session_type"
+fi
+
 if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
   env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
   if [ ! -d "$env_export_dir" ]; then
