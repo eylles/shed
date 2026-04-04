@@ -25,6 +25,22 @@
 # unspecified, tty, x11, wayland, mir, web
 # use_xdg_session_type=
 
+# if this var is set to a non empty var then the xdg home dirs will be set,
+# these include:
+#   XDG_DATA_HOME="$HOME/.local/share"
+#   XDG_CACHE_HOME="$HOME/.cache"
+#   XDG_STATE_HOME="$HOME/.local/state"
+# also the xdg user dirs will be set using xdg-user-dirs-update
+#   XDG_DESKTOP_DIR
+#   XDG_DOWNLOAD_DIR
+#   XDG_TEMPLATES_DIR
+#   XDG_PUBLICSHARE_DIR
+#   XDG_DOCUMENTS_DIR
+#   XDG_MUSIC_DIR
+#   XDG_PICTURES_DIR
+#   XDG_VIDEOS_DIR
+# set_xdg_home_dirs=
+
 # location where shed will export the following env vars:
 # export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
 # export XDG_SESSION_ID="$XDG_SESSION_ID"
