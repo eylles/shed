@@ -137,7 +137,8 @@ prog="${0##*/}"
 sessdir=0
 
 # werether shed is a fresh start or a post reload
-reloaded=""
+# default: $_false
+reloaded="$_false"
 
 # check if the session dir exists
 if [ -d "$ShedSessionDir" ]; then
@@ -184,7 +185,7 @@ if [ "$sessdir" = 1 ]; then
     # per session.
     file_pid=$(cat "$startfile")
     if [ "$file_pid" -eq "$shed_pid" ]; then
-      reloaded=1
+      reloaded="$_true"
     else
       printf '%s\n' "${prog}: instance with pid ${file_pid} already running!"
       exit 1
@@ -205,7 +206,9 @@ write_info() {
 write_info > "$shed_info"
 
 # write started for when shedc requests a reload
-[ -n "$reloaded" ] && printf '%s\n' "$prog $prog_v started" > "$msg_reply"
+if [ "$reloaded" -eq "$_true" ]; then
+  printf '%s\n' "$prog $prog_v started" > "$msg_reply"
+fi
 
 # Return type: void
 #       Usage: wait_exit
@@ -257,7 +260,7 @@ daemon_cycle() {
 
 # start all services on first run
 start_str=""
-if [ "$reloaded" = 1 ]; then
+if [ "$reloaded" -eq "$_true" ]; then
   start_str="all"
 else
   start_str="firstrun"
