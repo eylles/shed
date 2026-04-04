@@ -210,6 +210,15 @@ if [ "$reloaded" -eq "$_true" ]; then
   printf '%s\n' "$prog $prog_v started" > "$msg_reply"
 fi
 
+if [ "$reloaded" -eq "$_false" ] && ! is_dir_empty "$EnvDir"; then
+  for EnvFile in "$EnvDir"/*.env; do
+    if [ -r "$EnvFile" ]; then
+      . "$EnvFile"
+    fi
+  done
+  unset EnvFile
+fi
+
 # Return type: void
 #       Usage: wait_exit
 # --------------------------------------------------

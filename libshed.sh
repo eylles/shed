@@ -70,6 +70,10 @@ ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
 ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
 
+# directory for loadable .env files
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
+EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
+
 # shed start file, contains the pid of the shed process
 # ${ShedSessionDir}/shed.started
 startfile="${ShedSessionDir}/shed.started"
