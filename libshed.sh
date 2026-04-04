@@ -49,10 +49,34 @@ if [ -d "$OldShedSessionDir" ]; then
   UsingOldShedDir="$_true"
 fi
 
-# if ShedSessionDir doesn't exist, detect it dynamically
-# needed for shedc which runs without SHED_SESSION_PID in environment
-if [ ! -d "$ShedSessionDir" ]; then
-  for _dir in $(ls -dt "${XDG_RUNTIME_DIR}/shed"/* 2>/dev/null); do
+# Return type: int bool
+# Usage: is_dir_empty directory
+# --------------------------------------------------
+# Check if directory is empty (no files matching any glob)
+# Returns $_true if empty or doesn't exist, $_false if has files
+is_dir_empty() {
+  dir="$1"
+  # Check if directory exists and has files
+  if [ -d "$dir" ]; then
+    # Use a simple glob test - if the glob doesn't expand, it returns the pattern
+    for _ in "$dir"/* ; do
+      # If we get here, at least one file exists
+      return "$_false"
+    done
+    # No files found
+    return "$_true"
+  else
+    # Directory doesn't exist
+    return "$_true"
+  fi
+}
+
+# if ShedSessionDir doesn't exist when running shedc, try to detect it
+# dynamically
+if [ ! -d "$ShedSessionDir" ] &&
+   [ "$prog" = "shedc" ] &&
+   ! is_dir_empty "${XDG_RUNTIME_DIR}/shed"; then
+  for _dir in "${XDG_RUNTIME_DIR}/shed"/*; do
     [ -d "$_dir" ] || continue
     if [ -S "$_dir/socket" ] || [ -f "$_dir/socket" ]; then
       ShedSessionDir="$_dir"
@@ -234,28 +258,6 @@ serv_start() {
         printf '%s\n' "$exit_status" > "${p_dir}/${NAME}.est"
         ;;
     esac
-  fi
-}
-
-# Return type: int bool
-# Usage: is_dir_empty directory
-# --------------------------------------------------
-# Check if directory is empty (no files matching any glob)
-# Returns $_true if empty or doesn't exist, $_false if has files
-is_dir_empty() {
-  dir="$1"
-  # Check if directory exists and has files
-  if [ -d "$dir" ]; then
-    # Use a simple glob test - if the glob doesn't expand, it returns the pattern
-    for _ in "$dir"/* ; do
-      # If we get here, at least one file exists
-      return "$_false"
-    done
-    # No files found
-    return "$_true"
-  else
-    # Directory doesn't exist
-    return "$_true"
   fi
 }
 
