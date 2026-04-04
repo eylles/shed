@@ -213,6 +213,7 @@ fi
 if [ "$reloaded" -eq "$_false" ] && ! is_dir_empty "$EnvDir"; then
   for EnvFile in "$EnvDir"/*.env; do
     if [ -r "$EnvFile" ]; then
+      msg_log "info" "loading env file $EnvFile"
       . "$EnvFile"
     fi
   done
