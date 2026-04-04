@@ -67,9 +67,12 @@ if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
 Config="${ConfDir}/shed.rc"
+DefConf="@DOC@/shed.rc"
 
 if [ -r "$Config" ]; then
   . "$Config"
+else
+  cp "$DefConf" "$Config"
 fi
 
 if [ -n "$set_xdg_desktop_vars" ]; then

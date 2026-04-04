@@ -1,0 +1,38 @@
+# werether shed should set the XDG_SESSION_DESKTOP and XDG_CURRENT_DESKTOP env
+# vars, useful when for example running a window manager and wanting to have an
+# xdg-desktop-portal config which is set after the value of XDG_CURRENT_DESKTOP
+# in the form:
+# $XDG_CONFIG_HOME/xdg-desktop-portal/${XDG_CURRENT_DESKTOP}-portals.conf
+# just setting this variable to a non empty value will enable the option
+# set_xdg_desktop_vars=
+
+# value that will be exported to: XDG_SESSION_DESKTOP
+# session_desktop=
+
+# value that will be exported to: XDG_CURRENT_DESKTOP
+# current_desktop=
+
+# the XDG_SESSION_TYPE originally introduced by systemd and barely documented,
+# as with all poettering inventions, used and depended by anything and
+# everything that uses XDG_RUNTIME_DIR and everything in between, even if you
+# use login mangement like elogind the variable may be set incorrectly depending
+# on how your session was started, display mangers like lightdm tend to force
+# the variable into the correct value, but if you are not using one or are using
+# one which does not correct the variable it could be the incorrect value or not
+# even set at all, shed can correct this, just give a non empty value to this
+# variable and it will be set as the XDG_SESSION_TYPE, the values recognized by
+# systemd sd_session_get_type are:
+# unspecified, tty, x11, wayland, mir, web
+# use_xdg_session_type=
+
+# location where shed will export the following env vars:
+# export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
+# export XDG_SESSION_ID="$XDG_SESSION_ID"
+# export GUI_SESSION_PID="$GUI_SESSION_PID"
+# this file is useful when shed is not exec'd as part of the start up process,
+# which is not the ideal way to be running shed, that said a reasonable value
+# for the SHED_ENV_EXPORT_LOC is:
+# "/tmp/shed_session_${SHED_SESSION_PID}/shed.env"
+# SHED_ENV_EXPORT_LOC=
+
+# vim: ft=sh
