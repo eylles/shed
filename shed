@@ -60,6 +60,10 @@ if [ -z "$XDG_SESSION_ID" ]; then
   export XDG_SESSION_ID
 fi
 
+if [ -z "$XDG_CONFIG_HOME" ]; then
+  export XDG_CONFIG_HOME="${HOME}/.config"
+fi
+
 old_conf_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/conf"
 # directory where we are loading the shed specific config
 ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed"
