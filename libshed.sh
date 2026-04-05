@@ -159,12 +159,13 @@ msg_log() {
 # This function will print to stdout if called from shedc and redirect the
 # message to the $msg_reply file if called from shed
 msg_send() {
+  msg="$(date '+%Y-%m-%d-%H:%M:%S') $*"
   case "$prog" in
     shedc*)
-      printf '%s %s\n' "$(date '+%Y-%m-%d-%H:%M:%S')" "$*"
+      printf '%s\n' "$msg"
       ;;
     shed*)
-      printf '%s %s\n' "$(date '+%Y-%m-%d-%H:%M:%S')" "$*" >> "$msg_reply"
+      printf '%s\n' "$msg" >> "$msg_reply"
       ;;
   esac
 }
