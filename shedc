@@ -162,7 +162,7 @@ get_servstatus() {
   s_exec=""
   s_pid=""
   s_state=""
-  s_exec="$(readserviceprop "EXEC" "$ServiceFile")"
+  s_exec="$(readkeyvalprop "EXEC" "$ServiceFile")"
   # needed for services that got $HOME/path/service in their EXEC def
   s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
   # get the full path of the binary

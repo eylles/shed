@@ -338,20 +338,20 @@ start_components() {
 }
 
 # Return type: string
-#       Usage: readserviceprop "PROPERTY" service_file
+#       Usage: readkeyvalprop "PROPERTY" file
 #       property: key name
 #      Return: string containing the value of the
 #                 PROPERTY key from the passed file.
 # --------------------------------------------------
-# the service files store properties as key=value
-# pairs, pass the name of the key to get the stored
-# value, valid key names are:
+# the specific property keys for service definition
+# files are:
 #     EXEC
 #     E_ARGS
 #     DELAY
 #     NOHUP
+#     LOGFILE
 #     TYPE
-readserviceprop(){
+readkeyvalprop(){
   # Setting 'IFS' tells 'read' where to split the string.
   while IFS='=' read -r key val; do
     # Skip over lines containing comments.
@@ -391,7 +391,7 @@ read_file() {
 check_hup_allowed() {
   canhup="$_true"
   # Read NOHUP property from service file
-  s_nohup=$(readserviceprop "NOHUP" "$1")
+  s_nohup=$(readkeyvalprop "NOHUP" "$1")
   if [ -n "$s_nohup" ]; then
     case "$s_nohup" in
       true|TRUE|1|yes|YES|y|Y)
@@ -409,7 +409,7 @@ check_hup_allowed() {
 is_oneshot() {
   isoneshot="$_false"
   # Read TYPE property from service file
-  s_type=$(readserviceprop "TYPE" "$1")
+  s_type=$(readkeyvalprop "TYPE" "$1")
   if [ -n "$s_type" ]; then
     case "$s_type" in
       oneshot|one|ONESHOT|ONE)
