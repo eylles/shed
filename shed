@@ -70,7 +70,10 @@ ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed"
 if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
+# shed config file
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shed.rc
 Config="${ConfDir}/shed.rc"
+# the default config template
 DefConf="@DOC@/shed.rc"
 
 if [ -r "$Config" ]; then
@@ -152,11 +155,9 @@ fi
 if [ ! -d "$shed_service_pid_dir" ]; then
   mkdir -p "$shed_service_pid_dir"
 fi
-
 if [ ! -d "$shed_component_pid_dir" ]; then
   mkdir -p "$shed_component_pid_dir"
 fi
-
 if [ ! -d "$shed_logs_dir" ]; then
   mkdir -p "$shed_logs_dir"
 fi
@@ -168,13 +169,7 @@ if [ ! -p "$msg_socket" ]; then
   fi
   mkfifo -m 600 "$msg_socket"
 fi
-# create the reply socket file if necessary
-# if [ ! -p "$msg_reply" ]; then
-#   if [ -f "$msg_reply" ]; then
-#     rm "$msg_reply"
-#   fi
-#   mkfifo -m 600 "$msg_reply"
-# fi
+
 # create the empty reply file if necessary
 if [ -f "$msg_reply" ]; then
   : > "$msg_reply"
@@ -254,9 +249,6 @@ daemon_cycle() {
       Action="${SocInput%% *}"
       # from the socket, second column separated by space
       Argument="${SocInput##* }"
-      # debug prints
-      # printf 'action: %s\n' $Action
-      # printf 'argument: %s\n' $Argument
       # decide what to do with the read action and argument
       case "${Action}" in
         reload)      SHED_RELOAD=1              ;;

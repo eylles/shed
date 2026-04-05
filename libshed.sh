@@ -30,9 +30,6 @@ if [ -n "$GUI_SESSION_PID" ]; then
 fi
 
 # dir for the pid files
-# SHED_SESSION_PID=$$ must be exported in the xinitrc/xsession file
-# to have the pid of the running session, otherwise shed will try to determine
-# and export said PID, usually the PID of the parent process that started shed
 # ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}
 ShedSessionDir=${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}
 
