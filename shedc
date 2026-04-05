@@ -10,25 +10,6 @@ mypid="${$}"
 # the SHell Execution Daemon Client
 prog="${0##*/}"
 
-# read the contents of the pid file, cat but more "elegant"
-
-# Return type: string
-#       Usage: read_file file [prefix]
-#       [prefix]: if provided the characters here will be used a prefix when
-#                 printing the contents of the file.
-#      Return: '[prefix]line'
-read_file() {
-  if [ $# -gt 1 ]; then
-    prefix=$2
-  else
-    prefix=""
-  fi
-  while read -r FileLine
-  do
-    printf '%s%s\n' "$prefix" "$FileLine"
-  done < "$1"
-}
-
 # Return type: string
 #       Usage: progspinner prefix [time]
 #         prefix: the string the will appear before the progress spinner
