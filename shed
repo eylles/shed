@@ -60,6 +60,12 @@ if [ -z "$XDG_SESSION_ID" ]; then
   export XDG_SESSION_ID
 fi
 
+set_xdg_desktop_vars=""
+session_desktop=""
+current_desktop=""
+use_xdg_session_type=""
+set_xdg_home_dirs=""
+
 if [ -z "$XDG_CONFIG_HOME" ]; then
   export XDG_CONFIG_HOME="${HOME}/.config"
 fi

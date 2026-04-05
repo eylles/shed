@@ -10,6 +10,8 @@ mypid="${$}"
 # the SHell Execution Daemon Client
 prog="${0##*/}"
 
+PrettyPrint=""
+
 # Return type: string
 #       Usage: progspinner prefix [time]
 #         prefix: the string the will appear before the progress spinner
