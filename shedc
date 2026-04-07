@@ -174,6 +174,17 @@ get_procstatus() {
 }
 
 # Return type: string
+#       Usage: print_procstatus_header "NAME"
+#        NAME: identifier for the type of proc, so far shed only manages
+#              services and components.
+print_procstatus_header () {
+  if [ "$PrettyPrint" = 1 ]; then
+    printf '%6s %30s %*s %s\n' \
+      "STATUS" "$1" "$pw" "PID" "EXECUTABLE"
+  fi
+}
+
+# Return type: string
 #       Usage: procstat all | <service name>
 #            all: status for all services
 # <service name>: status of service
