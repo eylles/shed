@@ -225,10 +225,24 @@ procstat() {
       esac
       pw=$(printf '%s\n' "$pidmax" | wc -c)
     fi
-    for i in "${ServicesDir}"/* ; do
-      get_procstatus "${shed_service_pid_dir}" "$i"
-    done
+    if ! is_dir_empty "$ServicesDir"; then
+      print_procstatus_header "SERVICE"
+      for i in "${ServicesDir}"/* ; do
+        get_procstatus "${shed_service_pid_dir}" "$i"
+      done
+    else
+      msg_send "Dir '$ServicesDir' is empty!"
+    fi
+    if ! is_dir_empty "$ComponentsDir"; then
+      print_procstatus_header "COMPONENT"
+      for i in "${ComponentsDir}"/* ; do
+        get_procstatus "${shed_component_pid_dir}" "$i"
+      done
+    else
+      msg_send "Dir '$ComponentsDir' is empty!"
+    fi
   else
+    print_procstatus_header "SERVICE"
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
