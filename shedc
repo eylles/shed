@@ -136,12 +136,15 @@ read_pipe() {
 }
 
 # Return type: string
-#       Usage: get_servstatus sfile
+#       Usage: get_procstatus spiddir sfile
+#       spiddir: full path to directory where pid files are stored
 #       sfile: full path to the service definition file
-get_servstatus() {
+get_procstatus() {
+  s_pid_dir="$1"
+  shift
   ServiceFile="$1"
-  ServiceFileName="${ServiceFile##*/}"
-  s_name="$ServiceFileName"
+  shift
+  s_name="${ServiceFile##*/}"
   s_exec=""
   s_pid=""
   s_state=""
@@ -150,15 +153,15 @@ get_servstatus() {
   s_exec=$(printf '%s\n' "$s_exec" | sed "s@\$HOME@$HOME@")
   # get the full path of the binary
   s_exec=$(command -v "$s_exec")
-  if [ -f "${shed_service_pid_dir}/${s_name}.pid" ]; then
-    s_pid=$(read_file "${shed_service_pid_dir}/${s_name}.pid")
+  if [ -f "${s_pid_dir}/${s_name}.pid" ]; then
+    s_pid=$(read_file "${s_pid_dir}/${s_name}.pid")
     if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$ServiceFile"; then
       s_state="+"
     else
       s_state="?"
     fi
-    if [ -f "${shed_service_pid_dir}/${s_name}.est" ]; then
-      s_state=$(head "${shed_service_pid_dir}/${s_name}.est")
+    if [ -f "${s_pid_dir}/${s_name}.est" ]; then
+      s_state=$(head "${s_pid_dir}/${s_name}.est")
     fi
   else
       s_state="-"
@@ -212,13 +215,13 @@ procstat() {
       pw=$(printf '%s\n' "$pidmax" | wc -c)
     fi
     for i in "${ServicesDir}"/* ; do
-      get_servstatus "$i"
+      get_procstatus "${shed_service_pid_dir}" "$i"
     done
   else
     for i in "${ServicesDir}"/* ; do
       ServiceFileName="${i##*/}"
       if [ "$ServiceFileName" = "$1" ]; then
-        get_servstatus "$i"
+        get_procstatus "${shed_service_pid_dir}" "$i"
       fi
     done
   fi
