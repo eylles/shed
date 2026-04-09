@@ -270,6 +270,26 @@ daemon_cycle() {
   done
 }
 
+# Return type: void
+#       Usage: sigHandler "SIG"
+# Description:
+#   Handle signals to terminate or reload the program
+sigHandler () {
+  msg_log "received signal $1"
+  case "$1" in
+    HUP|USR1|USR2)
+      printf '%s\n' "reload" > "$msg_socket"
+      ;;
+    EXIT|TERM|INT|QUIT)
+      killprocs "all"
+      killcomps "all"
+      printf '%s\n' "wait-logout" > "$msg_socket"
+      rm -rf "$ShedSessionDir"
+      kill "$SHED_SESSION_PID"
+      ;;
+  esac
+}
+
 # start all services on first run
 start_str=""
 if [ "$reloaded" -eq "$_true" ]; then
@@ -291,6 +311,14 @@ case "$start_str" in
 esac
 
 start_services "$start_str"
+
+trap 'sigHandler "HUP"'  HUP
+trap 'sigHandler "USR1"' USR1
+trap 'sigHandler "USR2"' USR2
+trap 'sigHandler "EXIT"' EXIT
+trap 'sigHandler "TERM"' TERM
+trap 'sigHandler "INT"'  INT
+trap 'sigHandler "QUIT"' QUIT
 
 daemon_cycle
 
