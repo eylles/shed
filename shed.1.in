@@ -1,0 +1,226 @@
+.TH SHED 1 shed\-@VERSION@
+.SH NAME
+shed \- Session sHell Execution Daemon
+.SH SYNOPSIS
+.B shedc
+.RB [ \-nphV ]
+.RB { info | reload | relaunch | logout }
+.RB { \fB start | stop | restart | hup \fP }
+.IR service | all
+.SH DESCRIPTION
+.P
+shed is a completely init independient implementation of user services and a
+session process.
+.P
+shed is a daemon intended to run as the session process, it has no options.
+.P
+shedc is the command to control shed, start, stop, hup and gather the status of
+the running user session services.
+.SH OPTIONS
+.TP
+.B "\-h"
+Print brief usage information to standard output and exit.
+.TP
+.B "\-n"
+dry run, does not execute the action.
+.TP
+.B "\-p"
+Print reply from daemon and status information with prettyprint.
+.TP
+.B "\-V"
+Show shedc version.
+.SH ACTIONS
+.TP
+.B "hup"
+send HUP to session service.
+.TP
+.B "stop"
+send TERM to the session service.
+.TP
+.B "start"
+send a request to start the session service.
+.TP
+.B "restart"
+stop the session service and then start it.
+.TP
+.B "logout"
+send TERM to the session services and then terminate the session.
+.TP
+.B "reload"
+reload shed, this just tells shed to re-exec.
+.TP
+.B "relaunch"
+send TERM to the session services and reload shed.
+.TP
+.B "info"
+shows information about the running shed daemon, PID, start date, rundir.
+.TP
+.B "status"
+show status for the services.
+.TP
+status for the services is shown as follows:
+.TP
+[ + ] means the service is running
+.TP
+[ - ] means the service is not running
+.TP
+[ ? ] means the service was started but the pid was not among the active processes
+.TP
+[ 0 ] means the oneshot completed succesfully
+.TP
+[ 1 ] means the oneshot completed unsuccesfully
+.SH CONFIGURATION
+.P
+The configuration for shed is performed in:
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/
+the directory may contain the shed daemon configuration file,
+.B shed.rc
+as well as subdirectories
+.B env.d
+,
+.B services
+and
+.B components
+
+.P
+The shed.rc file is just a simple key=val file with the following options:
+
+
+.TP
+.B set_xdg_desktop_vars=
+werether shed should set the XDG_SESSION_DESKTOP and XDG_CURRENT_DESKTOP env
+vars, useful when for example running a window manager and wanting to have an
+xdg-desktop-portal config which is set after the value of XDG_CURRENT_DESKTOP
+in the form:
+$XDG_CONFIG_HOME/xdg-desktop-portal/${XDG_CURRENT_DESKTOP}-portals.conf
+just setting this variable to a non empty value will enable the option
+
+.TP
+.B session_desktop
+value that will be exported to: XDG_SESSION_DESKTOP
+
+.TP
+.B current_desktop
+value that will be exported to: XDG_CURRENT_DESKTOP
+
+.TP
+.B use_xdg_session_type
+the XDG_SESSION_TYPE originally introduced by systemd and barely documented,
+as with all poettering inventions, used and depended by anything and
+everything that uses XDG_RUNTIME_DIR and everything in between, even if you
+use login mangement like elogind the variable may be set incorrectly depending
+on how your session was started, display mangers like lightdm tend to force
+the variable into the correct value, but if you are not using one or are using
+one which does not correct the variable it could be the incorrect value or not
+even set at all, shed can correct this, just give a non empty value to this
+variable and it will be set as the XDG_SESSION_TYPE, the values recognized by
+systemd sd_session_get_type are:
+unspecified, tty, x11, wayland, mir, web
+
+.TP
+.B set_xdg_home_dirs
+if this var is set to a non empty var then the xdg home dirs will be set,
+these include:
+  XDG_DATA_HOME="$HOME/.local/share"
+  XDG_CACHE_HOME="$HOME/.cache"
+  XDG_STATE_HOME="$HOME/.local/state"
+also the xdg user dirs will be set using xdg-user-dirs-update
+  XDG_DESKTOP_DIR
+  XDG_DOWNLOAD_DIR
+  XDG_TEMPLATES_DIR
+  XDG_PUBLICSHARE_DIR
+  XDG_DOCUMENTS_DIR
+  XDG_MUSIC_DIR
+  XDG_PICTURES_DIR
+  XDG_VIDEOS_DIR
+
+.TP
+.B SHED_ENV_EXPORT_LOC
+location where shed will export the following env vars:
+export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
+export XDG_SESSION_ID="$XDG_SESSION_ID"
+export GUI_SESSION_PID="$GUI_SESSION_PID"
+this file is useful when shed is not exec'd as part of the start up process,
+which is not the ideal way to be running shed, that said a reasonable value
+for the SHED_ENV_EXPORT_LOC is:
+"/tmp/shed_session_${SHED_SESSION_PID}/shed.env"
+
+.P
+The
+.B env.d
+dir is for .env files, the files are just shell scripts that will be loaded
+directly by shed, which is itself a shell script specifically running on a posix
+compliant shell interpreter at
+.B /bin/sh
+meaning that no bashisms are allowed in the .env files, also the /bin/sh shell
+should be a posix compliant shell, at the very least bash but dash and busybox
+ash are reccomended.
+
+.P
+The
+.B services
+and
+.B components
+subdirs may contain service definition files, the format will be specified
+below, the components directory are for services meant to run as session
+components, for example in an x11 session that would be your window manager,
+panel, etc, the components are started first and only during the first run,
+meaning they don't get relaunched upon reloads of shed and only are terminated
+upon logout, services on the other hand are started right after session
+components, you can start, stop, hup and restart services, besides their
+location there is no difference between definition files for session componennts
+and services.
+
+.TP
+This is a simple example of a service definition file
+.IR compositor
+    EXEC=/usr/local/bin/picom
+    E_ARGS=--vsync
+    DELAY=2
+
+.P
+service definition files have no specific extension as they are just KEY=val
+files, the following property keys are available:
+.TP
+.B "EXEC"
+Program to execute, ideally use a full path, tho if only the command name is
+given shed will expand it with command -v, the $HOME var can be used in the exec
+definition for programs within subdirs of the HOME dir which are not in the path.
+.TP
+.B "E_ARGS"
+Arguments to for the program, if multiple arguments will be given surround them
+with double quotes.
+.TP
+.B "DELAY"
+Delay the start up of the service by the given amount of seconds, this value is
+passed directly to sleep(1)
+.TP
+.B "NOHUP"
+This specifies that the service cannot receive the "HUP" signal, useful as not
+every service will be compliant by being able to recieve the HUP signal to
+reload.
+.TP
+.B "TYPE"
+Explicitly declare the service as a
+.B oneshot
+or a
+.B daemon
+any other value including the property being empty or not set will be defaulted
+to daemon.
+.TP
+.B "LOGFILE"
+The location where stdout and stderr from the service will be redirected to, by
+default it will be directed to:
+.IR $XDG_RUNTIME_DIR/shed/$SHED_SESSION_PID/logs/NAME.log
+where NAME is the name of the service file, so a service named compositor will
+have all output directed to compositor.log
+.SH AUTHOR
+.EX
+eylles                 <ed.ylles1997 at gmail.com>
+.EE
+.SH HOMEPAGE
+.TP
+Source code:
+.EE
+https://codeberg.org/eylles/shed
+.EX
