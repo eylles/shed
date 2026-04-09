@@ -11,6 +11,7 @@ mypid="${$}"
 prog="${0##*/}"
 
 PrettyPrint=""
+dry_run=""
 
 # Return type: string
 #       Usage: progspinner prefix [time]
@@ -267,10 +268,9 @@ daemon_send() {
 #       Usage: kill_session
 # --------------------------------------------------
 kill_session() {
-  killprocs "all"
-  killcomps "all"
-  daemon_send "wait-logout"
-  sleep 1
+  [ -z "$dry_run" ] && killprocs "all"
+  [ -z "$dry_run" ] && killcomps "all"
+  [ -z "$dry_run" ] && daemon_send "wait-logout"
   [ -z "$dry_run" ] && rm -rf "$ShedSessionDir"
   [ -z "$dry_run" ] && kill "$SHED_SESSION_PID"
 }

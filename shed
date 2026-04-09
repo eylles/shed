@@ -255,8 +255,8 @@ fi
 # this function does not return output whatsoever
 # sleep 1 second while the ShedSessionDir exists
 wait_exit() {
-  while [ -d "$ShedSessionDir" ]; do
-    sleep 1
+  while ! is_dir_empty "$ShedSessionDir"; do
+    sleep 0.25
   done
 }
 
