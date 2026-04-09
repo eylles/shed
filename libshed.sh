@@ -91,7 +91,15 @@ ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
 ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
 
-# directory for loadable .env files
+# path of the transient executable script, the transient program will have the
+# responsability to run shed as it's child
+UseTransient="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient"
+
+# directory for loadable shallow .env files
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d
+ShallowEnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d"
+
+# directory for loadable session .env files
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
 EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
 

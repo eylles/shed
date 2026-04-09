@@ -270,6 +270,7 @@ kill_session() {
   killprocs "all"
   killcomps "all"
   daemon_send "wait-logout"
+  sleep 1
   [ -z "$dry_run" ] && rm -rf "$ShedSessionDir"
   [ -z "$dry_run" ] && kill "$SHED_SESSION_PID"
 }

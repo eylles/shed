@@ -10,8 +10,10 @@ if [ -n "$GUI_SESSION_PID" ]; then
   # since it exists that will be the SHED_SESSION_PID
   export SHED_SESSION_PID="$GUI_SESSION_PID"
 else
-  # it wasnt set, so we will use the shed_pid
-  export SHED_SESSION_PID="$shed_pid"
+  if [ -z "$SHED_SESSION_PID" ]; then
+    # it wasnt set, so we will use the shed_pid
+    export SHED_SESSION_PID="$shed_pid"
+  fi
 fi
 
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
@@ -179,6 +181,28 @@ fi
 # create the empty reply file if necessary
 if [ -f "$msg_reply" ]; then
   : > "$msg_reply"
+fi
+
+
+# shallow execution routine
+if [ "$sessdir" -eq "$_false" ]; then
+  if ! is_dir_empty "$ShallowEnvDir"; then
+    for EnvFile in "$ShallowEnvDir"/*.env; do
+      if [ -r "$EnvFile" ]; then
+        msg_log "info" "loading env file $EnvFile"
+        . "$EnvFile"
+      fi
+    done
+    unset EnvFile
+  fi
+  # exec transient
+  if [ -x "$UseTransient" ]; then
+    msg_log "info" "shed-shallow executing $UseTransient"
+    exec "$UseTransient"
+  else
+    msg_log "info" "shed-shallow executing $0"
+    exec "$0"
+  fi
 fi
 
 # check if shed is reloading, writing to socket is not possible when starting
