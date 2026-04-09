@@ -3,6 +3,7 @@ PREFIX = ${HOME}/.local
 BIN_LOC = $(DESTDIR)$(PREFIX)/bin
 LIB_LOC = $(DESTDIR)$(PREFIX)/lib/shed
 DOC_LOC = $(DESTDIR)$(PREFIX)/share/doc/shed
+MANPREFIX = $(PREFIX)/share/man
 .PHONY: all install uninstall clean
 GITTAG = $(shell git describe --tags 2>/dev/null)
 VERS = v0.2.0
@@ -16,6 +17,7 @@ all: $(SHED) $(SHEDC) $(LIBSHED)
 $(SHED):
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|@DOC@|$(DOC_LOC)|" shed > $@
 	chmod 755 $@
+	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > shed.1
 
 $(SHEDC):
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc > $@
@@ -29,10 +31,12 @@ install: all
 	mkdir -p $(BIN_LOC)
 	mkdir -p $(LIB_LOC)
 	mkdir -p $(DOC_LOC)
+	mkdir -p $(MANPREFIX)
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
 	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
 	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
+	cp -vf shed.1 $(MANPREFIX)/man1/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
 	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
 
@@ -40,8 +44,10 @@ uninstall:
 	rm -vf $(BIN_LOC)/shed
 	rm -vf $(BIN_LOC)/shedc
 	rm -vf $(DOC_LOC)/shed.rc
+	rm -vf $(MANPREFIX)/man1/shed.1
 
 clean:
 	rm $(SHED)
 	rm $(SHEDC)
 	rm $(LIBSHED)
+	rm shed.1
