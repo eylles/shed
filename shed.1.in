@@ -76,18 +76,23 @@ The configuration for shed is performed in:
 the directory may contain the shed daemon configuration file,
 .B shed.rc
 as well as subdirectories
+.B shallow.d
+,
 .B env.d
 ,
 .B services
 and
 .B components
+not to mention the
+.B transient
+script.
 
 .P
 The shed.rc file is just a simple key=val file with the following options:
 
 
 .TP
-.B set_xdg_desktop_vars=
+.B set_xdg_desktop_vars
 werether shed should set the XDG_SESSION_DESKTOP and XDG_CURRENT_DESKTOP env
 vars, useful when for example running a window manager and wanting to have an
 xdg-desktop-portal config which is set after the value of XDG_CURRENT_DESKTOP
@@ -147,14 +152,24 @@ for the SHED_ENV_EXPORT_LOC is:
 
 .P
 The
+.B shallow.d
+and
 .B env.d
-dir is for .env files, the files are just shell scripts that will be loaded
+dirs are for .env files, the files are just shell scripts that will be loaded
 directly by shed, which is itself a shell script specifically running on a posix
 compliant shell interpreter at
 .B /bin/sh
 meaning that no bashisms are allowed in the .env files, also the /bin/sh shell
 should be a posix compliant shell, at the very least bash but dash and busybox
 ash are reccomended.
+
+The files in
+.B shallow.d
+will be loaded first during the shallow phase of shed's initialization, then
+later during the transient phase the files in
+.B env.d
+will be loaded, shed will skip trying to load .env files from empty and non
+existant dirs.
 
 .P
 The
@@ -214,6 +229,93 @@ default it will be directed to:
 .IR $XDG_RUNTIME_DIR/shed/$SHED_SESSION_PID/logs/NAME.log
 where NAME is the name of the service file, so a service named compositor will
 have all output directed to compositor.log
+.P
+The
+.B transient
+script, if used it is expected to be executable and located in
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient
+were the script not executable or non existant during the shallow phase shed
+will fallback to executing itself with
+.B exec "$0"
+to go into the transient phase.
+
+The transient program has the resonsability of spawning an instance of shed as
+it's child in order to complete the session initialization.
+
+As an example of the transient script and running the transient shed instance
+we are going to show sway, a popular wayland compositor, as altho shed was built
+first to be a session process for x11, the development and testing has been and
+continues to be done in x11, the shallow-transient model makes it easily
+compatible with the manner wayland sessions work.
+.TP
+This is a simple example of a transient script, it should be executable:
+.IR transient
+    #!/bin/sh
+    exec sway > "$XDG_RUNTIME_DIR/shed/$SHED_SESSION_PID/logs/sway.log"
+
+.P
+In the sway config file shed must be initiated, the initialization must be a
+single instance and no attempts to spawn new instances should be done across
+reloads of the configuration of the transient program, the case case of sway the
+keyword "exec" is used to launch programs in this manner, check the
+documentation for the program you intend to use as the transient.
+.TP
+This is an example snippet for the sway config:
+.IR ${XDG_CONFIG_HOME:-${HOME}/.config}/sway/config
+    # ... other sway configs here
+    # this spawns one instance of shed in a manner in which no attempt will be
+    # made to spawn more instances upon reloads of sway
+    exec shed
+
+.SH INITIALIZATION
+.P
+The initialization of the shed daemon is simple and consists of 2 phases, the
+shallow and the transient, in the shallow phase shed will set up the environment
+variable
+.B SHED_SESSION_PID
+, usually with it's own PID, then will proceed to check if the variable
+XDG_RUNTIME_DIR is set, if not it will try it's best to set it to a writeable
+location, if
+.B /run/user/$UID
+is not writeble it will default to
+.B /tmp/${UID}-runtime-dir
+and make the directory, then it will proceed to check if the
+.B XDG_SESSION_ID
+is set, if not it will set it to it's own cgroup, this is shed's only non
+portable behaviour which relies upon a linux kernel specific feature, altho i
+severely doubt shed will be useful to other unices like the BSDs as they
+probably got a better solution built decades ago for this sorta stuff and is
+only us in linux land that live in the obscurantism of systemd where innovation
+that doesn't com from redhat is shunned and looked at with disdain, tangent
+aside, next sed will check for the XDG_CONFIG_HOME env var, if not set it will
+simply set it to
+.B ${HOME}/.config
+next shed will load the shed.rc file and proceed to set only the specified
+options, the options to set the other XDG env vars are opt in just like most of
+shed features and capabilites, next shed will proceed to initialize the
+ShedSessionDir whose definiton is
+.B $XDG_RUNTIME_DIR/shed/$SHED_SESSION_PID
+as well as initialize the directores for logs, pid storage, and the socket
+files, the shallow .env files are loaded from the
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d
+subdir, at this point the shed shallow will check if an executable transient
+script exists in
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient
+and proced to execute it with
+.B exec
+ensuring the transient script inherits the PID of the shed shallow, at this
+point is the responsability of the transient program to spawn shed as it's
+child. If an executable transient script wasn't found then shed will simply exec
+itself with
+.B exec "$0"
+.P
+At this point the execution of shed in the transient phase has converged, in the
+transient execution the shed daemon, shed will load the transient phase .env
+files from
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
+and proceed to spawn the session components as well as the session services if
+any, after which it will listen to the communications socket waiting for the
+shedc program to send it actions.
 .SH AUTHOR
 .EX
 eylles                 <ed.ylles1997 at gmail.com>
