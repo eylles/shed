@@ -1,6 +1,6 @@
 # SHED
 
-A manager for user services and session process
+A generic session process and init-agnostic user services provider.
 
 
 <p align="center">
@@ -24,10 +24,13 @@ Follow the shed development and feedback threads:
 
 ## what?
 
-Session services, programs that run as part of your graphical session, for example in x11 you have the compositor, keyring, maybe a clipboard daemon and perhaps pulseaudio or pipewire
+A session process, like lxsession or xfce4-session, plasma-workspace, etc... but
+completely generic, not tied to any toolkit, desktop, windowing system or even
+to a graphical interface at all.
 
-The eventual intention is to not just implement user services but also the spec
-of the x-session-manager as defined (altho loosely) by debian.
+Session services, are programs that run as part of your graphical session, for
+example in x11 you have the compositor, keyring, maybe a clipboard daemon and
+perhaps pulseaudio or pipewire
 
 ## dependencies
 
@@ -37,11 +40,37 @@ of the x-session-manager as defined (altho loosely) by debian.
 
 ## why ?
 
-Some programs have the tendency to missbehave when started in a session process in non systemd distros, the prime example right now being pipewire which has spawned this [pipewire #1099](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1099) and this [pipewire #1135](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1135) as the issue comments say, this problem forced gentoo to write a wrapper and slackware to roll out a custom [daemon](https://github.com/raforg/daemon) program written in C, in my opinion both of these solutions are less than ideal, on gentoo's case they now have to roll out similar wrappers for other missbehaving programs, the slackware program looks unnecessarily overengineered as it still needs more programs to be started correctly.
+Some programs have the tendency to missbehave when started in a session process
+in non systemd distros, the prime example right now being pipewire which has
+spawned this
+[pipewire #1099](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1099)
+and this
+[pipewire #1135](https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/1135)
+as the issue comments say, this problem forced gentoo to write a wrapper and
+slackware to roll out a custom [daemon](https://github.com/raforg/daemon)
+program written in C, in my opinion both of these solutions are less than ideal,
+on gentoo's case they now have to roll out similar wrappers for other
+missbehaving programs, the slackware program looks unnecessarily overengineered
+as it still needs more programs to be started correctly.
 
-And the elephant in the room, both these solutions come out as inferior to the likes of systemd units and runit user services as they don't support restarting for reloading configurations nor a correct way for them to be started and stopped by the user.
+And the elephant in the room, both these solutions come out as inferior to the
+likes of systemd user units and runit user services as they don't support
+restarting or reloading configurations nor a correct way for them to be started
+and stopped by the user.
 
-That is why i came up with this solution that takes a lot of inspiration from the sysvinit architecture with the aim of keeping simple, intuitive and completely agnostic from any window manager and desktop environment, potentially even agnostic to any graphical environment (altho i personally only care or x11)
+That is why i came up with this solution that takes a lot of inspiration from
+the sysvinit architecture with the aim of keeping simple, intuitive and
+completely agnostic from any window manager, desktop environment, and even to
+any graphical environment as it's architecture should have not problem
+whatsoever handling x11, wayland, [arcan](https://github.com/letoram/arcan),
+tty, ssh, etc... thanks to how it was designed and written in almost exclusively
+portable POSIX shell with some awk and just 1 function that relies on a linux
+kernel feature.
+
+This program is something that should have been written 10, 15 maybe even 20
+years ago by someone much smarter but it was only when i could no longer bear
+the situation of there being no generic program with the capabilites of shed
+that i forced myself into writing it.
 
 ## ROADMAP
 
@@ -50,7 +79,8 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [x] add check if the service is running in start, kill and hup
 - [x] add service status action to shedc
 - [x] add service restart action to shedc
-- [x] add a shed daemon reply socket, so that shedc can wait that shed is reloaded.
+- [x] add a shed daemon reply socket, so that shedc can wait that shed is
+      reloaded.
 - [x] make shedc tail and read the reply socket
 - [x] introduce libshed for shaded code between shed and shedc
 - [x] add info action to shedc to show info of the running shed daemon
@@ -59,12 +89,12 @@ That is why i came up with this solution that takes a lot of inspiration from th
 - [x] add a `session` cathegory of services that are not affected by actions
       (start, stop, restart) sent to all nor by reloads of shed, so that stuff
       like window managers can be managed on this cathegory
-
-### pending
-- [ ] implement the shed_shallow->transient-shed_instance architecture, where in
+- [x] implement the shed_shallow->transient-shed_instance architecture, where in
       a "shallow" shed instance sets the environment, executes the transient
       process and later on the transient spawns a shed instance as a child
       process, this architecture is required to support wayland sessions.
+
+### pending
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
