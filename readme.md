@@ -10,7 +10,7 @@ A generic session process and init-agnostic user services provider.
 <a href="https://git.devuan.org/eylles/shed" alt="Devuan"><img src="https://img.shields.io/badge/Devuan-6A6578?style=for-the-badge&logo=devuan&logoColor=F2F2F2"></a>
 <br>
 <br>
-<a href="./LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-green.svg"></a>
+<a href="./LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-green.svg"></a>
 <a href="https://liberapay.com/eylles/donate"><img alt="Donate using Liberapay" src="https://img.shields.io/liberapay/receives/eylles.svg?logo=liberapay"></a>
 <a href="https://liberapay.com/eylles/donate"><img alt="Donate using Liberapay" src="https://img.shields.io/liberapay/patrons/eylles.svg?logo=liberapay"></a>
 </p>
@@ -113,3 +113,7 @@ to use changes that have not yet been merged to master first cuz i develop this
 for myself as target audience second cuz it will break on my machine first
 before breaking on someone else's, hopefully... still read the commit history
 after pulling the repo and before running make!
+
+# LICENSE
+
+All files in the repo are licensed under GPLv3.0 or later
