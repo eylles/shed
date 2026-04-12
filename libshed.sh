@@ -332,7 +332,7 @@ start_from_dir() {
     msg_log "error" "$errmsg"
     use_dir="$fal_dir"
   fi
-  if is_dir_empty "$fal_dir"; then
+  if is_dir_empty "$use_dir"; then
     errmsg="no definitions found in '$fal_dir'"
     msg_send "$errmsg"
     msg_log "error" "$errmsg"
