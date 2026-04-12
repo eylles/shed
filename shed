@@ -375,12 +375,7 @@ if [ "$_true" -eq "$UsingOldShedDir" ]; then
   msg_log "info" "$prog $prog_v using old shed dir $ShedSessionDir"
 fi
 
-case "$start_str" in
-  "firstrun")
-    start_components "$start_str"
-    ;;
-esac
-
+start_components "$start_str"
 start_services "$start_str"
 
 trap 'sigHandler "HUP"'  HUP
