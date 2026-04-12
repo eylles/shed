@@ -93,8 +93,20 @@ that i forced myself into writing it.
       a "shallow" shed instance sets the environment, executes the transient
       process and later on the transient spawns a shed instance as a child
       process, this architecture is required to support wayland sessions.
+- [x] added checks for a fallback dir in /etc/shed for configs not present in
+      XDG_CONFIG_HOME/shed so they can be loaded from there instead
 
 ### pending
+- [ ] Implement per session configs, that is to have the set of files and
+      subdirs which currently reside in XDG_CONFIG_HOME/shed and their fallbacks
+      at /etc/shed to reside inside a subdir `sessions/session_name` where the
+      `session_name` would be akin to the XDG_CURRENT_DESKTOP, to use the
+      configs for a given session the session start will require to have `shed`
+      called with the shed `session_name` as argument, this will allow users to
+      be able to maintain multiple session configuration sets allowing not just
+      managing 1 window manager or 1 wayland session but having multiple
+      definitions for either, this will also open the door for future
+      distributors to provide multiple shed managed sessions for x11 or wayland
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
