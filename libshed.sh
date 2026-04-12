@@ -498,10 +498,10 @@ sig_proc() {
   s_file="${s_dir}/$s_name"
   if [ ! -f "$s_file" ]; then
     s_file="${f_dir}/$s_name"
-    msg_send "no service $1 found in $s_dir, falling back to $f_dir"
+    msg_send "no service $s_name found in $s_dir, falling back to $f_dir"
   fi
   if [ ! -f "$s_file" ]; then
-    msg_send "no service $1 found in $f_dir"
+    msg_send "no service $s_name found in $f_dir"
     return
   fi
   sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
