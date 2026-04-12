@@ -249,56 +249,58 @@ serv_start() {
   fi
   # check if service is already running
   if [ -f "${p_dir}/${NAME}.pid" ]; then
-    message="$NAME running"
-    if [ -f "${p_dir}/${NAME}.est" ]; then
-      message="$NAME oneshot already ran"
-    fi
-    msg_send "$message"
-  else
-    logfile_path="${LOGFILE%/*}"
-    if [ ! -d "$logfile_path" ]; then
-      mkdir -p "$logfile_path" || msg_log "error" \
-        "could not create logfile dir for $NAME"
-    fi
-    if [ ! -d "$logfile_path" ]; then
-      msg_log "info" "service $NAME not started"
+    s_pid="$(cat "${p_dir}/${NAME}.pid")"
+    if kill -0 "$s_pid" 2>/dev/null; then
+      msg_send "$NAME running"
+      return
+    elif [ -f "${p_dir}/${NAME}.est" ]; then
+      msg_send "$NAME oneshot already ran"
       return
     fi
-    case "$TYPE" in
-      # guard against possible stupid values
-      oneshot|one|ONESHOT|ONE)
-        TYPE="oneshot"
-        ;;
-      *)
-        # you're a daemon
-        TYPE="daemon"
-        ;;
-    esac
-    # needed for services that got $HOME/path/service in their EXEC def
-    EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
-    # get the full path of the binary
-    EXEC=$(command -v "$EXEC")
-    if [ -n "$DELAY" ] && [ "$NDlay" -eq "$_false" ]; then
-      msg_log "info" "$NAME start delayed by $DELAY seconds"
-      sleep "$DELAY"
-    fi
-    msg_log "info" "starting $TYPE $NAME"
-    # run the service command with the arguments
-    s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
-    eval "$s_run" &
-    # catch the pid of the process
-    proc_pid=$!
-    # write the pid of the process to the pid file
-    printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
-    [ "$NSck" -eq "$_false" ] && msg_send "$NAME started"
-    case "$TYPE" in
-      oneshot)
-        wait "$proc_pid"
-        exit_status=$?
-        printf '%s\n' "$exit_status" > "${p_dir}/${NAME}.est"
-        ;;
-    esac
   fi
+  logfile_path="${LOGFILE%/*}"
+  if [ ! -d "$logfile_path" ]; then
+    mkdir -p "$logfile_path" || msg_log "error" \
+      "could not create logfile dir for $NAME"
+  fi
+  if [ ! -d "$logfile_path" ]; then
+    msg_log "info" "service $NAME not started"
+    return
+  fi
+  case "$TYPE" in
+    # guard against possible stupid values
+    oneshot|one|ONESHOT|ONE)
+      TYPE="oneshot"
+      ;;
+    *)
+      # you're a daemon
+      TYPE="daemon"
+      ;;
+  esac
+  # needed for services that got $HOME/path/service in their EXEC def
+  EXEC=$(printf '%s\n' "$EXEC" | sed "s@\$HOME@$HOME@")
+  # get the full path of the binary
+  EXEC=$(command -v "$EXEC")
+  if [ -n "$DELAY" ] && [ "$NDlay" -eq "$_false" ]; then
+    msg_log "info" "$NAME start delayed by $DELAY seconds"
+    sleep "$DELAY"
+  fi
+  msg_log "info" "starting $TYPE $NAME"
+  # run the service command with the arguments
+  s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
+  eval "$s_run" &
+  # catch the pid of the process
+  proc_pid=$!
+  # write the pid of the process to the pid file
+  printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
+  [ "$NSck" -eq "$_false" ] && msg_send "$NAME started"
+  case "$TYPE" in
+    oneshot)
+      wait "$proc_pid"
+      exit_status=$?
+      printf '%s\n' "$exit_status" > "${p_dir}/${NAME}.est"
+      ;;
+  esac
 }
 
 # Return type: void
