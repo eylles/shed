@@ -103,22 +103,39 @@ fi
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
+# directory where we fallback to loading the user services to start from
+# /etc/shed/services
+FallbackServicesDir="/etc/shed/services"
 
 # directory where we are loading the session components to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
 ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
+# directory where we fallback to loading the session components to start from
+# /etc/shed/components
+FallbackComponentsDir="/etc/shed/components"
 
 # path of the transient executable script, the transient program will have the
 # responsability to run shed as it's child
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient
 UseTransient="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient"
+# fallback transient executable script, the transient program will have the
+# responsability to run shed as it's child
+# /etc/shed/transient
+FallbackTransient="/etc/shed/transient"
 
 # directory for loadable shallow .env files
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d
 ShallowEnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d"
+# directory for loadable shallow .env files
+# /etc/shed/shallow.d
+FallbackShallowEnvDir="/etc/shed/shallow.d"
 
 # directory for loadable session .env files
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
 EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
+# directory for loadable session .env files
+# /etc/shed/env.d
+FallbackEnvDir="/etc/shed/env.d"
 
 # shed start file, contains the pid of the shed process
 # ${ShedSessionDir}/shed.started
@@ -285,16 +302,19 @@ serv_start() {
 }
 
 # Return type: void
-#       Usage: start_from_dir def_dir pid_dir name_to_start
+#       Usage: start_from_dir def_dir fal_dir pid_dir name_to_start
 #       def_dir: directory with service definitions
+#       fal_dir: fallback directory with service definitions
 #       pid_dir: directory to store pid files
 # name_to_start: can be a service name or one of the macros all and firstrun
 # --------------------------------------------------
 # Generic function to start services from definitions located in a directory
 start_from_dir() {
   def_dir="$1"
-  pid_dir="$2"
-  start_s="$3"
+  fal_dir="$2"
+  pid_dir="$3"
+  start_s="$4"
+  use_dir="$def_dir"
   nodelay="$_true"
   nosock="$_false"
   specific_name=""
@@ -310,18 +330,24 @@ start_from_dir() {
     errmsg="no definitions found in '$def_dir'"
     msg_send "$errmsg"
     msg_log "error" "$errmsg"
+    use_dir="$fal_dir"
+  fi
+  if is_dir_empty "$fal_dir"; then
+    errmsg="no definitions found in '$fal_dir'"
+    msg_send "$errmsg"
+    msg_log "error" "$errmsg"
     return
   fi
   if [ -n "$specific_name" ]; then
-    s_file="${def_dir}/${specific_name}"
+    s_file="${use_dir}/${specific_name}"
     if [ -r "$s_file" ]; then
       serv_start "$pid_dir" "$s_file" "$nosock" "$nodelay" &
     else
-      msg_send "definition for $start_s not found in $def_dir"
+      msg_send "definition for $start_s not found in $use_dir"
     fi
     return
   fi
-  for i in "${def_dir}"/* ; do
+  for i in "${use_dir}"/* ; do
     serv_start "$pid_dir" "$i" "$nosock" "$nodelay" &
   done
 }
@@ -340,7 +366,11 @@ start_services() {
     shed*) : > "$msg_reply" ;; # blank msg_reply
   esac
   msg_send "starting services"
-  start_from_dir "${ServicesDir}" "${shed_service_pid_dir}" "$1"
+  start_from_dir \
+    "${ServicesDir}" \
+    "${FallbackServicesDir}" \
+    "${shed_service_pid_dir}" \
+    "$1"
 }
 
 # Return type: void
@@ -357,7 +387,11 @@ start_components() {
     shed*) : > "$msg_reply" ;; # blank msg_reply
   esac
   msg_send "starting components"
-  start_from_dir "${ComponentsDir}" "${shed_component_pid_dir}" "$1"
+  start_from_dir \
+    "${ComponentsDir}" \
+    "${FallbackComponentsDir}" \
+    "${shed_component_pid_dir}" \
+    "$1"
 }
 
 # Return type: string
@@ -444,7 +478,7 @@ is_oneshot() {
 }
 
 # Return type: void
-#       Usage: sig_proc <pids dir> <service dir> <service name> <signal>
+#       Usage: sig_proc <pids dir> <service dir> <f dir> <service name> <signal>
 # <service name>: service to send signal
 #         signal: term kill hup usr1 usr2
 # --------------------------------------------------
@@ -455,63 +489,71 @@ sig_proc() {
   shift
   s_dir="$1"
   shift
+  f_dir="$1"
+  shift
   s_name="$1"
   shift
   signal="$1"
   shift
   s_file="${s_dir}/$s_name"
-  if [ -f "$s_file" ]; then
-    sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
-    sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
-    if [ -f "${p_dir}/${s_name}.pid" ]; then
-      s_pid=$(read_file "${p_dir}/${s_name}.pid")
-      if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$s_file"; then
-        if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
-          msg_send "cannot hup daemon $s_name"
-        else
-          msg_send "sending $sig_str to $s_pid $s_name"
-          if [ -z "$dry_run" ]; then
-            kill "-${sig_use}" "$s_pid"
-          fi
-        fi
+  if [ ! -f "$s_file" ]; then
+    s_file="${f_dir}/$s_name"
+    msg_send "no service $1 found in $s_dir, falling back to $f_dir"
+  fi
+  if [ ! -f "$s_file" ]; then
+    msg_send "no service $1 found in $f_dir"
+    return
+  fi
+  sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
+  sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
+  if [ -f "${p_dir}/${s_name}.pid" ]; then
+    s_pid=$(read_file "${p_dir}/${s_name}.pid")
+    if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$s_file"; then
+      if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
+        msg_send "cannot hup daemon $s_name"
       else
-        case "$sig_str" in
-          term|kill)
-            msg_send "removing oneshot $s_name pid and exit status files"
-            ;;
-          *)
-            msg_send "cannot send signals to oneshots"
-            ;;
-        esac
-      fi
-      # remove the pid file even if process is not alive, this needs to be here
-      # so that the pid file for term/kill is always removed so long it exists
-      if [ -z "$dry_run" ]; then
-        case "$sig_str" in
-          term|kill)
-            rm -f "${p_dir}/${s_name}.pid"
-            if [ -f "${p_dir}/${s_name}.est" ]; then
-              rm -f "${p_dir}/${s_name}.est"
-            fi
-            ;;
-        esac
+        msg_send "sending $sig_str to $s_pid $s_name"
+        if [ -z "$dry_run" ]; then
+          kill "-${sig_use}" "$s_pid"
+        fi
       fi
     else
-      msg_send "service $s_name not running"
+      case "$sig_str" in
+        term|kill)
+          msg_send "removing oneshot $s_name pid and exit status files"
+          ;;
+        *)
+          msg_send "cannot send signals to oneshots"
+          ;;
+      esac
+    fi
+    # remove the pid file even if process is not alive, this needs to be here
+    # so that the pid file for term/kill is always removed so long it exists
+    if [ -z "$dry_run" ]; then
+      case "$sig_str" in
+        term|kill)
+          rm -f "${p_dir}/${s_name}.pid"
+          if [ -f "${p_dir}/${s_name}.est" ]; then
+            rm -f "${p_dir}/${s_name}.est"
+          fi
+          ;;
+      esac
     fi
   else
-    msg_send "no service $1 found in $s_dir"
+    msg_send "service $s_name not running"
   fi
 }
 
 # Return type: void
-#       Usage: sig_all <pids dir> <service dir> <signal>
+#       Usage: sig_all <pids dir> <service dir> <fallback dir> <signal>
 #      signal: term kill hup usr1 usr2
 # --------------------------------------------------
 # this function calls sig_proc for every pid file in
 # the $shed_service_pid_dir
 sig_all() {
   p_dir="$1"
+  shift
+  f_dir="$1"
   shift
   s_dir="$1"
   shift
@@ -526,7 +568,7 @@ sig_all() {
   for i in "${p_dir}"/*.pid ; do
     s_name="${i##*/}"
     s_name="${s_name%.pid}"
-    sig_proc "${p_dir}" "${s_dir}" "$s_name" "$sig"
+    sig_proc "${p_dir}" "${s_dir}" "${f_dir}" "$s_name" "$sig"
   done
 }
 
@@ -539,9 +581,18 @@ sig_all() {
 # all messages are sent to the reply socket
 hupprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    sig_all "${shed_service_pid_dir}" "${ServicesDir}" "hup"
+    sig_all \
+      "${shed_service_pid_dir}" \
+      "${ServicesDir}" \
+      "${FallbackServicesDir}" \
+      "hup"
   else
-    sig_proc "${shed_service_pid_dir}" "${ServicesDir}" "$1" "hup"
+    sig_proc \
+      "${shed_service_pid_dir}" \
+      "${ServicesDir}" \
+      "${FallbackServicesDir}" \
+      "$1" \
+      "hup"
   fi
 }
 
@@ -554,9 +605,18 @@ hupprocs() {
 # when ran from shed messages will be redirected to $msg_reply
 killprocs() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    sig_all "${shed_service_pid_dir}" "${ServicesDir}" "term"
+    sig_all \
+      "${shed_service_pid_dir}" \
+      "${ServicesDir}" \
+      "${FallbackServicesDir}" \
+      "term"
   else
-    sig_proc "${shed_service_pid_dir}" "${ServicesDir}" "$1" "term"
+    sig_proc \
+      "${shed_service_pid_dir}" \
+      "${ServicesDir}" \
+      "${FallbackServicesDir}" \
+      "$1" \
+      "term"
   fi
 }
 
@@ -570,9 +630,18 @@ killprocs() {
 # components are only killed on logout
 killcomps() {
   if [ -z "$1" ] || [ "all" = "$1" ]; then
-    sig_all "${shed_component_pid_dir}" "${ComponentsDir}" "term"
+    sig_all \
+      "${shed_component_pid_dir}" \
+      "${ComponentsDir}" \
+      "${FallbackComponentsDir}" \
+      "term"
   else
-    sig_proc "${shed_component_pid_dir}" "${ComponentsDir}" "$1" "term"
+    sig_proc \
+      "${shed_component_pid_dir}" \
+      "${ComponentsDir}" \
+      "${FallbackComponentsDir}" \
+      "$1" \
+      "term"
   fi
 }
 

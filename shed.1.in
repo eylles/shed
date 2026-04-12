@@ -73,6 +73,8 @@ status for the services is shown as follows:
 .P
 The configuration for shed is performed in:
 .B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/
+with a fallback in
+.B /etc/shed/
 the directory may contain the shed daemon configuration file,
 .B shed.rc
 as well as subdirectories

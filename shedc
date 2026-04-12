@@ -248,6 +248,11 @@ procstat() {
       for i in "${ServicesDir}"/* ; do
         get_procstatus "${shed_service_pid_dir}" "$i"
       done
+    elif ! is_dir_empty "$FallbackServicesDir"; then
+      print_procstatus_header "SERVICE"
+      for i in "${FallbackServicesDir}"/* ; do
+        get_procstatus "${shed_service_pid_dir}" "$i"
+      done
     else
       msg_send "Dir '$ServicesDir' is empty!"
     fi
@@ -256,17 +261,31 @@ procstat() {
       for i in "${ComponentsDir}"/* ; do
         get_procstatus "${shed_component_pid_dir}" "$i"
       done
+    elif ! is_dir_empty "$FallbackComponentsDir"; then
+      print_procstatus_header "COMPONENT"
+      for i in "${FallbackComponentsDir}"/* ; do
+        get_procstatus "${shed_component_pid_dir}" "$i"
+      done
     else
       msg_send "Dir '$ComponentsDir' is empty!"
     fi
   else
     print_procstatus_header "SERVICE"
-    for i in "${ServicesDir}"/* ; do
-      ServiceFileName="${i##*/}"
-      if [ "$ServiceFileName" = "$1" ]; then
-        get_procstatus "${shed_service_pid_dir}" "$i"
-      fi
-    done
+    if ! is_dir_empty "$ServicesDir"; then
+      for i in "${ServicesDir}"/* ; do
+        ServiceFileName="${i##*/}"
+        if [ "$ServiceFileName" = "$1" ]; then
+          get_procstatus "${shed_service_pid_dir}" "$i"
+        fi
+      done
+    elif ! is_dir_empty "$FallbackServicesDir"; then
+      for i in "${FallbackServicesDir}"/* ; do
+        ServiceFileName="${i##*/}"
+        if [ "$ServiceFileName" = "$1" ]; then
+          get_procstatus "${shed_service_pid_dir}" "$i"
+        fi
+      done
+    fi
   fi
 }
 

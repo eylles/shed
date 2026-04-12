@@ -98,13 +98,17 @@ fi
 # shed config file
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shed.rc
 Config="${ConfDir}/shed.rc"
+FallbackConfig="/etc/shed/shed.rc"
 # the default config template
 DefConf="@DOC@/shed.rc"
 
 if [ -r "$Config" ]; then
   . "$Config"
+elif [ -r "$FallbackConfig" ]; then
+  . "$FallbackConfig"
 else
   cp "$DefConf" "$Config"
+  . "$Config"
 fi
 
 if [ -n "$set_xdg_desktop_vars" ]; then
@@ -211,10 +215,21 @@ if [ "$sessdir" -eq "$_false" ]; then
       fi
     done
     unset EnvFile
+  elif ! is_dir_empty "$FallbackShallowEnvDir"; then
+    for EnvFile in "$FallbackShallowEnvDir"/*.env; do
+      if [ -r "$EnvFile" ]; then
+        msg_log "info" "loading env file $EnvFile"
+        . "$EnvFile"
+      fi
+    done
+    unset EnvFile
   fi
   # exec transient
   if [ -x "$UseTransient" ]; then
     msg_log "info" "shed-shallow executing $UseTransient"
+    exec "$UseTransient"
+  elif [ -x "$FallbackTransient" ]; then
+    msg_log "info" "shed-shallow executing $FallbackTransient"
     exec "$UseTransient"
   else
     msg_log "info" "shed-shallow executing $0"
@@ -258,6 +273,14 @@ fi
 
 if [ "$reloaded" -eq "$_false" ] && ! is_dir_empty "$EnvDir"; then
   for EnvFile in "$EnvDir"/*.env; do
+    if [ -r "$EnvFile" ]; then
+      msg_log "info" "loading env file $EnvFile"
+      . "$EnvFile"
+    fi
+  done
+  unset EnvFile
+elif [ "$reloaded" -eq "$_false" ] && ! is_dir_empty "$FallbackEnvDir"; then
+  for EnvFile in "$FallbackEnvDir"/*.env; do
     if [ -r "$EnvFile" ]; then
       msg_log "info" "loading env file $EnvFile"
       . "$EnvFile"
