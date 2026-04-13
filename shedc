@@ -162,6 +162,7 @@ get_procstatus() {
   shift
   ServiceFile="$1"
   shift
+  UseVMRSS="$1"
   s_name="${ServiceFile##*/}"
   s_exec=""
   s_pid=""
@@ -185,10 +186,17 @@ get_procstatus() {
       s_state="-"
   fi
   if [ "$PrettyPrint" = 1 ]; then
-    printf ' [ %s ] %30s %*s %s\n' "$s_state" "$s_name" "$pw" "$s_pid" "$s_exec"
+    printf ' [ %s ] %30s %*s %s' "$s_state" "$s_name" "$pw" "$s_pid" "$s_exec"
   else
-    printf ' [ %s ] %s\n' "$s_state" "$s_name"
+    printf ' [ %s ] %s' "$s_state" "$s_name"
   fi
+  if [ -n "$UseVMRSS" ] && [ -x "$(command -v vmrss)" ] && [ -n "$s_pid" ]; then
+    printf ' - '
+    vmrss "$s_pid" | \
+      awk '{printf "%s %.1f %s\n", $1, $2, $3}' | \
+      sed ':a;N;$!ba;s/  \+/ /g;s/\n/  /g'
+  fi
+  printf '\n'
 }
 
 # Return type: string
@@ -275,14 +283,14 @@ procstat() {
       for i in "${ServicesDir}"/* ; do
         ServiceFileName="${i##*/}"
         if [ "$ServiceFileName" = "$1" ]; then
-          get_procstatus "${shed_service_pid_dir}" "$i"
+          get_procstatus "${shed_service_pid_dir}" "$i" "$_true"
         fi
       done
     elif ! is_dir_empty "$FallbackServicesDir"; then
       for i in "${FallbackServicesDir}"/* ; do
         ServiceFileName="${i##*/}"
         if [ "$ServiceFileName" = "$1" ]; then
-          get_procstatus "${shed_service_pid_dir}" "$i"
+          get_procstatus "${shed_service_pid_dir}" "$i" "$_true"
         fi
       done
     fi
