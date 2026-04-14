@@ -215,7 +215,7 @@ passed directly to sleep(1)
 .B "NOHUP"
 This specifies that the service cannot receive the "HUP" signal, useful as not
 every service will be compliant by being able to recieve the HUP signal to
-reload.
+reload, possible values are: 1, true, yes.
 .TP
 .B "TYPE"
 Explicitly declare the service as a
