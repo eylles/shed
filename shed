@@ -181,6 +181,22 @@ else
   mkdir -p "$ShedSessionDir"
 fi
 
+# for practical purposes $startfile is a lockfile just not in name
+if [ ! -f "$startfile" ]; then
+  printf '%s\n' "$shed_pid" > "$startfile"
+else
+  # the pid will not change when reloading as we use exec, so if the pid is
+  # different then we should not run at all since only one instance should run
+  # per session.
+  file_pid=$(cat "$startfile")
+  if [ "$file_pid" -eq "$shed_pid" ]; then
+    reloaded="$_true"
+  else
+    printf '%s\n' "${prog}: instance with pid ${file_pid} already running!"
+    exit 1
+  fi
+fi
+
 if [ ! -d "$shed_service_pid_dir" ]; then
   mkdir -p "$shed_service_pid_dir"
 fi
@@ -206,6 +222,10 @@ fi
 
 
 # shallow execution routine
+# we are in shallow mode if the $ShedSessionDir didn't exist when we first ran,
+# since no other program outside shed is ever going to create the
+# $ShedSessionDir we can be sure of that, so we can simply check if $sessdir is
+# _true or _false to know we have to run the shallow mode code.
 if [ "$sessdir" -eq "$_false" ]; then
   if ! is_dir_empty "$ShallowEnvDir"; then
     for EnvFile in "$ShallowEnvDir"/*.env; do
@@ -224,6 +244,8 @@ if [ "$sessdir" -eq "$_false" ]; then
     done
     unset EnvFile
   fi
+  # remove the lockfile before executing the transient
+  rm "$startfile"
   # exec transient
   if [ -x "$UseTransient" ]; then
     msg_log "info" "shed-shallow executing $UseTransient"
@@ -235,27 +257,6 @@ if [ "$sessdir" -eq "$_false" ]; then
     msg_log "info" "shed-shallow executing $0"
     exec "$0"
   fi
-fi
-
-# check if shed is reloading, writing to socket is not possible when starting
-# on a fresh session cuz no one is listening to the socket
-if [ "$sessdir" -eq "$_true" ]; then
-  if [ -f "$startfile" ]; then
-    # the pid will not change when reloading as we use exec, so if the pid is
-    # different then we should not run at all since only one instance should run
-    # per session.
-    file_pid=$(cat "$startfile")
-    if [ "$file_pid" -eq "$shed_pid" ]; then
-      reloaded="$_true"
-    else
-      printf '%s\n' "${prog}: instance with pid ${file_pid} already running!"
-      exit 1
-    fi
-  else
-    printf '%s\n' "$shed_pid" > "$startfile"
-  fi
-else
-  printf '%s\n' "$shed_pid" > "$startfile"
 fi
 
 write_info() {

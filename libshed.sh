@@ -137,7 +137,7 @@ EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
 # /etc/shed/env.d
 FallbackEnvDir="/etc/shed/env.d"
 
-# shed start file, contains the pid of the shed process
+# shed start file, contains the pid of the shed process, we use it as a lockfile
 # ${ShedSessionDir}/shed.started
 startfile="${ShedSessionDir}/shed.started"
 
