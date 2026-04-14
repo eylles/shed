@@ -15,12 +15,12 @@ LIBSHED = libshed.$(VERSION)
 all: $(SHED) $(SHEDC) $(LIBSHED)
 
 $(SHED):
-	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|@DOC@|$(DOC_LOC)|" shed > $@
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|@DOC@|$(DOC_LOC)|" shed.sh > $@
 	chmod 755 $@
 	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > shed.1
 
 $(SHEDC):
-	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc > $@
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc.sh > $@
 	chmod 755 $@
 
 $(LIBSHED):
