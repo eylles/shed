@@ -124,7 +124,7 @@ FallbackEnvDir="/etc/shed/env.d"
 
 # shed start file, contains the pid of the shed process, we use it as a lockfile
 # ${ShedSessionDir}/shed.started
-startfile="${ShedSessionDir}/shed.started"
+lockfile="${ShedSessionDir}/shed.started"
 
 # contains version and start date
 # ${ShedSessionDir}/shed.info

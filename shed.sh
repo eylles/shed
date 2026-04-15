@@ -181,14 +181,13 @@ else
   mkdir -p "$ShedSessionDir"
 fi
 
-# for practical purposes $startfile is a lockfile just not in name
-if [ ! -f "$startfile" ]; then
-  printf '%s\n' "$shed_pid" > "$startfile"
+if [ ! -f "$lockfile" ]; then
+  printf '%s\n' "$shed_pid" > "$lockfile"
 else
   # the pid will not change when reloading as we use exec, so if the pid is
   # different then we should not run at all since only one instance should run
   # per session.
-  file_pid=$(cat "$startfile")
+  file_pid=$(cat "$lockfile")
   if [ "$file_pid" -eq "$shed_pid" ]; then
     reloaded="$_true"
   else
@@ -245,7 +244,7 @@ if [ "$sessdir" -eq "$_false" ]; then
     unset EnvFile
   fi
   # remove the lockfile before executing the transient
-  rm "$startfile"
+  rm "$lockfile"
   # exec transient
   if [ -x "$UseTransient" ]; then
     msg_log "info" "shed-shallow executing $UseTransient"

@@ -331,7 +331,7 @@ show_info() {
     printf '%s\n' "$prog: shed not using $shed_service_pid_dir, relaunch now!"
   fi
   if [ -r "$shed_info" ]; then
-    printf '%s=%s\n' "PID" "$(head "$startfile")"
+    printf '%s=%s\n' "PID" "$(head "$lockfile")"
     printf '%s=%s\n' "CLIENTV" "$prog_v"
     head "$shed_info"
     exit $_true
