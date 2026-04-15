@@ -85,21 +85,6 @@ is_dir_empty() {
   fi
 }
 
-# if ShedSessionDir doesn't exist when running shedc, try to detect it
-# dynamically
-if [ ! -d "$ShedSessionDir" ] &&
-   [ "$prog" = "shedc" ] &&
-   ! is_dir_empty "${XDG_RUNTIME_DIR}/shed"; then
-  for _dir in "${XDG_RUNTIME_DIR}/shed"/*; do
-    [ -d "$_dir" ] || continue
-    if [ -S "$_dir/socket" ] || [ -f "$_dir/socket" ]; then
-      ShedSessionDir="$_dir"
-      break
-    fi
-  done
-  unset _dir
-fi
-
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
