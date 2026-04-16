@@ -122,9 +122,19 @@ EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
 # /etc/shed/env.d
 FallbackEnvDir="/etc/shed/env.d"
 
-# shed start file, contains the pid of the shed process, we use it as a lockfile
+# old shed start file, contains the pid of the shed process, for compatibility
+# as versions after this ought to use the new lockfile name
 # ${ShedSessionDir}/shed.started
-lockfile="${ShedSessionDir}/shed.started"
+oldlockfile="${ShedSessionDir}/shed.started"
+
+# shed lock file, contains the pid of the shed process
+# ${ShedSessionDir}/shed.lock
+lockfile="${ShedSessionDir}/shed.lock"
+
+# recognize the oldlockfile as the lockfile if it exists
+if [ -f "$oldlockfile" ]; then
+  lockfile="$oldlockfile"
+fi
 
 # contains version and start date
 # ${ShedSessionDir}/shed.info

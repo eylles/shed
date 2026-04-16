@@ -183,6 +183,7 @@ fi
 
 if [ ! -f "$lockfile" ]; then
   printf '%s\n' "$shed_pid" > "$lockfile"
+  msg_log "info" "lockfile '$lockfile' written"
 else
   # the pid will not change when reloading as we use exec, so if the pid is
   # different then we should not run at all since only one instance should run
