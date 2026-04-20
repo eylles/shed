@@ -659,3 +659,50 @@ old_kill_all_procs() {
     [ -z "$dry_run" ] && rm -f "$i"
   done
 }
+
+# Return type: int
+#       Usage: get_perms <file>
+# --------------------------------------------------
+# will return the octal permissions of the file ie: 755
+get_perms() {
+  case "$(uname -s)" in
+    Linux)        stat -c '%a'  "$1" ;;
+    *BSD*|Darwin) stat -f '%Lp' "$1" ;;
+  esac
+}
+
+# Return type: int
+#       Usage: get_ownerid <file>
+# --------------------------------------------------
+# will return the UID of the file owner, say for a normal
+# user 1000 but for the root user 0
+get_ownerid() {
+  case "$(uname -s)" in
+    Linux)        stat -c '%u' "$1" ;;
+    *BSD*|Darwin) stat -f '%u' "$1" ;;
+  esac
+}
+
+# Return type: int bool
+#       Usage: are_exec_perms_correct <e_path> <uid>
+#      e_path: executable file path
+#         uid: expected owner user id
+# --------------------------------------------------
+# check if the executable permissions are correct, which is:
+#   - the executable file exists and is in fact executable
+#   - the actual owner id is the expected owner id
+#   - the file is writeable only by the owner
+are_exec_perms_correct() {
+  executable_path="$1"
+  shift
+  expected_owner_uid="$1"
+  shift
+  execut_realpath="$(realpath "$executable_path")"
+  [ ! -x "$execut_realpath" ] && return "$_false"
+  owner_id="$(get_ownerid "$execut_realpath")"
+  [ "$expected_owner_uid" -ne "$owner_id" ] && return "$_false"
+  exec_perms="$(get_perms "$execut_realpath")"
+  others_bit=$((exec_perms % 10))
+  [ $((others_bit & 2)) -ne 0 ] && return "$_false"
+  return "$_true"
+}
