@@ -183,6 +183,16 @@ else
   mkdir -p "$ShedSessionDir"
 fi
 
+if [ ! -d "$shed_service_pid_dir" ]; then
+  mkdir -p "$shed_service_pid_dir"
+fi
+if [ ! -d "$shed_component_pid_dir" ]; then
+  mkdir -p "$shed_component_pid_dir"
+fi
+if [ ! -d "$shed_logs_dir" ]; then
+  mkdir -p "$shed_logs_dir"
+fi
+
 if [ ! -f "$lockfile" ]; then
   printf '%s\n' "$shed_pid" > "$lockfile"
   msg_log "info" "lockfile '$lockfile' written"
@@ -197,16 +207,6 @@ else
     printf '%s\n' "${prog}: instance with pid ${file_pid} already running!"
     exit 1
   fi
-fi
-
-if [ ! -d "$shed_service_pid_dir" ]; then
-  mkdir -p "$shed_service_pid_dir"
-fi
-if [ ! -d "$shed_component_pid_dir" ]; then
-  mkdir -p "$shed_component_pid_dir"
-fi
-if [ ! -d "$shed_logs_dir" ]; then
-  mkdir -p "$shed_logs_dir"
 fi
 
 # create the socket file if necessary
