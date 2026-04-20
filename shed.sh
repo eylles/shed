@@ -248,6 +248,7 @@ if [ "$sessdir" -eq "$_false" ]; then
   fi
   # remove the lockfile before executing the transient
   rm "$lockfile"
+  msg_log "info" "shed-shallow lockfile '$lockfile' released"
   # exec transient
   if are_exec_perms_correct "$UseTransient" "$UserID"; then
     msg_log "info" "shed-shallow executing $UseTransient"
