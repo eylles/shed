@@ -33,6 +33,8 @@ else
   fi
 fi
 
+UserID=""
+RootUserID=0
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
 # but it may be defined in the environment
 if [ -z "$UID" ]; then
@@ -247,10 +249,10 @@ if [ "$sessdir" -eq "$_false" ]; then
   # remove the lockfile before executing the transient
   rm "$lockfile"
   # exec transient
-  if [ -x "$UseTransient" ]; then
+  if are_exec_perms_correct "$UseTransient" "$UserID"; then
     msg_log "info" "shed-shallow executing $UseTransient"
     exec "$UseTransient"
-  elif [ -x "$FallbackTransient" ]; then
+  elif are_exec_perms_correct "$FallbackTransient" "$RootUserID" ; then
     msg_log "info" "shed-shallow executing $FallbackTransient"
     exec "$UseTransient"
   else
