@@ -91,14 +91,14 @@ if [ -z "$XDG_CONFIG_HOME" ]; then
   export XDG_CONFIG_HOME="${HOME}/.config"
 fi
 
-old_conf_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/conf"
+old_conf_dir="${XDG_CONFIG_HOME}/shed/conf"
 # directory where we are loading the shed specific config
-ConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed"
+ConfDir="${XDG_CONFIG_HOME}/shed"
 if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
 # shed config file
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shed.rc
+# ${XDG_CONFIG_HOME}/.config}/shed/shed.rc
 Config="${ConfDir}/shed.rc"
 FallbackConfig="/etc/shed/shed.rc"
 # the default config template
