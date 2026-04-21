@@ -40,6 +40,7 @@ RootUserID=0
 if [ -z "$UID" ]; then
   # result of: id -u $USER
   UserID=$(id -u "$USER")
+  export UID="$UserID"
 else
   UserID="$UID"
 fi
