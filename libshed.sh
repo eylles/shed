@@ -706,3 +706,21 @@ are_exec_perms_correct() {
   [ $((others_bit & 2)) -ne 0 ] && return "$_false"
   return "$_true"
 }
+
+# Return type: int bool
+#       Usage: is_str_valid <string>
+# --------------------------------------------------
+# valid strings are those that only contain
+# 'alphanums', dots '.' and dashes '_-'
+is_str_valid() {
+  case "$1" in
+    # the class of strings we consider false, this should mean:
+    # 'empty' OR those which contain strings that are NOT 'alphanums', '._-'
+    ""|*[!A-Za-z0-9._-]*)
+      return "$_false"
+      ;;
+    *)
+      return "$_true"
+      ;;
+  esac
+}
