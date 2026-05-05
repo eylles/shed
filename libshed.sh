@@ -702,8 +702,11 @@ are_exec_perms_correct() {
   owner_id="$(get_ownerid "$execut_realpath")"
   [ "$expected_owner_uid" -ne "$owner_id" ] && return "$_false"
   exec_perms="$(get_perms "$execut_realpath")"
-  others_bit=$((exec_perms % 10))
-  [ $((others_bit & 2)) -ne 0 ] && return "$_false"
+  case "$exec_perms" in
+    *[2367][0-9]|*[0-9][2367])
+      return "$_false"
+      ;;
+  esac
   return "$_true"
 }
 
