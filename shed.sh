@@ -145,6 +145,7 @@ if [ -n "$set_xdg_home_dirs" ]; then
   export XDG_MUSIC_DIR
   export XDG_PICTURES_DIR
   export XDG_VIDEOS_DIR
+  export XDG_PROJECTS_DIR
 fi
 
 if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
