@@ -11,11 +11,13 @@ VERSION = $(if $(GITTAG),$(GITTAG),$(VERS))
 SHED = shed.$(VERSION)
 SHEDC = shedc.$(VERSION)
 LIBSHED = libshed.$(VERSION)
+UTILS = utils.$(VERSION)
 
-all: $(SHED) $(SHEDC) $(LIBSHED)
+all: $(SHED) $(SHEDC) $(LIBSHED) $(UTILS)
 
 $(SHED):
-	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|@DOC@|$(DOC_LOC)|" shed.sh > $@
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|./utils.sh|$(LIB_LOC)/$(UTILS)|g; s|@DOC@|$(DOC_LOC)|" \
+		shed.sh > $@
 	chmod 755 $@
 	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > shed.1
 
@@ -24,7 +26,12 @@ $(SHEDC):
 	chmod 755 $@
 
 $(LIBSHED):
-	sed "s|@VERSION@|$(VERSION)|g" libshed.sh > $@
+	sed "s|@VERSION@|$(VERSION)|g; s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" \
+		libshed.sh > $@
+	chmod 755 $@
+
+$(UTILS):
+	cp -f utils.sh $@
 	chmod 755 $@
 
 install: all
@@ -35,6 +42,7 @@ install: all
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
 	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
 	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
+	cp -vf $(UTILS)  $(LIB_LOC)/$(UTILS)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
 	cp -vf shed.1 $(MANPREFIX)/man1/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
@@ -50,4 +58,5 @@ clean:
 	rm $(SHED)
 	rm $(SHEDC)
 	rm $(LIBSHED)
+	rm $(UTILS)
 	rm shed.1

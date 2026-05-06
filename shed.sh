@@ -88,6 +88,9 @@ current_desktop=""
 use_xdg_session_type=""
 set_xdg_home_dirs=""
 
+# source utils library
+. ./utils.sh
+
 if [ -z "$XDG_CONFIG_HOME" ]; then
   export XDG_CONFIG_HOME="${HOME}/.config"
 fi
