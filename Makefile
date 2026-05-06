@@ -16,8 +16,9 @@ UTILS = utils.$(VERSION)
 all: $(SHED) $(SHEDC) $(LIBSHED) $(UTILS)
 
 $(SHED):
-	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g; s|./utils.sh|$(LIB_LOC)/$(UTILS)|g; s|@DOC@|$(DOC_LOC)|" \
-		shed.sh > $@
+	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" shed.sh | \
+	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" | \
+	sed "s|@DOC@|$(DOC_LOC)|" > $@
 	chmod 755 $@
 	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > shed.1
 
@@ -26,8 +27,8 @@ $(SHEDC):
 	chmod 755 $@
 
 $(LIBSHED):
-	sed "s|@VERSION@|$(VERSION)|g; s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" \
-		libshed.sh > $@
+	sed "s|@VERSION@|$(VERSION)|g" libshed.sh | \
+	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" > $@
 	chmod 755 $@
 
 $(UTILS):
