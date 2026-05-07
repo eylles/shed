@@ -169,6 +169,26 @@ if [ -n "$set_xdg_home_dirs" ]; then
   export XDG_PROJECTS_DIR
 fi
 
+if [ -n "$make_xdg_home_dirs" ]; then
+  for dir in \
+    "$XDG_DATA_HOME" \
+    "$XDG_CACHE_HOME" \
+    "$XDG_STATE_HOME" \
+    "$XDG_DESKTOP_DIR" \
+    "$XDG_DOWNLOAD_DIR" \
+    "$XDG_TEMPLATES_DIR" \
+    "$XDG_PUBLICSHARE_DIR" \
+    "$XDG_DOCUMENTS_DIR" \
+    "$XDG_MUSIC_DIR" \
+    "$XDG_PICTURES_DIR" \
+    "$XDG_VIDEOS_DIR" \
+    "$XDG_PROJECTS_DIR" ;
+    do
+      make_dir "$dir"
+    done
+    unset dir
+fi
+
 if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
   env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
   if [ ! -d "$env_export_dir" ]; then

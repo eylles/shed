@@ -41,6 +41,10 @@
 #   XDG_VIDEOS_DIR
 # set_xdg_home_dirs=
 
+# if this var is set to a non empty var then the set xdg home dirs will be
+# created if they do not exist
+# make_xdg_home_dirs=
+
 # location where shed will export the following env vars:
 # export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
 # export XDG_SESSION_ID="$XDG_SESSION_ID"
