@@ -91,6 +91,14 @@ set_xdg_home_dirs=""
 # source utils library
 . ./utils.sh
 
+if [ -z "$SHED_SESSION" ] && [ "$#" -gt 0 ]; then
+  if is_str_valid "$1"; then
+    export SHED_SESSION="$1"
+  else
+    export SHED_SESSION="default"
+  fi
+fi
+
 if [ -z "$XDG_CONFIG_HOME" ]; then
   export XDG_CONFIG_HOME="${HOME}/.config"
 fi
