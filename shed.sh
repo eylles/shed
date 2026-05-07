@@ -99,20 +99,30 @@ if [ -z "$SHED_SESSION" ] && [ "$#" -gt 0 ]; then
   fi
 fi
 
+SESSBASE=""
+case "$SHED_SESSION" in
+  "default")
+    SESSBASE=""
+    ;;
+  *)
+    SESSBASE="/${SHED_SESSION}"
+    ;;
+esac
+
 if [ -z "$XDG_CONFIG_HOME" ]; then
   export XDG_CONFIG_HOME="${HOME}/.config"
 fi
 
 old_conf_dir="${XDG_CONFIG_HOME}/shed/conf"
 # directory where we are loading the shed specific config
-ConfDir="${XDG_CONFIG_HOME}/shed"
+ConfDir="${XDG_CONFIG_HOME}${SESSBASE}/shed"
 if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
 # shed config file
 # ${XDG_CONFIG_HOME}/.config}/shed/shed.rc
 Config="${ConfDir}/shed.rc"
-FallbackConfig="/etc/shed/shed.rc"
+FallbackConfig="/etc/shed${SESSBASE}/shed.rc"
 # the default config template
 DefConf="@DOC@/shed.rc"
 
