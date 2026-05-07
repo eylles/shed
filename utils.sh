@@ -10,6 +10,21 @@ _true=0
 _false=1
 
 # Return type: int bool
+# Usage: is_dir directory
+# --------------------------------------------------
+# Check if directory exists
+# Returns $_true if passed directory exists, $_false if it does not
+# The function will resolve the given path with realpath(1) so that symlinks
+# pointing to directories can be passed
+is_dir(){
+  if [ -d "$(realpath "$1")" ]; then
+    return "$_true"
+  else
+    return "$_false"
+  fi
+}
+
+# Return type: int bool
 # Usage: is_dir_empty directory
 # --------------------------------------------------
 # Check if directory is empty (no files matching any glob)
@@ -17,7 +32,7 @@ _false=1
 is_dir_empty() {
   dir="$1"
   # Check if directory exists and has files
-  if [ -d "$dir" ]; then
+  if is_dir "$dir"; then
     # Use a simple glob test - if the glob doesn't expand, it returns the pattern
     for _ in "$dir"/* ; do
       # If we get here, at least one file exists
