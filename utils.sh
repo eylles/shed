@@ -24,6 +24,18 @@ is_dir(){
   fi
 }
 
+# Return type: void
+# Usage: make_dir directory
+# --------------------------------------------------
+# an utility wrapper around mkdir
+# Uses is_dir to check if the given path exists, if it does not
+# proceeds to create it with mkdir -p
+make_dir() {
+  if ! is_dir "$1"; then
+    mkdir -p "$1"
+  fi
+}
+
 # Return type: int bool
 # Usage: is_dir_empty directory
 # --------------------------------------------------
