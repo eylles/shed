@@ -192,7 +192,7 @@ fi
 if [ -n "$SHED_ENV_EXPORT_LOC" ]; then
   env_export_dir="${SHED_ENV_EXPORT_LOC%/*}"
   if [ ! -d "$env_export_dir" ]; then
-    mkdir -p "$env_export_dir"
+    make_dir "$env_export_dir"
   fi
   cat << __ENV_EXPORT__ >> "$SHED_ENV_EXPORT_LOC"
 export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
@@ -223,17 +223,17 @@ if [ -d "$ShedSessionDir" ]; then
   sessdir="$_true"
 else
   # create the session dir if it doesn't exist
-  mkdir -p "$ShedSessionDir"
+  make_dir "$ShedSessionDir"
 fi
 
 if [ ! -d "$shed_service_pid_dir" ]; then
-  mkdir -p "$shed_service_pid_dir"
+  make_dir "$shed_service_pid_dir"
 fi
 if [ ! -d "$shed_component_pid_dir" ]; then
-  mkdir -p "$shed_component_pid_dir"
+  make_dir "$shed_component_pid_dir"
 fi
 if [ ! -d "$shed_logs_dir" ]; then
-  mkdir -p "$shed_logs_dir"
+  make_dir "$shed_logs_dir"
 fi
 
 if [ ! -f "$lockfile" ]; then
