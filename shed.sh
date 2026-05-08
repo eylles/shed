@@ -17,6 +17,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
+# source utils library
+. ./utils.sh
+
 shed_pid="${$}"
 
 SHED_ENV_EXPORT_LOC=""
@@ -87,9 +90,6 @@ session_desktop=""
 current_desktop=""
 use_xdg_session_type=""
 set_xdg_home_dirs=""
-
-# source utils library
-. ./utils.sh
 
 if [ -z "$SHED_SESSION" ] && [ "$#" -gt 0 ]; then
   if is_str_valid "$1"; then
