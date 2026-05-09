@@ -143,6 +143,13 @@ also the xdg user dirs will be set using xdg-user-dirs-update
   XDG_PROJECTS_DIR
 
 .TP
+.B make_xdg_home_dirs
+if this var is set to a non empty var then the set xdg home dirs will be created
+if they do not exist, the functions used do follow symlinks so if you have the
+xdg dirs created as symlinks pointing somewhere else shed is smart enough to
+account for that.
+
+.TP
 .B SHED_ENV_EXPORT_LOC
 location where shed will export the following env vars:
 export XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR"
