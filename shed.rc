@@ -39,6 +39,7 @@
 #   XDG_MUSIC_DIR
 #   XDG_PICTURES_DIR
 #   XDG_VIDEOS_DIR
+#   XDG_PROJECTS_DIR
 # set_xdg_home_dirs=
 
 # if this var is set to a non empty var then the set xdg home dirs will be

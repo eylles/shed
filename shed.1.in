@@ -140,6 +140,7 @@ also the xdg user dirs will be set using xdg-user-dirs-update
   XDG_MUSIC_DIR
   XDG_PICTURES_DIR
   XDG_VIDEOS_DIR
+  XDG_PROJECTS_DIR
 
 .TP
 .B SHED_ENV_EXPORT_LOC
