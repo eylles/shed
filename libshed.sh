@@ -59,43 +59,6 @@ if [ -d "$OldShedSessionDir" ]; then
   UsingOldShedDir="$_true"
 fi
 
-# directory where we are loading the user services to start from
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
-ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
-# directory where we fallback to loading the user services to start from
-# /etc/shed/services
-FallbackServicesDir="/etc/shed/services"
-
-# directory where we are loading the session components to start from
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
-ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
-# directory where we fallback to loading the session components to start from
-# /etc/shed/components
-FallbackComponentsDir="/etc/shed/components"
-
-# path of the transient executable script, the transient program will have the
-# responsability to run shed as it's child
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient
-UseTransient="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient"
-# fallback transient executable script, the transient program will have the
-# responsability to run shed as it's child
-# /etc/shed/transient
-FallbackTransient="/etc/shed/transient"
-
-# directory for loadable shallow .env files
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d
-ShallowEnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d"
-# directory for loadable shallow .env files
-# /etc/shed/shallow.d
-FallbackShallowEnvDir="/etc/shed/shallow.d"
-
-# directory for loadable session .env files
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
-EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
-# directory for loadable session .env files
-# /etc/shed/env.d
-FallbackEnvDir="/etc/shed/env.d"
-
 # old shed start file, contains the pid of the shed process, for compatibility
 # as versions after this ought to use the new lockfile name
 # ${ShedSessionDir}/shed.started
@@ -134,6 +97,43 @@ shed_component_pid_dir="${ShedSessionDir}/components"
 msg_socket="${ShedSessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}/reply
 msg_reply="${ShedSessionDir}/reply"
+
+# directory where we are loading the user services to start from
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
+ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
+# directory where we fallback to loading the user services to start from
+# /etc/shed/services
+FallbackServicesDir="/etc/shed/services"
+
+# directory where we are loading the session components to start from
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components
+ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/components"
+# directory where we fallback to loading the session components to start from
+# /etc/shed/components
+FallbackComponentsDir="/etc/shed/components"
+
+# path of the transient executable script, the transient program will have the
+# responsability to run shed as it's child
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient
+UseTransient="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/transient"
+# fallback transient executable script, the transient program will have the
+# responsability to run shed as it's child
+# /etc/shed/transient
+FallbackTransient="/etc/shed/transient"
+
+# directory for loadable shallow .env files
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d
+ShallowEnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/shallow.d"
+# directory for loadable shallow .env files
+# /etc/shed/shallow.d
+FallbackShallowEnvDir="/etc/shed/shallow.d"
+
+# directory for loadable session .env files
+# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d
+EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/env.d"
+# directory for loadable session .env files
+# /etc/shed/env.d
+FallbackEnvDir="/etc/shed/env.d"
 
 # Return type: void
 # Usage: msg_log "level" "message"
