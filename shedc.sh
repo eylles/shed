@@ -330,6 +330,12 @@ show_info() {
   if [ ! -d "$shed_service_pid_dir" ]; then
     printf '%s\n' "$prog: shed not using $shed_service_pid_dir, relaunch now!"
   fi
+  if [ -r "$shed_session_file" ]; then
+    printf '%s=%s\n' "SESSION" "$(head "$shed_session_file")"
+  else
+    printf '%s\n' "running shed daemon has no 'shed.session' file"
+    printf '%s\n' "run shedc reload to re-exec the shed daemon"
+  fi
   if [ -r "$shed_info" ]; then
     printf '%s=%s\n' "PID" "$(head "$lockfile")"
     printf '%s=%s\n' "CLIENTV" "$prog_v"
@@ -358,7 +364,7 @@ show_help() {
   printf '   logout   send term to the session services and the xsession process\n'
   printf '   reload   re-exec shed to run a newe version\n'
   printf '   relaunch send term to the session services and reload shed\n'
-  printf '   info     shows version, pid and started date of shed daemon\n'
+  printf '   info     shows version, pid, session and started date of shed daemon\n'
   printf '   status   shows the status of the desired service'
   printf 'for all services the status is shown with a symbol as follows:\n'
   printf '\t     [ + ] means the service is running\n'

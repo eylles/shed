@@ -53,7 +53,8 @@ reload shed, this just tells shed to re-exec.
 send TERM to the session services and reload shed.
 .TP
 .B "info"
-shows information about the running shed daemon, PID, start date, rundir.
+shows information about the running shed daemon: SESSION, PID, client version,
+daemon version, start date, rundir.
 .TP
 .B "status"
 show status for the services.
