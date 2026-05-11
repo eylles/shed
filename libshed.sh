@@ -102,6 +102,16 @@ msg_socket="${ShedSessionDir}/socket"
 # defined as: ${XDG_RUNTIME_DIR}/shed/${SHED_SESSION_PID}/reply
 msg_reply="${ShedSessionDir}/reply"
 
+if [ -z "$SHED_SESSION" ]; then
+  SHED_SESSION=$(head -n 1 "$shed_session_file" 2>/dev/null)
+  case "$SHED_SESSION" in
+    "")
+      SHED_SESSION="default"
+      ;;
+  esac
+  export SHED_SESSION
+fi
+
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
