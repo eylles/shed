@@ -234,6 +234,10 @@ if [ ! -d "$shed_logs_dir" ]; then
   make_dir "$shed_logs_dir"
 fi
 
+if [ ! -f "$shed_session_file" ]; then
+  printf '%s' "$SHED_SESSION" > "$shed_session_file"
+fi
+
 if [ ! -f "$lockfile" ]; then
   printf '%s\n' "$shed_pid" > "$lockfile"
   msg_log "info" "lockfile '$lockfile' written"

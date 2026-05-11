@@ -59,6 +59,10 @@ if [ -d "$OldShedSessionDir" ]; then
   UsingOldShedDir="$_true"
 fi
 
+# contains the value of SHED_SESSION to be used for the session
+# ${ShedSessionDir}/shed.session
+shed_session_file="${ShedSessionDir}/shed.session"
+
 # old shed start file, contains the pid of the shed process, for compatibility
 # as versions after this ought to use the new lockfile name
 # ${ShedSessionDir}/shed.started
