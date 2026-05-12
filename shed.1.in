@@ -2,6 +2,9 @@
 .SH NAME
 shed \- Session sHell Execution Daemon
 .SH SYNOPSIS
+.B shed
+.RB { SHED_SESSION }
+.TP
 .B shedc
 .RB [ \-nphV ]
 .RB { info | reload | relaunch | logout }
@@ -9,13 +12,21 @@ shed \- Session sHell Execution Daemon
 .IR service | all
 .SH DESCRIPTION
 .P
-shed is a completely init independient implementation of user services and a
-session process.
+shed is a daemon intended to run as session process, it receives the
+.B SHED_SESSION
+optional argument to determine which set of configs to load.
 .P
-shed is a daemon intended to run as the session process, it has no options.
+shed is also a completely init independient implementation of per user services
+and a session process, all the features are opt in so you are not required to
+"buy into" the shed way of doing things.
 .P
 shedc is the command to control shed, start, stop, hup and gather the status of
-the running user session services.
+the running user session services, shedc requires a shed instance as parent to
+work correctly, in specific it requires the
+.B SHED_SESSION
+and
+.B SHED_SESSION_PID
+env vars to be set in order to work as intended.
 .SH OPTIONS
 .TP
 .B "\-h"
@@ -282,11 +293,13 @@ This is an example snippet for the sway config:
 .P
 The initialization of the shed daemon is simple and consists of 2 phases, the
 shallow and the transient, in the shallow phase shed will set up the environment
-variable
+variables
+.B SHED_SESSION
+and
 .B SHED_SESSION_PID
-, usually with it's own PID, then will proceed to check if the variable
-XDG_RUNTIME_DIR is set, if not it will try it's best to set it to a writeable
-location, if
+, usually SHED_SESSION_PID is the shallow daemon's own PID, then will proceed to
+check if the variable XDG_RUNTIME_DIR is set, if not it will try it's best to
+set it to a writeable location, if
 .B /run/user/$UID
 is not writeble it will default to
 .B /tmp/${UID}-runtime-dir
@@ -327,6 +340,17 @@ files from
 and proceed to spawn the session components as well as the session services if
 any, after which it will listen to the communications socket waiting for the
 shedc program to send it actions.
+.SH ENVIRONMENT
+.TP
+.B SHED_SESSION
+Session name passed as argument, inherited by all descendants (shedc, services,
+components).
+Controls which config subdirectory is used. Defaults to "default" (no subdir).
+Must be valid alphanumeric + dots/dashes/underscores.
+.TP
+.B SHED_SESSION_PID
+The PID of the running shed session, required to resolve and access the
+ShedSessionDir
 .SH AUTHOR
 .EX
 eylles                 <ed.ylles1997 at gmail.com>
