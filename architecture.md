@@ -2,10 +2,10 @@
 
 The program has 2 components, the daemon atop the session and the control
 client, for common functionality and variable definition both shed and shedc
-share libshed, all 3 are posix shell scripts, in their "pre-build" form they
-have the `.sh` extension, upon build the `.sh` extension is removed and the
-version number is appended after a `.` to the file name, upon installation at
-the static location `$(DESTDIR)$(PREFIX)/lib/shed` symlinks at
+share libshed as well as utils, all 3 are posix shell scripts, in their
+"pre-build" form they have the `.sh` extension, upon build the `.sh` extension
+is removed and the version number is appended after a `.` to the file name, upon
+installation at the static location `$(DESTDIR)$(PREFIX)/lib/shed` symlinks at
 `$(DESTDIR)$(PREFIX)/bin` are created for `shed` and `shedc`
 
 - shed: the daemon for the session process, it reads a user config, sets the
@@ -21,8 +21,8 @@ the static location `$(DESTDIR)$(PREFIX)/lib/shed` symlinks at
 
 
 The files for the shed configuration are located at:
-`XDG_CONFIG_HOME/shed/` with fallback in `/etc/shed`, the file structure is as
-follows:
+`XDG_CONFIG_HOME/shed/` with fallback in `/etc/shed`, the file structure for the
+default session is as follows:
 ```tree
 shed/
 ├── components/
