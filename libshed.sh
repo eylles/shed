@@ -112,6 +112,17 @@ if [ -z "$SHED_SESSION" ]; then
   export SHED_SESSION
 fi
 
+if [ -z "$SESSBASE" ]; then
+  case "$SHED_SESSION" in
+    "default")
+      SESSBASE=""
+      ;;
+    *)
+      SESSBASE="/${SHED_SESSION}"
+      ;;
+  esac
+fi
+
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed/services"
