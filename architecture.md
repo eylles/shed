@@ -123,6 +123,19 @@ x11 openbox setup as well as a wayland waybox setup can just leverage shed and
 not have the need to write their own custom session scripts for either setup off
 the ground.
 
+## Session Flow & Inheritance
+
+When shed starts with a session argument:
+- shed daemon (parent) parses arg, validates with `is_str_valid`, exports
+   `SHED_SESSION`, `SHED_SESSION_PID`
+- shed writes session name to `$ShedSessionDir/shed.session` (persistence)
+- All child processes inherit `SHED_SESSION` env var (bash, services,
+   components, shedc)
+- libshed.sh fallbacks `SHED_SESSION` to default if not set
+- libshed.sh computes `SESSBASE` suffix from inherited `SHED_SESSION`
+- All config dirs use session-specific subdirs via `SESSBASE`
+- shedc requires shed daemon ancestor (no standalone mode)
+
 # architectures to implement
 
 The following has not been implemented but i intend to eventually do so:
