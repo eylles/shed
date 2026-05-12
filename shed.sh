@@ -113,7 +113,7 @@ fi
 
 old_conf_dir="${XDG_CONFIG_HOME}/shed/conf"
 # directory where we are loading the shed specific config
-ConfDir="${XDG_CONFIG_HOME}${SESSBASE}/shed"
+ConfDir="${XDG_CONFIG_HOME}/shed${SESSBASE}"
 if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
