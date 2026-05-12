@@ -54,19 +54,14 @@ File Key
 | `|` | named pipe |
 
 
-# architectures to implement
-
-The following has not been implemented but i intend to eventually do so:
-
-## per session shed config files
-
-A mechanism to have the shed session config files but not be limited to just one
-set of them, as an example the sets of config files for 2 sessions named
-"shed_awesome" and "shed_sway", one of them x11 and the other wayland would be
-contained in subdirs within the shed config (or fallback) dir, which set of
-configs to use would be determined by passing the session name as an argument to
-`shed` upon the shallow run, which then would export the `SHED_SESSION` env var
-which would be assigned to such passed value and tell the transient shed run as
+Shed also supports per session shed config files.
+This mechanism allows to have the shed session config files not be limited to
+just one set of them, as an example the sets of config files for 2 sessions
+named "shed_awesome" and "shed_sway", one of them x11 and the other wayland
+would be contained in subdirs within the shed config (or fallback) dir, which
+set of configs to use is determined by passing the session name as an argument
+to `shed` upon the shallow run, which then exports the `SHED_SESSION` env var
+which is assigned to such passed value and tells the transient shed run as
 well as reloads which set of config files to use, the file tree would look
 something like so:
 
@@ -106,11 +101,19 @@ shed/
     └── transient·
 ```
 
-This architecture change would allow potential distributors to ship
-configurations for their default sessions, as example a bunsenlabs-like distro
-which wishes to ship an x11 openbox setup as well as a wayland waybox setup
-could just leverage shed and not have the need to write their own custom session
-scripts for either setup off the ground.
+If no argument was passed to shed or the argument was deemed invalid then shed
+fallbacks to the "default" session which uses no per session suffix, this also
+provides backwards compatibility with previous builds of shed.
+
+This architecture allows potential distributors to ship configurations for their
+default sessions, as example a bunsenlabs-like distro which wishes to ship an
+x11 openbox setup as well as a wayland waybox setup can just leverage shed and
+not have the need to write their own custom session scripts for either setup off
+the ground.
+
+# architectures to implement
+
+The following has not been implemented but i intend to eventually do so:
 
 
 ## optional usage of start-stop-daemon and init-d-script
