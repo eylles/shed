@@ -53,6 +53,18 @@ File Key
 | `·` | executable file |
 | `|` | named pipe |
 
+The shed daemon works in shallow then in transient mode
+- shed shallow daemon starts, loads utils, exports SHED_SESSION_PID, if needed
+  determines ENV (XDG_RUNTIME_DIR, XDG_SESSION_ID), exports SHED_SESSION, if
+  needed exports XDG_CONFIG_HOME, loads config file, if options are set then
+  sets xdg desktop vars, xdg session type, sets and creates xdg home dirs, the
+  SHED_ENV_EXPORT_LOC, loads libshed, initializes the ShedSessionDir, session
+  files, lockfile, message socket, loads the shallow.d env files, removes
+  lockfile and hands over to transient process
+- shed transient, started as either a child of the transient process or as the
+  transient process, loads utils and libshed libraries, writes info, loads env.d
+  files, sets signal traps, logs initialization, starts components, starts
+  services, finally listens to the msg_socket for actions
 
 Shed also supports per session shed config files.
 This mechanism allows to have the shed session config files not be limited to
