@@ -289,6 +289,59 @@ This is an example snippet for the sway config:
     # made to spawn more instances upon reloads of sway
     exec shed
 
+.P
+Tho this far the document has covered the 'default' session, if an argument is
+passed to
+.B shed
+upon launch, shed will try to use a session whose name matches the passed
+string, this
+.B SHED_SESSION
+argument is searched as a subdir inside either
+.B ${XDG_CONFIG_HOME:-${HOME}/.config}/shed/
+or
+.B /etc/shed/
+following the same convention of sub-directories and files as those for the
+default session that have been outlined above, for an example if one were to
+have 2 sessions set up be them
+.B shed_awesome
+and
+.B shed_sway
+then the file tree would look like:
+
+.IR ${XDG_CONFIG_HOME}/shed/
+    +-- shed_awesome/
+    |   +-- components
+    |   |   +-- 99x11-window-manager
+    |   +-- env.d
+    |   |   +-- x11-tearfree.env
+    |   |   +-- gnome-keyring.env
+    |   +-- services
+    |   |   +-- compositor
+    |   |   +-- pipewire-daemon
+    |   |   +-- pipewire-daemon-pulse
+    |   |   +-- pipewire-media-session
+    |   |   +-- polkit-agent
+    |   |   +-- xscreenlocker
+    |   |   +-- xsettings-daemon
+    |   +-- shed.rc
+    +-- shed_sway/
+        +-- components/
+        |   +-- swww
+        |   +-- sway-bar
+        +-- env.d/
+        |   +-- gnome-keyring.env
+        +-- shallow.d/
+        |   +-- gtk-wayland-backend.env
+        |   +-- qt-wayland-backend.env
+        |   +-- java-options.env
+        +-- services/
+        |   +-- pipewire-daemon
+        |   +-- pipewire-daemon-pulse
+        |   +-- pipewire-media-session
+        |   +-- polkit-agent
+        +-- shed.rc
+        +-- transient·
+
 .SH INITIALIZATION
 .P
 The initialization of the shed daemon is simple and consists of 2 phases, the
