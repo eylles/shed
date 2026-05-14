@@ -48,8 +48,8 @@ uninstall:
 	rm -vf $(MAN_LOC)/shed.1
 
 clean:
-	rm $(SHED)
-	rm $(SHEDC)
-	rm $(LIBSHED)
-	rm $(UTILS)
-	rm shed.1
+	rm -f $(SHED)
+	rm -f $(SHEDC)
+	rm -f $(LIBSHED)
+	rm -f $(UTILS)
+	rm -f shed.1
