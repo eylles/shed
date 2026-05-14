@@ -99,7 +99,7 @@ and
 .B components
 not to mention the
 .B transient
-script.
+script, the following assumes the 'default' session is going to be used.
 
 .P
 The shed.rc file is just a simple key=val file with the following options:
