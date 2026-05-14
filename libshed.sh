@@ -503,9 +503,9 @@ sig_proc() {
 sig_all() {
   p_dir="$1"
   shift
-  f_dir="$1"
-  shift
   s_dir="$1"
+  shift
+  f_dir="$1"
   shift
   sig="$1"
   shift
