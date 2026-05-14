@@ -31,13 +31,13 @@ install: all
 	mkdir -p $(BIN_LOC)
 	mkdir -p $(LIB_LOC)
 	mkdir -p $(DOC_LOC)
-	mkdir -p $(MANPREFIX)
+	mkdir -p $(MAN_LOC)
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
 	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
 	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
 	cp -vf $(UTILS)  $(LIB_LOC)/$(UTILS)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
-	cp -vf shed.1 $(MANPREFIX)/man1/shed.1
+	cp -vf shed.1 $(MAN_LOC)/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
 	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
 
@@ -45,7 +45,7 @@ uninstall:
 	rm -vf $(BIN_LOC)/shed
 	rm -vf $(BIN_LOC)/shedc
 	rm -vf $(DOC_LOC)/shed.rc
-	rm -vf $(MANPREFIX)/man1/shed.1
+	rm -vf $(MAN_LOC)/shed.1
 
 clean:
 	rm $(SHED)
