@@ -17,7 +17,7 @@ _false=1
 # The function will resolve the given path with realpath(1) so that symlinks
 # pointing to directories can be passed
 is_dir(){
-  if [ -d "$(realpath "$1")" ]; then
+  if [ -d "$(realpath "$1" 2>/dev/null)" ]; then
     return "$_true"
   else
     return "$_false"
@@ -141,7 +141,7 @@ are_exec_perms_correct() {
   shift
   expected_owner_uid="$1"
   shift
-  execut_realpath="$(realpath "$executable_path")"
+  execut_realpath="$(realpath "$executable_path" 2>/dev/null)"
   [ ! -x "$execut_realpath" ] && return "$_false"
   owner_id="$(get_ownerid "$execut_realpath")"
   [ "$expected_owner_uid" -ne "$owner_id" ] && return "$_false"
