@@ -1,17 +1,9 @@
 .POSIX:
-PREFIX = ${HOME}/.local
-BIN_LOC = $(DESTDIR)$(PREFIX)/bin
-LIB_LOC = $(DESTDIR)$(PREFIX)/lib/shed
-DOC_LOC = $(DESTDIR)$(PREFIX)/share/doc/shed
-MANPREFIX = $(PREFIX)/share/man
+
+include version.mk
+include config.mk
+
 .PHONY: all install uninstall clean
-GITTAG = $(shell git describe --tags 2>/dev/null)
-VERS = v0.2.0
-VERSION = $(if $(GITTAG),$(GITTAG),$(VERS))
-SHED = shed.$(VERSION)
-SHEDC = shedc.$(VERSION)
-LIBSHED = libshed.$(VERSION)
-UTILS = utils.$(VERSION)
 
 all: $(SHED) $(SHEDC) $(LIBSHED) $(UTILS)
 
