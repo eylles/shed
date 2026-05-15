@@ -72,6 +72,32 @@ years ago by someone much smarter but it was only when i could no longer bear
 the situation of there being no generic program with the capabilites of shed
 that i forced myself into writing it.
 
+## Quick start
+
+clone the repo and cd
+
+```sh
+git clone https://github.com/eylles/shed
+cd shed
+
+# check and edit the config.mk file as needed
+make
+make install
+```
+
+using the default locations you should get a series of examples for either x11
+or wayland sessions at `/usr/local/share/doc/shed/examples`, take them as
+inspiration, the shed_awesome and the xsession shed-awesome.desktop are the
+example x11 files, the shed_sway and the wayland-session shed-sway.desktop are
+the example wayland files.
+
+the shed files go in `$XDG_CONFIG_HOME/shed/`, the xsession file goes into
+`/usr/share/xsessions/`, the wayland session files goes into
+`/usr/share/wayland-sessions/`
+
+you can figure out the rest, i believe in you!
+
+
 ## ROADMAP
 
 ### done
@@ -114,17 +140,13 @@ that i forced myself into writing it.
 - [ ] draw a logo/icon for shed to use in the repo
 
 
-## use the git master but beware of changes!
+## use the latest release
 
-Currently the master branch functions in a more consistent way than the stuff in
-the release tags do but it isn't really a stable work per se and things may
-break without notice altho i do try to test all commits before pushing i do not
-know what your config and setup are like so if you have an issue, bug or
-something broke specify you used the master branch and not a release tag, i tend
-to use changes that have not yet been merged to master first cuz i develop this
-for myself as target audience second cuz it will break on my machine first
-before breaking on someone else's, hopefully... still read the commit history
-after pulling the repo and before running make!
+As of release v0.3.0 there is no reason whatsoever to use older releases, the
+master branch is where development happens, i try to keep it stable but read the
+commit history and know why you want to use the master branch rather than a
+release, always mention if you are using a release tag or the master branch at
+some commit before opening issues.
 
 # LICENSE
 
