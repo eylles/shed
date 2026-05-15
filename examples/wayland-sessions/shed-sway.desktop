@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=shed sway
+Comment=An i3-compatible Wayland compositor on shed
+Exec=shed
+Type=Application
+DesktopNames=sway;wlroots

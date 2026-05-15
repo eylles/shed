@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=shed awesome
+Comment=awesome wm on shed
+Exec=shed
+Type=Application
+Icon=/usr/share/pixmaps/awesome.xpm
