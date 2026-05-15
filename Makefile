@@ -32,11 +32,13 @@ install: all
 	mkdir -p $(LIB_LOC)
 	mkdir -p $(DOC_LOC)
 	mkdir -p $(MAN_LOC)
+	mkdir -p $(DOC_LOC)/examples
 	cp -vf $(SHED)  $(LIB_LOC)/$(SHED)
 	cp -vf $(SHEDC) $(LIB_LOC)/$(SHEDC)
 	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
 	cp -vf $(UTILS)  $(LIB_LOC)/$(UTILS)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
+	cp -vrf examples/* $(DOC_LOC)/examples
 	cp -vf shed.1 $(MAN_LOC)/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
 	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
@@ -46,6 +48,7 @@ uninstall:
 	rm -vf $(BIN_LOC)/shedc
 	rm -vf $(DOC_LOC)/shed.rc
 	rm -vf $(MAN_LOC)/shed.1
+	rm -vr $(DOC_LOC)/examples
 
 clean:
 	rm -f $(SHED)

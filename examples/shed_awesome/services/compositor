@@ -1,0 +1,3 @@
+EXEC=/usr/local/bin/picom
+E_ARGS="--vsync"
+DELAY=2
