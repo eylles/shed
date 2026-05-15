@@ -3,7 +3,7 @@
 #################################
 
 # installation prefix
-PREFIX = ${HOME}/.local
+PREFIX = /usr/local
 # executables location
 BIN_LOC = $(DESTDIR)$(PREFIX)/bin
 # libraries location
