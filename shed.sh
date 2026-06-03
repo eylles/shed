@@ -62,6 +62,38 @@ if [ -z "${XDG_RUNTIME_DIR}" ]; then
   fi
 fi
 
+# Return type: string
+# Usage: get_fallback_identifier <OsType>
+# OsType: expected to be the output from 'uname -s'
+# ------------------------------------------------------------------------------
+# Description:
+# This function returns the first available from a series of possible unique
+# identifiers in the form of OsType_uident, where OsType is the passed argument
+# suffixed by _uident, where uident is a unique identifier, first we try TTYN
+# where TTYN is the basename of the tty path where shed was started from as
+# provided by the tty(1) program trimmed to just the string after the last '/',
+# if tty(1) gives an error we fallback to dispN where N is the value of the
+# 'DISPLAY' env var the ':' separator removed, if that is not set we fallback to
+# pidN where N is the PID of shed, so as an example in FreeBSD with shed started
+# from tty1 the tty(1) program returns '/dev/tty1' the output would be
+# 'FreeBSD_tty1', if tty(1) fails and DISPLAY is set to ':0' then it would be
+# 'FreeBSD_disp_0', worst case we fallback to something like 'FreeBSD_pid1520'
+# if the PID of shed was '1520', this function is for fallbacks only.
+get_fallback_identifier() {
+  started_tty="$(tty 2>/dev/null || echo 'no_tty')"
+  started_tty="${started_tty##*/}"
+  if [ "no_tty" != "$started_tty" ]; then
+    u_ident="$started_tty"
+  elif [ -n "$DISPLAY" ]; then
+    u_ident="disp${DISPLAY##*:}"
+  else
+    u_ident="pid${shed_pid}"
+  fi
+  printf '%s' "${1}_${u_ident}"
+}
+
+# Return type: string
+# ------------------------------------------------------------------------------
 # should return shed's cgroup, cgroup is a linux only feature tho
 # usually the content of cgroup is something like "0::/1", we only return the
 # value after the "/", so with "0::/1" we output "1"
@@ -97,26 +129,15 @@ get_shed_cgroup() {
 # with as i'd assume they already got something better and is just we linux
 # folk whom are stuck in the obscurantism of systemd...
 get_session_identifier() {
-  retval=""
   os_type="$(uname -s)"
   case "$os_type" in
     Linux)
-      retval="$(get_shed_cgroup)"
+      get_shed_cgroup
       ;;
     *)
-      started_tty="$(tty 2>/dev/null || echo 'no_tty')"
-      started_tty="${started_tty##*/}"
-      if [ "no_tty" != "$started_tty" ]; then
-        u_ident="$started_tty"
-      elif [ -n "$DISPLAY" ]; then
-        u_ident="disp${DISPLAY##*:}"
-      else
-        u_ident="pid${shed_pid}"
-      fi
-      retval="${os_type}_${u_ident}"
+      get_fallback_identifier "$os_type"
       ;;
   esac
-  printf '%s' "$retval"
 }
 
 # do we got an XDG_SESSION_ID ?
