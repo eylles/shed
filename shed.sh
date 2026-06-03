@@ -68,18 +68,32 @@ get_shed_cgroup() {
   sed 's@.*::/@@' /proc/"${shed_pid}"/cgroup
 }
 
+get_session_identifier() {
+  retval=""
+  os_type="$(uname -s)"
+  case "$os_type" in
+    Linux)
+      retval="$(get_shed_cgroup)"
+      ;;
+    *)
+      started_tty="$(tty 2>/dev/null || echo 'no_tty')"
+      started_tty="${started_tty##*/}"
+      if [ "no_tty" != "$started_tty" ]; then
+        u_ident="$started_tty"
+      elif [ -n "$DISPLAY" ]; then
+        u_ident="disp${DISPLAY##*:}"
+      else
+        u_ident="pid${shed_pid}"
+      fi
+      retval="${os_type}_${u_ident}"
+      ;;
+  esac
+  printf '%s' "$retval"
+}
+
 # do we got an XDG_SESSION_ID ?
 if [ -z "$XDG_SESSION_ID" ]; then
-  # okay, since we don't it will be shed's cgroup
-  # other kernels like the bsd families, illumos, darwin, etc ought to have
-  # something similar-ish or some property that gets assigned to processes and
-  # propagated to their children that we can get and use to define an
-  # XDG_SESSION_ID, at least i know bsd got the jails system but got no idea if
-  # that would be the correct property to use for this, no idea if people in
-  # other unices and unix-like os even care about something like shed to begin
-  # with as i'd assume they already got something better and is just we linux
-  # folk whom are stuck in the obscurantism of systemd...
-  XDG_SESSION_ID="$(get_shed_cgroup)"
+  XDG_SESSION_ID="$(get_session_identifier)"
   export XDG_SESSION_ID
 fi
 
