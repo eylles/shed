@@ -63,11 +63,39 @@ if [ -z "${XDG_RUNTIME_DIR}" ]; then
 fi
 
 # should return shed's cgroup, cgroup is a linux only feature tho
+# usually the content of cgroup is something like "0::/1", we only return the
+# value after the "/", so with "0::/1" we output "1"
 get_shed_cgroup() {
   # so we can just wing it and use /proc/ directly
   sed 's@.*::/@@' /proc/"${shed_pid}"/cgroup
 }
 
+# Return type: string
+# --------------------------
+# this is a best attempt effort
+# in linux we just output shed's cgroup
+# in any other platform the return will be the output of 'uname -s' suffixed by
+# _uident, where uident is a unique identifier, first we try TTYN where TTYN is
+# the path of the tty where shed was started from as provided by the tty(1)
+# program trimmed to just the string after the last '/', if tty(1) gives an
+# error we fallback to dispN where N is the value of the 'DISPLAY' env var with
+# the prepended ':' removed, if that is not set we fallback to pidN where N is
+# the PID of shed, so as an example in FreeBSD with shed started from tty1 the
+# tty(1) program returns '/dev/tty1' the output would be 'FreeBSD_tty1', if
+# tty(1) fails and DISPLAY is set to ':0' then it would be 'FreeBSD_disp0',
+# worst case we fallback to something like 'FreeBSD_pid1520' if the PID of shed
+# was '1520', if that is not enough for your platform please implement a
+# suitable function that integrates with the correct semantics of your
+# platform/operating system/kernel in a logical way.
+# ------------------------------------------------------------------------------
+# other kernels like the bsd families, illumos, darwin, etc ought to have
+# something similar-ish or some property that gets assigned to processes and
+# propagated to their children that we can get and use to define an
+# XDG_SESSION_ID, at least i know bsd got the jails system but got no idea if
+# that would be the correct property to use for this, no idea if people in
+# other unices and unix-like os even care about something like shed to begin
+# with as i'd assume they already got something better and is just we linux
+# folk whom are stuck in the obscurantism of systemd...
 get_session_identifier() {
   retval=""
   os_type="$(uname -s)"
