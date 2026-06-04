@@ -9,6 +9,10 @@ _true=0
 # value: 1
 _false=1
 
+# Return type: string
+# Usage: rm_char_first_occur <str> <char>
+# Description:
+#   Removes the first (leftmost) occurrence of <char> from string <str>
 rm_char_first_occur() {
     str="$1"
     delim="$2"
@@ -18,6 +22,8 @@ rm_char_first_occur() {
     printf '%s' "$out"
 }
 
+# Return type: int bool
+# Usage: has_char <str> <char>
 has_char() {
     str="$1"
     char="$2"
@@ -28,6 +34,10 @@ has_char() {
     return "$retval"
 }
 
+# Return type: string
+# Usage: rm_all_char <str> <char>
+# Description:
+#   Loops until all occurrences of <char> are removed from string <str>
 rm_all_char() {
     str="$1"
     delim="$2"
