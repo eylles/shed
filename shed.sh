@@ -85,7 +85,8 @@ get_fallback_identifier() {
   if [ "no_tty" != "$started_tty" ]; then
     u_ident="$started_tty"
   elif [ -n "$DISPLAY" ]; then
-    u_ident="disp${DISPLAY##*:}"
+    use_disp="$(rm_all_char "$DISPLAY" ":")"
+    u_ident="disp${use_disp}"
   else
     u_ident="pid${shed_pid}"
   fi
