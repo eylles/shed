@@ -9,6 +9,34 @@ _true=0
 # value: 1
 _false=1
 
+rm_char_first_occur() {
+    str="$1"
+    delim="$2"
+    right="${str#*"$delim"}"
+    left="${str%"$delim$right"*}"
+    out="${left}${right}"
+    printf '%s' "$out"
+}
+
+has_char() {
+    str="$1"
+    char="$2"
+    retval="$_false"
+    case "$str" in
+        *"$char"*) retval="$_true" ;;
+    esac
+    return "$retval"
+}
+
+rm_all_char() {
+    str="$1"
+    delim="$2"
+    while has_char "$str" "$delim"; do
+        str="$(rm_char_first_occur "$str" "$delim")"
+    done
+    printf '%s' "$str"
+}
+
 # Return type: int bool
 # Usage: is_dir directory
 # --------------------------------------------------
