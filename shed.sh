@@ -96,11 +96,11 @@ get_fallback_identifier() {
 # Return type: string
 # ------------------------------------------------------------------------------
 # should return shed's cgroup, cgroup is a linux only feature tho
-# usually the content of cgroup is something like "0::/1", we only return the
+# if the content of cgroup is something like "0::/1", we only return the
 # value after the "/", so with "0::/1" we output "1"
 get_shed_cgroup() {
   # so we can just wing it and use /proc/ directly
-  sed 's@.*::/@@' /proc/"${shed_pid}"/cgroup
+  sed 's@.*::/@@' /proc/"${shed_pid}"/cgroup 2>/dev/null
 }
 
 # Return type: string
