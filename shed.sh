@@ -109,6 +109,8 @@ get_shed_ps_s_id() {
 
 # Return type: string
 # ------------------------------------------------------------------------------
+# if loginctl is available use it to get the XDG_SESSION_ID, loginctl is usually
+# only available on linux distributions that use either systemd or elogind
 get_loginctl_session_id() {
   if command -v loginctl >/dev/null 2>&1; then
     loginctl session-status | head -n1 | cut -d' ' -f1
