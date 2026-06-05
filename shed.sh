@@ -95,6 +95,16 @@ get_fallback_identifier() {
 
 # Return type: string
 # ------------------------------------------------------------------------------
+get_loginctl_session_id() {
+  if command -v loginctl >/dev/null 2>&1; then
+    loginctl session-status | head -n1 | cut -d' ' -f1
+  else
+    return "$_false"
+  fi
+}
+
+# Return type: string
+# ------------------------------------------------------------------------------
 # should return shed's cgroup, cgroup is a linux only feature tho
 # if the content of cgroup is something like "0::/1", we only return the
 # value after the "/", so with "0::/1" we output "1"
