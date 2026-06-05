@@ -105,6 +105,13 @@ get_loginctl_session_id() {
 
 # Return type: string
 # ------------------------------------------------------------------------------
+# should return shed's sessionid value, this is a linux specific feature tho
+get_shed_proc_sessionid() {
+  cat /proc/"${shed_pid}"/sessionid 2>/dev/null
+}
+
+# Return type: string
+# ------------------------------------------------------------------------------
 # should return shed's cgroup, cgroup is a linux only feature tho
 # if the content of cgroup is something like "0::/1", we only return the
 # value after the "/", so with "0::/1" we output "1"
