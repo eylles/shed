@@ -95,6 +95,20 @@ get_fallback_identifier() {
 
 # Return type: string
 # ------------------------------------------------------------------------------
+# altho the ps(1) program is a standard unix interface the value it returns may
+# not be desirable for usage as an XDG_SESSION_ID
+get_shed_ps_s_id() {
+  pssid=$(ps -o sid= -p "$shed_pid" 2>/dev/null)
+  if [ -n "$pssid" ]; then
+    pssid=$(rm_all_char "$pssid" ' ')
+    printf '%s' "$pssid"
+  else
+    return "$_false"
+  fi
+}
+
+# Return type: string
+# ------------------------------------------------------------------------------
 get_loginctl_session_id() {
   if command -v loginctl >/dev/null 2>&1; then
     loginctl session-status | head -n1 | cut -d' ' -f1
