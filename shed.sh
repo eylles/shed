@@ -109,6 +109,18 @@ get_shed_ps_s_id() {
 
 # Return type: string
 # ------------------------------------------------------------------------------
+# if the XDG_SESSION_COOKIE string is present we assume we are within a
+# consolekit session and we can get a usable value from ck-list-sessions
+get_consolekit_session_id() {
+  if [ -n "$XDG_SESSION_COOKIE" ]; then
+    ck-list-sessions | awk '/^Session/{print $2; exit}'
+  else
+    return "$_false"
+  fi
+}
+
+# Return type: string
+# ------------------------------------------------------------------------------
 # if loginctl is available use it to get the XDG_SESSION_ID, loginctl is usually
 # only available on linux distributions that use either systemd or elogind
 get_loginctl_session_id() {
@@ -149,6 +161,13 @@ get_shed_cgroup() {
 get_linux_session_identifier() {
   # Try loginctl first
   uniqid="$(get_loginctl_session_id)"
+  if [ -n "$uniq" ]; then
+    printf '%s' "$uniq"
+    return
+  fi
+
+  # try consolekit
+  uniqid="$(get_consolekit_session_id)"
   if [ -n "$uniq" ]; then
     printf '%s' "$uniq"
     return
