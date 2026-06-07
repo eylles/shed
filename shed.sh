@@ -123,7 +123,15 @@ get_loginctl_session_id() {
 # ------------------------------------------------------------------------------
 # should return shed's sessionid value, this is a linux specific feature tho
 get_shed_proc_sessionid() {
-  cat /proc/"${shed_pid}"/sessionid 2>/dev/null
+  # maximum unsigned 32 bit integer '4294967295''
+  MaxUInt32=$(( (1 << 32) - 1 ))
+  proc_sessid="$(cat /proc/"${shed_pid}"/sessionid 2>/dev/null)"
+  # Ensure it is a valid ID and not the "no session" unset indicator
+  if [ "$MaxUInt32" -eq "$proc_sessid" ]; then
+    return "$_false"
+  else
+    printf '%s' "$proc_sessid"
+  fi
 }
 
 # Return type: string
