@@ -137,6 +137,42 @@ get_shed_cgroup() {
 }
 
 # Return type: string
+# ------------------------------------------------------------------------------
+# Gets a unique identifier string to use as XDG_SESSION_ID on linux
+get_linux_session_identifier() {
+  # Try loginctl first
+  uniqid="$(get_loginctl_session_id)"
+  if [ -n "$uniq" ]; then
+    printf '%s' "$uniq"
+    return
+  fi
+
+  # try cgroup
+  uniqid="$(get_shed_cgroup)"
+  if [ -n "$uniqid" ]; then
+    printf '%s' "$uniqid"
+    return
+  fi
+
+  # Try /proc/sessionid
+  uniqid="$(get_shed_proc_sessionid)"
+  if [ -n "$uniqid" ]; then
+    printf '%s' "$uniqid"
+    return
+  fi
+
+  # Try ps(1) SID
+  uniqid="$(get_shed_ps_s_id)"
+  if [ -n "$uniqid" ]; then
+    printf '%s' "$uniqid"
+    return
+  fi
+
+  # Last resort: generic fallback
+  get_fallback_identifier "Linux"
+}
+
+# Return type: string
 # --------------------------
 # this is a best attempt effort
 # in linux we just output shed's cgroup
@@ -166,7 +202,7 @@ get_session_identifier() {
   os_type="$(uname -s)"
   case "$os_type" in
     Linux)
-      get_shed_cgroup
+      get_linux_session_identifier
       ;;
     *)
       get_fallback_identifier "$os_type"
