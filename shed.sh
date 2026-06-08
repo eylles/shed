@@ -175,7 +175,7 @@ get_linux_session_identifier() {
 
   # try cgroup
   uniqid="$(get_shed_cgroup)"
-  if [ -n "$uniqid" ]; then
+  if is_str_valid "$uniqid" ; then
     printf '%s' "$uniqid"
     return
   fi
