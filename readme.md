@@ -63,9 +63,10 @@ the sysvinit architecture with the aim of keeping simple, intuitive and
 completely agnostic from any window manager, desktop environment, and even to
 any graphical environment as it's architecture should have not problem
 whatsoever handling x11, wayland, [arcan](https://github.com/letoram/arcan),
-tty, ssh, etc... thanks to how it was designed and written in almost exclusively
-portable POSIX shell with some awk and just 1 function that relies on a linux
-kernel feature.
+tty, ssh, etc... thanks to how it was designed and written in portable POSIX
+shell with some awk shed should be trivial to port across UNIX-like operating
+systems other than linux, if someone on the BSD or Illumos world is interested
+check PORTING.md.
 
 This program is something that should have been written 10, 15 maybe even 20
 years ago by someone much smarter but it was only when i could no longer bear
