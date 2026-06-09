@@ -23,7 +23,6 @@
 shed_pid="${$}"
 
 SHED_ENV_EXPORT_LOC=""
-SHED_RELOAD=""
 
 # check if GUI_SESSION_PID is set
 if [ -n "$GUI_SESSION_PID" ]; then
@@ -362,10 +361,6 @@ prog="${0##*/}"
 # initial value: $_false
 sessdir="$_false"
 
-# werether shed is a fresh start or a post reload
-# default: $_false
-reloaded="$_false"
-
 # check if the session dir exists
 if [ -d "$ShedSessionDir" ]; then
   # let the program knows the dir exists
@@ -388,6 +383,10 @@ fi
 if [ ! -f "$shed_session_file" ]; then
   printf '%s' "$SHED_SESSION" > "$shed_session_file"
 fi
+
+# werether shed is a fresh start or a post reload
+# default: $_false
+reloaded="$_false"
 
 if [ ! -f "$lockfile" ]; then
   printf '%s\n' "$shed_pid" > "$lockfile"
@@ -499,6 +498,8 @@ wait_exit() {
     sleep 0.25
   done
 }
+
+SHED_RELOAD=""
 
 # Return type: void
 #       Usage: daemon_cycle
