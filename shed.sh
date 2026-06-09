@@ -499,6 +499,11 @@ wait_exit() {
   done
 }
 
+# global var to track daemon cycle reload state
+#   0 or unset: continue cycle.
+#   1: re-exec daemon.
+#   2: exit daemon, set by daemon_cycle when the dir for the msg_socket fifo
+#      does not exist.
 SHED_RELOAD=""
 
 # Return type: void
