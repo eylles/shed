@@ -508,6 +508,26 @@ wait_exit() {
 SHED_RELOAD=""
 
 # Return type: void
+#       Usage: process_action "Action Argument"
+# --------------------------------------------------
+# parse a single input line and run the associated commands
+process_action() {
+  Input="$1"
+  [ -z "$Input" ] && return
+  # first column separated by space
+  Action="${Input%% *}"
+  # second column separated by space
+  Argument="${Input##* }"
+  case "${Action}" in
+    reload)      SHED_RELOAD=1              ;;
+    start)       start_services "$Argument" ;;
+    stop)        killprocs "$Argument"      ;;
+    hup)         hupprocs "$Argument"       ;;
+    wait-logout) wait_exit                  ;;
+  esac
+}
+
+# Return type: void
 #       Usage: daemon_cycle
 # --------------------------------------------------
 # this function does not return output whatsoever
