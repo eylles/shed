@@ -527,6 +527,26 @@ process_action() {
   esac
 }
 
+# Define path for the internal atomic action queue
+QUEUE_FILE="${ShedSessionDir}/queue"
+
+# Return type: void
+#       Usage: ipcHandler
+# --------------------------------------------------
+# process queue file line by line, lines are handled with process_action
+ipcHandler() {
+  # move the queue file so the loop can keep writing to a clean one
+  if [ -s "$QUEUE_FILE" ]; then
+    mv "$QUEUE_FILE" "$QUEUE_FILE.work"
+    : > "$QUEUE_FILE"
+    while read -r Line; do
+      process_action "$Line"
+      [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ] && break
+    done < "$QUEUE_FILE.work"
+    rm -f "$QUEUE_FILE.work"
+  fi
+}
+
 # Return type: void
 #       Usage: daemon_cycle
 # --------------------------------------------------
