@@ -20,6 +20,7 @@
 # source utils library
 . ./utils.sh
 
+# Type: int
 shed_pid="${$}"
 
 SHED_ENV_EXPORT_LOC=""
@@ -267,7 +268,7 @@ if [ -d "$old_conf_dir" ]; then
   ConfDir="$old_conf_dir"
 fi
 # shed config file
-# ${XDG_CONFIG_HOME}/.config}/shed/shed.rc
+# ${XDG_CONFIG_HOME}/.config}/shed/${SESSBASE}/shed.rc
 Config="${ConfDir}/shed.rc"
 FallbackConfig="/etc/shed${SESSBASE}/shed.rc"
 # the default config template
