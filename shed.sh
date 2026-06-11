@@ -529,6 +529,8 @@ process_action() {
 
 # Define path for the internal atomic action queue
 QUEUE_FILE="${ShedSessionDir}/queue"
+# initialize the QUEUE_FILE
+: > "$QUEUE_FILE"
 
 # Return type: void
 #       Usage: ipcHandler
