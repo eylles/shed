@@ -631,7 +631,7 @@ trap 'sigHandler "USR2"' USR2
 trap 'sigHandler "EXIT"' EXIT
 trap 'sigHandler "TERM"' TERM
 trap 'sigHandler "INT"'  INT
-trap 'sigHandler "CONT"'  CONT
+trap 'sigHandler "CONT"' CONT
 trap 'sigHandler "QUIT"' QUIT
 
 daemon_cycle
