@@ -588,7 +588,7 @@ daemon_cycle() {
 sigHandler () {
   msg_log "received signal $1"
   case "$1" in
-    HUP|USR1|USR2)
+    HUP|USR*)
       printf '%s\n' "reload" > "$msg_socket"
       ;;
     TERM|INT)
