@@ -554,33 +554,38 @@ ipcHandler() {
 # --------------------------------------------------
 # this function does not return output whatsoever
 daemon_cycle() {
-  Action=""
-  Argument=""
-  # daemon cycle to run until we receive a reload action in the socket
+  # Ensure queue file is clean before launching background task
+  : > "$QUEUE_FILE"
+  # Spin up the non-blocking background reader loop
+  (
+    while [ -d "${ShedSessionDir}" ]; do
+      # This read blocks inside a subshell without blocking signals to the main
+      # process loop
+      if read -r RawInput < "$msg_socket"; then
+        if [ -n "$RawInput" ]; then
+          # Save command to queue file and issue a localized nudge signal (USR1)
+          printf '%s\n' "$RawInput" >> "$QUEUE_FILE"
+          kill -USR1 "$shed_pid"
+        fi
+      fi
+    done
+  ) &
+  READER_PID=$!
+  # Event Loop
   while [ -z "$SHED_RELOAD" ] || [ "$SHED_RELOAD" = 0 ] ; do
-    # check that the ShedSessionDir exists
+    # Check that the ShedSessionDir exists
     if [ -d "${ShedSessionDir}" ]; then
-      # wait until a write is done to the socket
-      # read the contents of the socket, action and argument
-      # drain the named pipe $msg_socket
-      SocInput=$(cat "$msg_socket")
-      # from the socket, first column separated by space
-      Action="${SocInput%% *}"
-      # from the socket, second column separated by space
-      Argument="${SocInput##* }"
-      # decide what to do with the read action and argument
-      case "${Action}" in
-        reload)      SHED_RELOAD=1              ;;
-        start)       start_services "$Argument" ;;
-        stop)        killprocs "$Argument"      ;;
-        hup)         hupprocs "$Argument"       ;;
-        wait-logout) wait_exit                  ;;
-      esac
+      # Posix 'wait' yields control. It unblocks instantly when any trap fires.
+      # It returns 128 when interrupted by a signal, which satisfies the loop
+      # tick.
+      wait "$READER_PID" 2>/dev/null
     else
       # shed must exit
       SHED_RELOAD=2
     fi
   done
+  # Cleanup background reader process before dropping out of the cycle
+  kill "$READER_PID" 2>/dev/null
 }
 
 # Return type: void
