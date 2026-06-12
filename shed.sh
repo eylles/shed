@@ -634,7 +634,7 @@ start_components "$start_str"
 start_services "$start_str"
 
 trap 'sigHandler "HUP"'  HUP
-trap 'sigHandler "USR1"' USR1
+trap 'ipcHandler'        USR1 # exclusively for internal background IPC alerts
 trap 'sigHandler "USR2"' USR2
 trap 'sigHandler "EXIT"' EXIT
 trap 'sigHandler "TERM"' TERM
