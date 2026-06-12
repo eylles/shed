@@ -527,7 +527,8 @@ process_action() {
   esac
 }
 
-# Define path for the internal atomic action queue
+# path for the internal atomic action queue
+# ${ShedSessionDir}/queue
 QUEUE_FILE="${ShedSessionDir}/queue"
 # initialize the QUEUE_FILE
 : > "$QUEUE_FILE"
