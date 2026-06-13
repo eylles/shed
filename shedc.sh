@@ -240,7 +240,7 @@ procstat() {
       os_type=$(uname -s)
       case "${os_type}" in
         Linux)
-          pidmax=$(head /proc/sys/kernel/pid_max)
+          pidmax=$(cat /proc/sys/kernel/pid_max)
           ;;
         NetBSD)
           pidmax=30000
