@@ -249,7 +249,7 @@ procstat() {
           pidmax=99999
           ;;
       esac
-      pw=$(printf '%s\n' "$pidmax" | wc -c)
+      pw=${#pidmax} # get string length
     fi
     if ! is_dir_empty "$ServicesDir"; then
       print_procstatus_header "SERVICE"
