@@ -594,7 +594,7 @@ daemon_cycle() {
 # Description:
 #   Handle signals to terminate or reload the program
 sigHandler () {
-  msg_log "received signal $1"
+  msg_log "info" "received signal $1"
   case "$1" in
     HUP|USR*)
       printf '%s\n' "reload" > "$msg_socket"
