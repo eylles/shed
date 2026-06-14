@@ -538,6 +538,7 @@ QUEUE_FILE="${ShedSessionDir}/queue"
 # --------------------------------------------------
 # process queue file line by line, lines are handled with process_action
 ipcHandler() {
+  msg_log "debug" "received signal $1"
   # move the queue file so the loop can keep writing to a clean one
   if [ -s "$QUEUE_FILE" ]; then
     mv "$QUEUE_FILE" "$QUEUE_FILE.work"
@@ -634,7 +635,7 @@ start_components "$start_str"
 start_services "$start_str"
 
 trap 'sigHandler "HUP"'  HUP
-trap 'ipcHandler'        USR1 # exclusively for internal background IPC alerts
+trap 'ipcHandler "USR1"' USR1 # exclusively for internal background IPC alerts
 trap 'sigHandler "USR2"' USR2
 trap 'sigHandler "EXIT"' EXIT
 trap 'sigHandler "TERM"' TERM
