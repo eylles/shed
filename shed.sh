@@ -624,7 +624,7 @@ else
   start_str="firstrun"
 fi
 
-msg_log "info" "$prog $prog_v initiated"
+msg_log "info" "$prog $prog_v initiated with pid $shed_pid"
 
 if [ "$_true" -eq "$UsingOldShedDir" ]; then
   msg_log "info" "$prog $prog_v using old shed dir $ShedSessionDir"
