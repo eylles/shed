@@ -160,6 +160,10 @@ EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/env.d"
 # /etc/shed${SESSBASE}/env.d
 FallbackEnvDir="/etc/shed${SESSBASE}/env.d"
 
+LogLevelFile="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/loglevel.rc"
+FallbackLogLevelFile="/etc/shed${SESSBASE}/loglevel.rc"
+UseLogLevelFile=""
+
 # Type: int
 # possible values:
 #   0  -  logging disabled
@@ -169,6 +173,19 @@ FallbackEnvDir="/etc/shed${SESSBASE}/env.d"
 # -------------------------------------------
 # default: 1
 LOG_LEVEL=1
+
+if [ -r "$LogLevelFile" ]; then
+  UseLogLevelFile="$LogLevelFile"
+elif [ -r "$FallbackLogLevelFile" ]; then
+  UseLogLevelFile="$FallbackLogLevelFile"
+fi
+
+if [ -n "$UseLogLevelFile" ]; then
+  ConfLogLevel="$(readkeyvalprop "LOG_LEVEL" "$UseLogLevelFile")"
+  if [ -n "$ConfLogLevel" ]; then
+    LOG_LEVEL="$ConfLogLevel"
+  fi
+fi
 
 # Return type: void
 # Usage: msg_log "level" "message"
