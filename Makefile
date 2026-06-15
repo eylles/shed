@@ -38,6 +38,7 @@ install: all
 	cp -vf $(LIBSHED)  $(LIB_LOC)/$(LIBSHED)
 	cp -vf $(UTILS)  $(LIB_LOC)/$(UTILS)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
+	cp -vf loglevel.rc $(DOC_LOC)/loglevel.rc
 	cp -vrf examples/* $(DOC_LOC)/examples
 	cp -vf shed.1 $(MAN_LOC)/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
