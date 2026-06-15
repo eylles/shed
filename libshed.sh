@@ -160,6 +160,16 @@ EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/env.d"
 # /etc/shed${SESSBASE}/env.d
 FallbackEnvDir="/etc/shed${SESSBASE}/env.d"
 
+# Type: int
+# possible values:
+#   0  -  logging disabled
+#   1  -  show info messages
+#   2  -  show error messages
+#   3  -  show debug messages
+# -------------------------------------------
+# default: 1
+LOG_LEVEL=1
+
 # Return type: void
 # Usage: msg_log "level" "message"
 # log level can be:
@@ -170,20 +180,32 @@ msg_log() {
     loglevel="$1"
     shift
     message="$*"
+    should_log="$_false"
     case "$loglevel" in
-        info)
-          loglevel="inf"
-            ;;
-        err)
-          loglevel="err"
-            ;;
-        debug)
-          loglevel="dbg"
-            ;;
+      info)
+        loglevel="inf"
+        if [ "$LOG_LEVEL" -gt 0 ]; then
+          should_log="$_true"
+        fi
+        ;;
+      err)
+        loglevel="err"
+        if [ "$LOG_LEVEL" -gt 0 ]; then
+          should_log="$_true"
+        fi
+        ;;
+      debug)
+        loglevel="dbg"
+        if [ "$LOG_LEVEL" -gt 0 ]; then
+          should_log="$_true"
+        fi
+        ;;
     esac
-    printf '[%s] %s: %s\n' \
-      "$(date '+%Y-%m-%d-%H:%M:%S')" \
-      "$loglevel" "$message" >> "$shed_log_file"
+    if [ "$_true" -eq "$should_log" ]; then
+      printf '[%s] %s: %s\n' \
+        "$(date '+%Y-%m-%d-%H:%M:%S')" \
+        "$loglevel" "$message" >> "$shed_log_file"
+    fi
 }
 
 # Return type: void or string
