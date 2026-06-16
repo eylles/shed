@@ -127,44 +127,44 @@ ShedConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}"
 ShedFallbackConfDir="/etc/shed${SESSBASE}"
 
 # directory where we are loading the user services to start from
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/services
-ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/services"
+# ${ShedConfDir}/services
+ServicesDir="${ShedConfDir}/services"
 # directory where we fallback to loading the user services to start from
-# /etc/shed${SESSBASE}/services
-FallbackServicesDir="/etc/shed${SESSBASE}/services"
+# ${ShedFallbackConfDir}/services
+FallbackServicesDir="${ShedFallbackConfDir}/services"
 
 # directory where we are loading the session components to start from
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/components
-ComponentsDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/components"
+# ${ShedConfDir}/components
+ComponentsDir="${ShedConfDir}/components"
 # directory where we fallback to loading the session components to start from
-# /etc/shed${SESSBASE}/components
-FallbackComponentsDir="/etc/shed${SESSBASE}/components"
+# ${ShedFallbackConfDir}/components
+FallbackComponentsDir="${ShedFallbackConfDir}/components"
 
 # path of the transient executable script, the transient program will have the
 # responsability to run shed as it's child
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/transient
-UseTransient="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/transient"
+# ${ShedConfDir}/transient
+UseTransient="${ShedConfDir}/transient"
 # fallback transient executable script, the transient program will have the
 # responsability to run shed as it's child
-# /etc/shed${SESSBASE}/transient
-FallbackTransient="/etc/shed${SESSBASE}/transient"
+# ${ShedFallbackConfDir}/transient
+FallbackTransient="${ShedFallbackConfDir}/transient"
 
 # directory for loadable shallow .env files
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/shallow.d
-ShallowEnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/shallow.d"
+# ${ShedConfDir}/shallow.d
+ShallowEnvDir="${ShedConfDir}/shallow.d"
 # directory for loadable shallow .env files
-# /etc/shed${SESSBASE}/shallow.d
-FallbackShallowEnvDir="/etc/shed${SESSBASE}/shallow.d"
+# ${ShedFallbackConfDir}/shallow.d
+FallbackShallowEnvDir="${ShedFallbackConfDir}/shallow.d"
 
 # directory for loadable session .env files
-# ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/env.d
-EnvDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/env.d"
+# ${ShedConfDir}/env.d
+EnvDir="${ShedConfDir}/env.d"
 # directory for loadable session .env files
-# /etc/shed${SESSBASE}/env.d
-FallbackEnvDir="/etc/shed${SESSBASE}/env.d"
+# ${ShedFallbackConfDir}/env.d
+FallbackEnvDir="${ShedFallbackConfDir}/env.d"
 
-LogLevelFile="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/loglevel.rc"
-FallbackLogLevelFile="/etc/shed${SESSBASE}/loglevel.rc"
+LogLevelFile="${ShedConfDir}/loglevel.rc"
+FallbackLogLevelFile="${ShedFallbackConfDir}/loglevel.rc"
 UseLogLevelFile=""
 
 # Type: int
