@@ -123,6 +123,9 @@ if [ -z "$SESSBASE" ]; then
   esac
 fi
 
+ShedConfDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}"
+ShedFallbackConfDir="/etc/shed${SESSBASE}"
+
 # directory where we are loading the user services to start from
 # ${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/services
 ServicesDir="${XDG_CONFIG_HOME:-${HOME}/.config}/shed${SESSBASE}/services"
