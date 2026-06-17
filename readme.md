@@ -32,6 +32,11 @@ Session services, are programs that run as part of your graphical session, for
 example in x11 you have the compositor, keyring, maybe a clipboard daemon and
 perhaps pulseaudio or pipewire
 
+This program is something that should have been written 10, 15 maybe even 20
+years ago by someone much smarter but it was only when i could no longer bear
+the situation of there being no generic program with the capabilites of shed
+that i forced myself into writing it.
+
 ## dependencies
 
 - a posix compatible shell interpreter
@@ -41,11 +46,6 @@ perhaps pulseaudio or pipewire
 ## why ?
 
 [Why SHED?](why_shed.md)
-
-This program is something that should have been written 10, 15 maybe even 20
-years ago by someone much smarter but it was only when i could no longer bear
-the situation of there being no generic program with the capabilites of shed
-that i forced myself into writing it.
 
 ## Quick start
 
