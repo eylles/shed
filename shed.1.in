@@ -102,7 +102,9 @@ not to mention the
 script, the following assumes the 'default' session is going to be used.
 
 .P
-The shed.rc file is just a simple key=val file with the following options:
+The
+.B shed.rc
+file is just a simple key=val file with the following options:
 
 
 .TP
