@@ -3,9 +3,13 @@
 include version.mk
 include config.mk
 
-.PHONY: all install uninstall clean
+.PHONY: all bin lib install uninstall clean
 
-all: $(SHED) $(SHEDC) $(LIBSHED) $(UTILS)
+all: bin lib
+
+bin: $(SHED) $(SHEDC)
+
+lib: $(LIBSHED) $(UTILS)
 
 $(SHED):
 	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" shed.sh | \
