@@ -45,7 +45,7 @@ that i forced myself into writing it.
 
 ## why ?
 
-[Why SHED?](why_shed.md)
+[Why SHED?](docs/why_shed.md)
 
 ## Quick start
 
@@ -75,7 +75,7 @@ you can figure out the rest, i believe in you!
 
 ## ROADMAP
 
-Check the shed [Roadmap](roadmap.md)
+Check the shed [Roadmap](docs/roadmap.md)
 
 ## use the latest release
 
