@@ -34,7 +34,7 @@ $(UTILS): builddir
 	cp -f utils.sh build/$@
 	chmod 755 build/$@
 
-install: all
+install:
 	mkdir -p $(BIN_LOC)
 	mkdir -p $(LIB_LOC)
 	mkdir -p $(DOC_LOC)
