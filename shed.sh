@@ -383,6 +383,7 @@ fi
 
 if [ ! -f "$shed_session_file" ]; then
   printf '%s' "$SHED_SESSION" > "$shed_session_file"
+  msg_log "debug" "shed_session_file '$shed_session_file' written"
 fi
 
 # werether shed is a fresh start or a post reload
@@ -411,11 +412,13 @@ if [ ! -p "$msg_socket" ]; then
     rm "$msg_socket"
   fi
   mkfifo -m 600 "$msg_socket"
+  msg_log "debug" "message socket '$msg_socket' open"
 fi
 
 # create the empty reply file if necessary
 if [ -f "$msg_reply" ]; then
   : > "$msg_reply"
+  msg_log "debug" "reply socket '$msg_reply' initiated"
 fi
 
 
@@ -465,6 +468,7 @@ write_info() {
 }
 
 write_info > "$shed_info"
+msg_log "debug" "shed info file '$shed_info' written"
 
 # write started for when shedc requests a reload
 if [ "$reloaded" -eq "$_true" ]; then
@@ -567,6 +571,7 @@ daemon_cycle() {
         if [ -n "$RawInput" ]; then
           # Save command to queue file and issue a localized nudge signal (USR1)
           printf '%s\n' "$RawInput" >> "$QUEUE_FILE"
+          msg_log "debug" "nudge main shed process '$shed_pid'"
           kill -USR1 "$shed_pid"
         fi
       fi
@@ -631,6 +636,7 @@ if [ "$_true" -eq "$UsingOldShedDir" ]; then
   msg_log "info" "$prog $prog_v using old shed dir $ShedSessionDir"
 fi
 
+msg_log "debug" "using start string '$start_str'"
 start_components "$start_str"
 start_services "$start_str"
 
@@ -643,6 +649,7 @@ trap 'sigHandler "INT"'  INT
 trap 'sigHandler "CONT"' CONT
 trap 'sigHandler "QUIT"' QUIT
 
+msg_log "debug" "waiting on daemon main cycle"
 daemon_cycle
 
 # reload shed
