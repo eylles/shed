@@ -81,6 +81,36 @@ status for the services is shown as follows:
 [ 0 ] means the oneshot completed succesfully
 .TP
 [ 1 ] means the oneshot completed unsuccesfully
+.SH SIGNALS
+.P
+The signals handled by the
+.B shed
+daemon:
+.TP
+.B "USR1"
+On SIGUSR1 shed is nudged to process the QUEUE_FILE, when text is written to the
+msg_socket a subshell will append it to the QUEUE_FILE, then nudge the main
+process with SIGUSR1 to process the actions line by line, this signal is used
+internally so externally sending it will accomplish nothing.
+.TP
+.B "HUP" "USR2"
+On SIGHUP shed performs a
+.B reload
+action.
+.TP
+.B "INT"
+On SIGINT shed stops all services and components.
+.TP
+.B "CONT"
+On SIGCONT shed starts all components and services.
+.TP
+.B "TERM"
+On SIGTERM shed stops all services and components.
+.TP
+.B "QUIT" "EXIT"
+On SIGQUIT shed stops all services and components, then performs rm -rf on the
+$ShedSessionDir and finally kill $SHED_SESSION_PID, which maps to the session
+leader.
 .SH CONFIGURATION
 .P
 The configuration for shed is performed in:
