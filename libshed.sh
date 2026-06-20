@@ -214,13 +214,13 @@ msg_log() {
         ;;
       err)
         loglevel="err"
-        if [ "$LOG_LEVEL" -gt 0 ]; then
+        if [ "$LOG_LEVEL" -gt 1 ]; then
           should_log="$_true"
         fi
         ;;
       debug)
         loglevel="dbg"
-        if [ "$LOG_LEVEL" -gt 0 ]; then
+        if [ "$LOG_LEVEL" -gt 2 ]; then
           should_log="$_true"
         fi
         ;;
