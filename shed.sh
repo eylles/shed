@@ -161,15 +161,15 @@ get_shed_cgroup() {
 get_linux_session_identifier() {
   # Try loginctl first
   uniqid="$(get_loginctl_session_id)"
-  if [ -n "$uniq" ]; then
-    printf '%s' "$uniq"
+  if [ -n "$uniqid" ]; then
+    printf '%s' "$uniqid"
     return
   fi
 
   # try consolekit
   uniqid="$(get_consolekit_session_id)"
-  if [ -n "$uniq" ]; then
-    printf '%s' "$uniq"
+  if [ -n "$uniqid" ]; then
+    printf '%s' "$uniqid"
     return
   fi
 
