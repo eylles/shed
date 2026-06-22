@@ -14,18 +14,18 @@ lib: $(LIBSHED) $(UTILS)
 builddir:
 	mkdir build
 
-$(SHED): builddir
+$(SHED): builddir $(LIBSHED)
 	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" shed.sh | \
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" | \
 	sed "s|@DOC@|$(DOC_LOC)|" > build/$@
 	chmod 755 build/$@
 	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > build/shed.1
 
-$(SHEDC): builddir
+$(SHEDC): builddir $(LIBSHED)
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc.sh > build/$@
 	chmod 755 build/$@
 
-$(LIBSHED): builddir
+$(LIBSHED): builddir $(UTILS)
 	sed "s|@VERSION@|$(VERSION)|g" libshed.sh | \
 	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" > build/$@
 	chmod 755 build/$@
