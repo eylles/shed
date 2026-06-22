@@ -43,6 +43,15 @@ that i forced myself into writing it.
 - core unix utilities (date, mkdir, awk, kill, mkfifo, cat)
 
 
+## porting
+
+This program is written to target the widest range of unix-like operating
+systems, altho i lack the knowledge to properly integrate shed into BSD and
+illumos environments wrapper functions are provided in the codebase so that
+adding the corresponding cases should be the only modification of shed needed.
+
+For details check [PORTING](docs/porting.md)
+
 ## why ?
 
 [Why SHED?](docs/why_shed.md)
