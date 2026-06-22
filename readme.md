@@ -86,6 +86,16 @@ you can figure out the rest, i believe in you!
 
 Check the shed [Roadmap](docs/roadmap.md)
 
+## Contributing
+
+Check the [CONTRIBUTING](CONTRIBUTING.md) guidelines first and please follow
+them, if you want to contribute code be sure to read the
+[architecture](docs/architecture.md) as well as the
+[how it works](docs/how_it_works.md) documents, if leveraging the capabilities
+of AI tools please direct your tool of choice to take into consideration the
+previously mentioned documents as well as the [internals](docs/internals.md)
+document.
+
 ## use the latest release
 
 As of release v0.3.0 there is no reason whatsoever to use older releases, the
