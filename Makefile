@@ -11,30 +11,30 @@ bin: $(SHED) $(SHEDC)
 
 lib: $(LIBSHED) $(UTILS)
 
-builddir:
+build:
 	mkdir build
 
-$(SHED): builddir $(LIBSHED)
+$(SHED): build $(LIBSHED)
 	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" shed.sh | \
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" | \
 	sed "s|@DOC@|$(DOC_LOC)|" > build/$@
 	chmod 755 build/$@
 	sed "s|@VERSION@|$(VERSION)|g" shed.1.in > build/shed.1
 
-$(SHEDC): builddir $(LIBSHED)
+$(SHEDC): build $(LIBSHED)
 	sed "s|./libshed.sh|$(LIB_LOC)/$(LIBSHED)|g" shedc.sh > build/$@
 	chmod 755 build/$@
 
-$(LIBSHED): builddir $(UTILS)
+$(LIBSHED): build $(UTILS)
 	sed "s|@VERSION@|$(VERSION)|g" libshed.sh | \
 	sed "s|./utils.sh|$(LIB_LOC)/$(UTILS)|g" > build/$@
 	chmod 755 build/$@
 
-$(UTILS): builddir
+$(UTILS): build
 	cp -f utils.sh build/$@
 	chmod 755 build/$@
 
-install:
+install: all
 	mkdir -p $(BIN_LOC)
 	mkdir -p $(LIB_LOC)
 	mkdir -p $(DOC_LOC)
