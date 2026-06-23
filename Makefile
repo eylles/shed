@@ -61,9 +61,4 @@ uninstall:
 	rm -vr $(DOC_LOC)/examples
 
 clean:
-	rm -f build/$(SHED)
-	rm -f build/$(SHEDC)
-	rm -f build/$(LIBSHED)
-	rm -f build/$(UTILS)
-	rm -f build/shed.1
-	rm -rf build
+	rm -vrf build
