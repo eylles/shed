@@ -31,8 +31,22 @@
       managing 1 window manager or 1 wayland session but having multiple
       definitions for either, this will also open the door for future
       distributors to provide multiple shed managed sessions for x11 or wayland
+- [x] Add multiple ways to get an `XDG_SESSION_ID` if not set, the existing and
+      wrapper functions ease the porting of shed to other unices by providing
+      sensible fallbacks and the skeleton to hook OS specific semantics for the
+      setting of `XDG_SESSION_ID`
+- [x] Remodel daemon cycle to be non blocking
+- [x] Improve logging and add configuration for which log levels to log
+- [x] Streamline library variable definitions
+- [x] Remodel makefile
+- [x] Improve documentation
 
 ### pending
+- [ ] implement optional integration with `start-stop-daemon`
+- [ ] implement `NOFIRSTRUN` property to prevent a service from being started
+      upon "firstrun".
+- [ ] implement `NOSTARTALL` property to prevent a service from being started
+      when shed reloads or whenever `start_services` is called with "all" arg
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
