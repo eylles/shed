@@ -121,6 +121,7 @@ readkeyvalprop(){
     # '$val' stores the value.
     if [ "$key" = "$1" ]; then
       printf '%s\n' "$val"
+      return "$_true"
     fi
   done < "$2"
 }
