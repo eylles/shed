@@ -445,12 +445,8 @@ check_hup_allowed() {
   canhup="$_true"
   # Read NOHUP property from service file
   s_nohup=$(readkeyvalprop "NOHUP" "$1")
-  if [ -n "$s_nohup" ]; then
-    case "$s_nohup" in
-      true|TRUE|1|yes|YES|y|Y)
-        canhup="$_false"
-        ;;
-    esac
+  if is_str_true "$s_nohup"; then
+    canhup="$_false"
   fi
   return "$canhup"
 }

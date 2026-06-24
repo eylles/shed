@@ -211,4 +211,20 @@ is_str_valid() {
   esac
 }
 
+# Return type: int bool
+#       Usage: is_str_true <string>
+# --------------------------------------------------
+# if the string is a truthy value returns $_true, otherwise $_false
+# truthy strings are case insensitive: [ true, t, yes, y, on ], any
+# other string is taken as false
+is_str_true() {
+  result="$_false"
+  case "$1" in
+    [Tt][Rr][Uu][Ee]|[Yy][Ee][Ss]|[Yy]|[Tt]|[Oo][Nn]|1)
+      result="$_true"
+      ;;
+  esac
+  return "$result"
+}
+
 HAS_UTILS=$_true
