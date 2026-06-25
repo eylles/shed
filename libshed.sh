@@ -250,13 +250,17 @@ msg_send() {
 }
 
 # Return type: void
-#       Usage: serv_start pid_dir service_file nosock nodelay
+#       Usage: serv_start pid_dir service_file nosock nodelay firstrun
 #         nosock: default $_false, if passed $_true will set
 #                 no sock mode and no message is sent to the
 #                 reply socket
 #        nodelay: default $_false, if passed $_true will set
 #                 no delay mode and no delay will be applied
 #                 to starting of the service
+#       firstrun: default $_false, if passed $_true will set
+#                 first run flag and the service will not
+#                 be started if the NOFIRSTRUN property is
+#                 set to a truthy value
 # --------------------------------------------------
 # this function is not expected to have a return value as
 # all messages are sent to the reply socket unless specified
@@ -265,10 +269,13 @@ serv_start() {
   NSck="$_false"
   # No Delay, default $_false
   NDlay="$_false"
+  # No First Run, default $_false
+  FirstRun="$_false"
   NAME=""
   EXEC=""
   E_ARGS=""
   DELAY=""
+  NOFIRSTRUN=""
   LOGFILE=""
   TYPE=""
   exit_status=""
@@ -281,8 +288,14 @@ serv_start() {
   if [ "${4}" -eq "$_true" ]; then
     NDlay="${4}"
   fi
+  if [ "${5}" -eq "$_true" ]; then
+    FirstRun="${5}"
+  fi
   # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
+  if [ "$FirstRun" -eq "$_true" ] && is_str_true "$NOFIRSTRUN"; then
+    return "$_true"
+  fi
   NAME="${s_file##*/}"
   if [ -z "$LOGFILE" ]; then
     LOGFILE="${shed_logs_dir}/${NAME}.log"
@@ -359,11 +372,13 @@ start_from_dir() {
   use_dir="$def_dir"
   nodelay="$_true"
   nosock="$_false"
+  firstrun="$_false"
   specific_name=""
   case "$start_s" in
     firstrun)
       nosock="$_true"  # do not write to msg_reply sock
       nodelay="$_false" # have start delays
+      firstrun="$_true" # set the firstrun flag
       ;;
     all) : ;; # do nothing
     *) specific_name="$start_s" ;;
@@ -383,14 +398,14 @@ start_from_dir() {
   if [ -n "$specific_name" ]; then
     s_file="${use_dir}/${specific_name}"
     if [ -r "$s_file" ]; then
-      serv_start "$pid_dir" "$s_file" "$nosock" "$nodelay" &
+      serv_start "$pid_dir" "$s_file" "$nosock" "$nodelay" "$firstrun" &
     else
       msg_send "definition for $start_s not found in $use_dir"
     fi
     return
   fi
   for i in "${use_dir}"/* ; do
-    serv_start "$pid_dir" "$i" "$nosock" "$nodelay" &
+    serv_start "$pid_dir" "$i" "$nosock" "$nodelay" "$firstrun" &
   done
 }
 
