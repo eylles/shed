@@ -122,13 +122,15 @@ this table illustrates where definition files are expected to be
 
 | variable | description |
 | ---      | ---   |
-| NAME     | obsoleted property used in previous versions, is ignored even if set as the service name is the same as the definition file basename |
-| EXEC     | the program to be started as a service |
-| E_ARGS   | additional arguments for the daemon program, quote the argument string if it contains spaces |
-| DELAY    | delay the startup of the daemon program by the provided seconds, this is passed directly to sleep(1) |
-| NOHUP    | to prevent a service from being hupped set this to some of: yes, true, 1 |
-| LOGFILE  | file where all program output is redirected to, by default it will be in ${XDG_RUNTIME_DIR}/shed/{$SHED_SESSION_PID}/logs/${NAME}.log |
-| TYPE     | if property is not present or set to something other than oneshot or daemon, it will be taken as daemon |
+| NAME       | obsoleted property used in previous versions, is ignored even if set as the service name is the same as the definition file basename |
+| EXEC       | the program to be started as a service |
+| E_ARGS     | additional arguments for the daemon program, quote the argument string if it contains spaces |
+| DELAY      | delay the startup of the daemon program by the provided seconds, this is passed directly to sleep(1) |
+| NOHUP      | to prevent a service from being hupped set this to some of: yes, true, 1 |
+| NOFIRSTRUN | to prevent a service from being started with `start_services firstrun` set this to some of: yes, true, 1 |
+| NOSTARTALL | to prevent a service from being started with `start_services all` set this to some of: yes, true, 1 |
+| LOGFILE    | file where all program output is redirected to, by default it will be in ${XDG_RUNTIME_DIR}/shed/{$SHED_SESSION_PID}/logs/${NAME}.log |
+| TYPE       | if property is not present or set to something other than oneshot or daemon, it will be taken as daemon |
 
 
 ## how to start a shed session

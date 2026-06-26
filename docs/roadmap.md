@@ -40,13 +40,13 @@
 - [x] Streamline library variable definitions
 - [x] Remodel makefile
 - [x] Improve documentation
+- [x] implement `NOFIRSTRUN` property to prevent a service from being started
+upon "firstrun".
+- [x] implement `NOSTARTALL` property to prevent a service from being started
+when shed reloads or whenever `start_services` is called with "all" arg
 
 ### pending
 - [ ] implement optional integration with `start-stop-daemon`
-- [ ] implement `NOFIRSTRUN` property to prevent a service from being started
-      upon "firstrun".
-- [ ] implement `NOSTARTALL` property to prevent a service from being started
-      when shed reloads or whenever `start_services` is called with "all" arg
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
