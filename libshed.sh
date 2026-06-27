@@ -303,13 +303,15 @@ serv_start() {
   fi
   # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
+  NAME="${s_file##*/}"
   if [ "$FirstRun" -eq "$_true" ] && is_str_true "$NOFIRSTRUN"; then
+    msg_log "info" "service $NAME skipped (NOFIRSTRUN)"
     return "$_true"
   fi
   if [ "$StartAll" -eq "$_true" ] && is_str_true "$NOSTARTALL"; then
+    msg_log "info" "service $NAME skipped (NOSTARTALL)"
     return "$_true"
   fi
-  NAME="${s_file##*/}"
   if [ -z "$LOGFILE" ]; then
     LOGFILE="${shed_logs_dir}/${NAME}.log"
   fi
