@@ -249,6 +249,28 @@ msg_send() {
   esac
 }
 
+StartStopDaemonFile="${ShedConfDir}/use-start-stop-daemon.rc"
+FallbackStartStopDaemonFile="${ShedFallbackConfDir}/use-start-stop-daemon.rc"
+UseStartStopDaemonFile=""
+
+# Type: int bool ($_true or $_false)
+# ----------------------------------
+# default: $_false
+USE_SSD="$_false"
+
+if [ -r "$StartStopDaemonFile" ]; then
+  UseStartStopDaemonFile="$StartStopDaemonFile"
+elif [ -r "$FallbackStartStopDaemonFile" ]; then
+  UseStartStopDaemonFile="$FallbackStartStopDaemonFile"
+fi
+
+if [ -n "$UseStartStopDaemonFile" ]; then
+  ConfUseSSD="$(readkeyvalprop "USE_SSD" "$UseStartStopDaemonFile")"
+  if is_str_true "$ConfUseSSD"; then
+    USE_SSD="$_true"
+  fi
+fi
+
 # Return type: void
 #       Usage: serv_start pid_dir service_file nosock nodelay firstrun startall
 #         nosock: default $_false, if passed $_true will set
