@@ -227,4 +227,12 @@ is_str_true() {
   return "$result"
 }
 
+
+# Return type: int bool
+#       Usage: is_program <program>
+#     program: name of the program to check if is available
+is_program() {
+  command -v "$1" >/dev/null || return "$_false"
+}
+
 HAS_UTILS=$_true
