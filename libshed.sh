@@ -564,41 +564,62 @@ sig_proc() {
   fi
   sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
   sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
-  if [ -f "${p_dir}/${s_name}.pid" ]; then
-    s_pid=$(read_file "${p_dir}/${s_name}.pid")
-    if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$s_file"; then
+  if [ "$USE_SSD" -eq "$(is_program 'start-stop-daemon')" ]; then
+    if ! is_oneshot "$s_file"; then
       if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
         msg_send "cannot hup daemon $s_name"
       else
         msg_send "sending $sig_str to $s_pid $s_name"
-        if [ -z "$dry_run" ]; then
-          kill "-${sig_use}" "$s_pid"
-        fi
+        prog="$(readkeyvalprop "EXEC" "$s_file")"
+        # needed for services that got $HOME/path/service in their EXEC def
+        prog=$(printf '%s\n' "$prog" | sed "s@\$HOME@$HOME@")
+        # get the full path of the binary
+        prog=$(command -v "$prog")
+        start-stop-daemon \
+          --stop --quiet --signal "${sig_use}" \
+          --pidfile "${p_dir}/${s_name}.pid" \
+          --name "$prog" --exec "$prog" --remove-pidfile
       fi
-    else
-      case "$sig_str" in
-        term|kill)
-          msg_send "removing oneshot $s_name pid and exit status files"
-          ;;
-        *)
-          msg_send "cannot send signals to oneshots"
-          ;;
-      esac
-    fi
-    # remove the pid file even if process is not alive, this needs to be here
-    # so that the pid file for term/kill is always removed so long it exists
-    if [ -z "$dry_run" ]; then
-      case "$sig_str" in
-        term|kill)
-          rm -f "${p_dir}/${s_name}.pid"
-          if [ -f "${p_dir}/${s_name}.est" ]; then
-            rm -f "${p_dir}/${s_name}.est"
-          fi
-          ;;
-      esac
     fi
   else
-    msg_send "service $s_name not running"
+    if [ -f "${p_dir}/${s_name}.pid" ]; then
+      s_pid=$(read_file "${p_dir}/${s_name}.pid")
+      if kill -0 "$s_pid" 2>/dev/null && ! is_oneshot "$s_file"; then
+        if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
+          msg_send "cannot hup daemon $s_name"
+        else
+          msg_send "sending $sig_str to $s_pid $s_name"
+          if [ -z "$dry_run" ]; then
+            kill "-${sig_use}" "$s_pid"
+          fi
+        fi
+      else
+        case "$sig_str" in
+          term|kill)
+            msg_send "removing oneshot $s_name pid and exit status files"
+            ;;
+          *)
+            msg_send "cannot send signals to oneshots"
+            ;;
+        esac
+      fi
+    else
+      msg_send "service $s_name not running"
+    fi
+  fi
+  # remove the pid file even if process is not alive, this needs to be here
+  # so that the pid file for term/kill is always removed so long it exists
+  if [ -z "$dry_run" ]; then
+    case "$sig_str" in
+      term|kill)
+        if [ -f "${p_dir}/${s_name}.pid" ]; then
+          rm -f "${p_dir}/${s_name}.pid"
+        fi
+        if [ -f "${p_dir}/${s_name}.est" ]; then
+          rm -f "${p_dir}/${s_name}.est"
+        fi
+        ;;
+    esac
   fi
 }
 
