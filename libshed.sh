@@ -376,7 +376,7 @@ serv_start() {
     sleep "$DELAY"
   fi
   msg_log "info" "starting $TYPE $NAME"
-  if [ "$USE_SSD" -eq "$(is_program 'start-stop-daemon')" ]; then
+  if [ "$USE_SSD" -eq "$_true" ] && is_program 'start-stop-daemon'; then
     start-stop-daemon \
       --start --quiet --pidfile "${p_dir}/${NAME}.pid" \
       --name "$EXEC" --exec "$EXEC" --background --make-pidfile \
@@ -564,7 +564,7 @@ sig_proc() {
   fi
   sig_use=$(printf '%s' "$signal" | tr '[:lower:]' '[:upper:]')
   sig_str=$(printf '%s' "$signal" | tr '[:upper:]' '[:lower:]')
-  if [ "$USE_SSD" -eq "$(is_program 'start-stop-daemon')" ]; then
+  if [ "$USE_SSD" -eq "$_true" ] && is_program 'start-stop-daemon'; then
     if ! is_oneshot "$s_file"; then
       if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
         msg_send "cannot hup daemon $s_name"
