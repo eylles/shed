@@ -376,13 +376,24 @@ serv_start() {
     sleep "$DELAY"
   fi
   msg_log "info" "starting $TYPE $NAME"
-  # run the service command with the arguments
-  s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
-  eval "$s_run" &
-  # catch the pid of the process
-  proc_pid=$!
-  # write the pid of the process to the pid file
-  printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
+  if [ "$USE_SSD" -eq "$(is_program 'start-stop-daemon')" ]; then
+    start-stop-daemon \
+      --start --quiet --pidfile "${p_dir}/${NAME}.pid" \
+      --name "$EXEC" --exec "$EXEC" --background --make-pidfile \
+      --output "$LOGFILE" -- "$E_ARGS"
+    until [ -s "${p_dir}/${NAME}.pid" ]; do
+      sleep 1
+    done
+    proc_pid="$(cat "${p_dir}/${NAME}.pid")"
+  else
+    # run the service command with the arguments
+    s_run="exec $EXEC $E_ARGS >> $LOGFILE 2>&1"
+    eval "$s_run" &
+    # catch the pid of the process
+    proc_pid=$!
+    # write the pid of the process to the pid file
+    printf '%s\n' "$proc_pid" > "${p_dir}/${NAME}.pid"
+  fi
   [ "$NSck" -eq "$_false" ] && msg_send "$NAME started"
   case "$TYPE" in
     oneshot)
