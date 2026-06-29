@@ -380,7 +380,7 @@ serv_start() {
     start-stop-daemon \
       --start --quiet --pidfile "${p_dir}/${NAME}.pid" \
       --name "$EXEC" --exec "$EXEC" --background --make-pidfile \
-      --output "$LOGFILE" -- "$E_ARGS"
+      --output "$LOGFILE" -- $E_ARGS
     until [ -s "${p_dir}/${NAME}.pid" ]; do
       sleep 1
     done
