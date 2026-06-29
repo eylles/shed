@@ -381,9 +381,15 @@ serv_start() {
       --start --quiet --pidfile "${p_dir}/${NAME}.pid" \
       --name "$EXEC" --exec "$EXEC" --background --make-pidfile \
       --output "$LOGFILE" -- $E_ARGS
-    until [ -s "${p_dir}/${NAME}.pid" ]; do
+    tries=0
+    while [ ! -s "${p_dir}/${NAME}.pid" ] && [ $tries -lt 5 ]; do
       sleep 1
+      tries=$((tries + 1))
     done
+    if [ ! -s "${p_dir}/${NAME}.pid" ]; then
+      msg_log "error" "start-stop-daemon failed to write PID for $NAME"
+      return
+    fi
     proc_pid="$(cat "${p_dir}/${NAME}.pid")"
   else
     # run the service command with the arguments
