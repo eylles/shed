@@ -382,8 +382,8 @@ serv_start() {
       --name "$EXEC" --exec "$EXEC" --background --make-pidfile \
       --output "$LOGFILE" -- $E_ARGS
     tries=0
-    while [ ! -s "${p_dir}/${NAME}.pid" ] && [ $tries -lt 5 ]; do
-      sleep 1
+    while [ ! -s "${p_dir}/${NAME}.pid" ] && [ $tries -lt 10 ]; do
+      msleep "500"
       tries=$((tries + 1))
     done
     if [ ! -s "${p_dir}/${NAME}.pid" ]; then
