@@ -575,7 +575,7 @@ sig_proc() {
       if [ "hup" = "$sig_str" ] && ! check_hup_allowed "$s_file"; then
         msg_send "cannot hup daemon $s_name"
       else
-        msg_send "sending $sig_str to $s_pid $s_name"
+        msg_send "sending $sig_str to $s_name (via start-stop-daemon)"
         prog="$(readkeyvalprop "EXEC" "$s_file")"
         # needed for services that got $HOME/path/service in their EXEC def
         prog=$(printf '%s\n' "$prog" | sed "s@\$HOME@$HOME@")
