@@ -240,8 +240,17 @@ is_program() {
 has_usleep=""
 has_usleep=$(command -v usleep)
 [ -z "$has_usleep" ] && has_usleep=$(command -v busybox)
+# type: string
+# description: path if available to sleep that supports floats
+has_fsleep=""
+[ -z "$has_usleep" ] && has_usleep=$(command -v python)
+if [ -z "$has_usleep" ] && is_program "python"; then
+  has_usleep=""
+  has_fsleep=$(command -v python)
+fi
 if sleep 0.001 2>/dev/null; then
     has_usleep=""
+    has_flseep=$(command -v sleep)
 fi
 
 # usage: msleep int
@@ -268,7 +277,14 @@ msleep () {
             sec_decim="0${sec_decim}"
         fi
         secs="${sec_whole}.${sec_decim}"
-        sleep "$secs"
+        case "$has_fsleep" in
+          */sleep)
+            sleep "$secs"
+            ;;
+          */python)
+            python -c 'import time; time.sleep('"$secs"')'
+            ;;
+        esac
     fi
 }
 
