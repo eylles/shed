@@ -243,7 +243,6 @@ has_usleep=$(command -v usleep)
 # type: string
 # description: path if available to sleep that supports floats
 has_fsleep=""
-[ -z "$has_usleep" ] && has_usleep=$(command -v python)
 if [ -z "$has_usleep" ] && is_program "python"; then
   has_usleep=""
   has_fsleep=$(command -v python)
@@ -266,13 +265,13 @@ msleep () {
     microsecs="${milisecs}000"
     case "$has_usleep" in
       */usleep)
-        usleep "$microsecs"
+        usleep "$microsecs" >/dev/null 2>&1
         ;;
       */busybox)
-        busybox usleep "$microsecs"
+        busybox usleep "$microsecs" >/dev/null 2>&1
         ;;
       */perl)
-        perl -MTime::HiRes=usleep -e 'usleep('"$microsecs"')'
+        perl -MTime::HiRes=usleep -e 'usleep('"$microsecs"')' >/dev/null 2>&1
         ;;
     esac
   else
@@ -286,10 +285,10 @@ msleep () {
     secs="${sec_whole}.${sec_decim}"
     case "$has_fsleep" in
       */sleep)
-        sleep "$secs"
+        sleep "$secs" >/dev/null 2>&1
         ;;
       */python)
-        python -c 'import time; time.sleep('"$secs"')'
+        python -c 'import time; time.sleep('"$secs"')' >/dev/null 2>&1
         ;;
     esac
   fi
