@@ -248,44 +248,51 @@ if [ -z "$has_usleep" ] && is_program "python"; then
   has_usleep=""
   has_fsleep=$(command -v python)
 fi
+if [ -z "$has_usleep" ] && is_program "perl"; then
+  has_usleep=$(command -v perl)
+  has_fsleep=""
+fi
 if sleep 0.001 2>/dev/null; then
-    has_usleep=""
-    has_flseep=$(command -v sleep)
+  has_usleep=""
+  has_fsleep=$(command -v sleep)
 fi
 
 # usage: msleep int
 # description: sleep for milliseconds
 # return type: void
 msleep () {
-    milisecs="$1"
-    if [ -n "$has_usleep" ]; then
-        microsecs="${milisecs}000"
-        case "$has_usleep" in
-            */usleep)
-                usleep "$microsecs"
-                ;;
-            */busybox)
-                busybox usleep "$microsecs"
-                ;;
-        esac
-    else
-        sec_whole=$(( milisecs / 1000 ))
-        sec_decim=$(( milisecs % 1000 ))
-        if [ "$sec_decim" -lt 10 ]; then
-            sec_decim="00${sec_decim}"
-        elif [ "$sec_decim" -lt 100 ]; then
-            sec_decim="0${sec_decim}"
-        fi
-        secs="${sec_whole}.${sec_decim}"
-        case "$has_fsleep" in
-          */sleep)
-            sleep "$secs"
-            ;;
-          */python)
-            python -c 'import time; time.sleep('"$secs"')'
-            ;;
-        esac
+  milisecs="$1"
+  if [ -n "$has_usleep" ]; then
+    microsecs="${milisecs}000"
+    case "$has_usleep" in
+      */usleep)
+        usleep "$microsecs"
+        ;;
+      */busybox)
+        busybox usleep "$microsecs"
+        ;;
+      */perl)
+        perl -MTime::HiRes=usleep -e 'usleep('"$microsecs"')'
+        ;;
+    esac
+  else
+    sec_whole=$(( milisecs / 1000 ))
+    sec_decim=$(( milisecs % 1000 ))
+    if [ "$sec_decim" -lt 10 ]; then
+      sec_decim="00${sec_decim}"
+    elif [ "$sec_decim" -lt 100 ]; then
+      sec_decim="0${sec_decim}"
     fi
+    secs="${sec_whole}.${sec_decim}"
+    case "$has_fsleep" in
+      */sleep)
+        sleep "$secs"
+        ;;
+      */python)
+        python -c 'import time; time.sleep('"$secs"')'
+        ;;
+    esac
+  fi
 }
 
 HAS_UTILS=$_true
