@@ -264,14 +264,15 @@ msleep () {
   if [ -n "$has_usleep" ]; then
     microsecs="${milisecs}000"
     case "$has_usleep" in
-      */usleep)
-        usleep "$microsecs" >/dev/null 2>&1
+      *usleep)
+        $has_usleep "$microsecs" >/dev/null 2>&1
         ;;
-      */busybox)
-        busybox usleep "$microsecs" >/dev/null 2>&1
+      *busybox)
+        $has_usleep usleep "$microsecs" >/dev/null 2>&1
         ;;
-      */perl)
-        perl -MTime::HiRes=usleep -e 'usleep('"$microsecs"')' >/dev/null 2>&1
+      *perl)
+        $has_usleep -MTime::HiRes=usleep -e 'usleep('"$microsecs"')' \
+          >/dev/null 2>&1
         ;;
     esac
   else
@@ -284,11 +285,11 @@ msleep () {
     fi
     secs="${sec_whole}.${sec_decim}"
     case "$has_fsleep" in
-      */sleep)
-        sleep "$secs" >/dev/null 2>&1
+      *sleep)
+        $has_fsleep "$secs" >/dev/null 2>&1
         ;;
-      */python)
-        python -c 'import time; time.sleep('"$secs"')' >/dev/null 2>&1
+      *python)
+        $has_fsleep -c 'import time; time.sleep('"$secs"')' >/dev/null 2>&1
         ;;
     esac
   fi
