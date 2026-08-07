@@ -44,9 +44,9 @@
 upon "firstrun".
 - [x] implement `NOSTARTALL` property to prevent a service from being started
 when shed reloads or whenever `start_services` is called with "all" arg
+- [x] implement optional integration with `start-stop-daemon`
 
 ### pending
-- [ ] implement optional integration with `start-stop-daemon`
 - [ ] implement the `XDG_AUTOSTART` spec and provide the option to start and
       manage services from the autostart as regular ones.
 - [ ] write bash completion scripts
