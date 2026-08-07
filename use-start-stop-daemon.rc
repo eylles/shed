@@ -1,0 +1,5 @@
+# set this to true in order to tell shed to use the start-stop-daemon program to
+# start as well as stop services.
+#USE_SSD=FALSE
+
+# vim: ft=sh
