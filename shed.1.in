@@ -304,6 +304,14 @@ This specifies that the service cannot receive the "HUP" signal, useful as not
 every service will be compliant by being able to recieve the HUP signal to
 reload, possible values are: 1, true, yes.
 .TP
+.B "NOFIRSTRUN"
+This specifies that the service will not be started by start_services firstrun,
+possible values are: 1, true, yes.
+.TP
+.B "NOSTARTALL"
+This specifies that the service will not be started by start_services all,
+possible values are: 1, true, yes.
+.TP
 .B "TYPE"
 Explicitly declare the service as a
 .B oneshot
