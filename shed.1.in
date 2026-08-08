@@ -121,6 +121,8 @@ the directory may contain the shed daemon configuration file,
 .B shed.rc
 , the file to enable the usage of start-stop-daemon
 .B use-start-stop-daemon.rc
+, the file to set the log level
+.B loglevel.rc
 as well as subdirectories
 .B shallow.d
 ,
