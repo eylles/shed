@@ -230,11 +230,14 @@ The
 file, is also a simple key=val file with just the
 .B USE_SSD
 field, the file is loaded from the libshed.sh library file.
-The default setting is
+.TP
+.B "USE_SSD"
+By default
 .B USE_SSD=FALSE
-the accepted values are the range of common truth-y strings case insensitive
-spanning [ TRUE, YES, ON, Y, T ] as well as 1, every other string on this field
-will be considered false.
+the following values case insensitive are taken as true:
+    TRUE, true, YES, yes, ON, on, Y, y, T, t, 1
+
+every other string on this field will be considered false.
 
 .P
 The
