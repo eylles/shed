@@ -119,6 +119,8 @@ with a fallback in
 .B /etc/shed/
 the directory may contain the shed daemon configuration file,
 .B shed.rc
+, the file to enable the usage of start-stop-daemon
+.B use-start-stop-daemon.rc
 as well as subdirectories
 .B shallow.d
 ,
@@ -219,6 +221,18 @@ the following values are available:
     1  -  show info messages
     2  -  show error messages
     3  -  show debug messages
+
+.P
+The
+.B use-start-stop-daemon.rc
+file, is also a simple key=val file with just the
+.B USE_SSD
+field, the file is loaded from the libshed.sh library file.
+The default setting is
+.B USE_SSD=FALSE
+the accepted values are the range of common truth-y strings case insensitive
+spanning [ TRUE, YES, ON, Y, T ] as well as 1, every other string on this field
+will be considered false.
 
 .P
 The
