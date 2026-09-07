@@ -67,6 +67,7 @@ cd shed
 # check and edit the config.mk file as needed
 make
 make install
+make install-examples
 ```
 
 using the default locations you should get a series of examples for either x11

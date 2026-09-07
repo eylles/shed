@@ -46,12 +46,14 @@ install: all
 	cp -vf build/$(UTILS)  $(LIB_LOC)/$(UTILS)
 	cp -vf shed.rc $(DOC_LOC)/shed.rc
 	cp -vf loglevel.rc $(DOC_LOC)/loglevel.rc
-	cp -vrf examples/* $(DOC_LOC)/examples
 	cp -vf docs/how_it_works.md $(DOC_LOC)/how_it_works.md
 	cp -vf docs/architecture.md $(DOC_LOC)/architecture.md
 	cp -vf build/shed.1 $(MAN_LOC)/shed.1
 	ln -sf $(LIB_LOC)/$(SHED)  $(BIN_LOC)/shed
 	ln -sf $(LIB_LOC)/$(SHEDC) $(BIN_LOC)/shedc
+
+install-examples:
+	cp -vrf examples/* $(DOC_LOC)/examples
 
 uninstall:
 	rm -vf $(BIN_LOC)/shed
