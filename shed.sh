@@ -537,21 +537,25 @@ QUEUE_FILE="${ShedSessionDir}/queue"
 # initialize the QUEUE_FILE
 : > "$QUEUE_FILE"
 
+# A small temporary state file to pass the unique filename safely
+# ${ShedSessionDir}/next_work_file
+INBOUND_SIGNAL_FILE="${ShedSessionDir}/next_work_file"
+: > "$INBOUND_SIGNAL_FILE"
+
 # Return type: void
 #       Usage: ipcHandler
 # --------------------------------------------------
 # process queue file line by line, lines are handled with process_action
 ipcHandler() {
   msg_log "debug" "received signal $1"
+  active_work_file="$(cat "$INBOUND_SIGNAL_FILE")"
   # move the queue file so the loop can keep writing to a clean one
-  if [ -s "$QUEUE_FILE" ]; then
-    mv "$QUEUE_FILE" "$QUEUE_FILE.work"
-    : > "$QUEUE_FILE"
+  if [ -s "$active_work_file" ]; then
     while read -r Line; do
       process_action "$Line"
       [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ] && break
-    done < "$QUEUE_FILE.work"
-    rm -f "$QUEUE_FILE.work"
+    done < "$active_work_file"
+    rm -f "$active_work_file"
   fi
 }
 
@@ -564,6 +568,9 @@ daemon_cycle() {
   : > "$QUEUE_FILE"
   # Spin up the non-blocking background reader loop
   (
+    # Initialize the counter INSIDE the subshell
+    # It lives here because the subshell is the one creating the unique files
+    WORK_COUNTER=0
     while [ -d "${ShedSessionDir}" ]; do
       # This read blocks inside a subshell without blocking signals to the main
       # process loop
@@ -571,6 +578,15 @@ daemon_cycle() {
         if [ -n "$RawInput" ]; then
           # Save command to queue file and issue a localized nudge signal (USR1)
           printf '%s\n' "$RawInput" >> "$QUEUE_FILE"
+          # Increment the counter and prepare the UNIQUE filename
+          WORK_COUNTER=$((WORK_COUNTER + 1))
+          work_file="${QUEUE_FILE}.${WORK_COUNTER}.work"
+          # Swap the file right here in the reader!
+          # This ensures no new writes can ever contaminate the work file.
+          mv "$QUEUE_FILE" "$work_file"
+          : > "$QUEUE_FILE"
+          # Tell the main process exactly which unique file to look for
+          printf '%s\n' "$work_file" > "$INBOUND_SIGNAL_FILE"
           msg_log "debug" "nudge main shed process '$shed_pid'"
           kill -USR1 "$shed_pid"
         fi
@@ -593,6 +609,7 @@ daemon_cycle() {
   done
   # Cleanup background reader process before dropping out of the cycle
   kill "$READER_PID" 2>/dev/null
+  rm -f "$INBOUND_SIGNAL_FILE"
 }
 
 # Return type: void
