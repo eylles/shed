@@ -537,26 +537,21 @@ QUEUE_FILE="${ShedSessionDir}/queue"
 # initialize the QUEUE_FILE
 : > "$QUEUE_FILE"
 
-# A small temporary state file to pass the unique filename safely
-# ${ShedSessionDir}/next_work_file
-INBOUND_SIGNAL_FILE="${ShedSessionDir}/next_work_file"
-: > "$INBOUND_SIGNAL_FILE"
-
 # Return type: void
 #       Usage: ipcHandler
 # --------------------------------------------------
 # process queue file line by line, lines are handled with process_action
 ipcHandler() {
   msg_log "debug" "received signal $1"
-  active_work_file="$(cat "$INBOUND_SIGNAL_FILE")"
-  # move the queue file so the loop can keep writing to a clean one
-  if [ -s "$active_work_file" ]; then
-    while read -r Line; do
-      process_action "$Line"
-      [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ] && break
-    done < "$active_work_file"
-    rm -f "$active_work_file"
-  fi
+  for active_work_file in "${QUEUE_FILE}."*.work; do
+    if [ -f "$active_work_file" ] &&  [ -s "$active_work_file" ]; then
+      while read -r Line; do
+        process_action "$Line"
+        [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ] && break
+      done < "$active_work_file"
+      rm -f "$active_work_file"
+    fi
+  done
 }
 
 # Return type: void
@@ -586,7 +581,6 @@ daemon_cycle() {
           mv "$QUEUE_FILE" "$work_file"
           : > "$QUEUE_FILE"
           # Tell the main process exactly which unique file to look for
-          printf '%s\n' "$work_file" > "$INBOUND_SIGNAL_FILE"
           msg_log "debug" "nudge main shed process '$shed_pid'"
           kill -USR1 "$shed_pid"
         fi
@@ -609,7 +603,6 @@ daemon_cycle() {
   done
   # Cleanup background reader process before dropping out of the cycle
   kill "$READER_PID" 2>/dev/null
-  rm -f "$INBOUND_SIGNAL_FILE"
 }
 
 # Return type: void
