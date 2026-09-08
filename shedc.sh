@@ -337,8 +337,8 @@ show_info() {
     printf '%s\n' "run shedc reload to re-exec the shed daemon"
   fi
   if [ -r "$shed_info" ]; then
-    printf '%s=%s\n' "PID" "$(head "$lockfile")"
-    printf '%s=%s\n' "CLIENTV" "$prog_v"
+    printf '%s=%s\n' "DAEMON_PID" "$(head "$lockfile")"
+    printf '%s=%s\n' "CLIENT_VERSION" "$prog_v"
     head "$shed_info"
     exit $_true
   else

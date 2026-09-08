@@ -462,7 +462,7 @@ if [ "$sessdir" -eq "$_false" ]; then
 fi
 
 write_info() {
-  printf '%s=%s\n' "VERSION" "$prog_v"
+  printf '%s=%s\n' "DAEMON_VERSION" "$prog_v"
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
 }
