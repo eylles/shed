@@ -547,7 +547,10 @@ ipcHandler() {
     if [ -f "$active_work_file" ] &&  [ -s "$active_work_file" ]; then
       while read -r Line; do
         process_action "$Line"
-        [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ] && break
+        if [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ]; then
+          # Break out of both the read loop and the file loop
+          break 2
+        fi
       done < "$active_work_file"
       rm -f "$active_work_file"
     fi
