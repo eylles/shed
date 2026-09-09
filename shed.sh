@@ -566,24 +566,15 @@ daemon_cycle() {
   : > "$QUEUE_FILE"
   # Spin up the non-blocking background reader loop
   (
-    # Initialize the counter INSIDE the subshell
-    # It lives here because the subshell is the one creating the unique files
     WORK_COUNTER=0
     while [ -d "${ShedSessionDir}" ]; do
-      # This read blocks inside a subshell without blocking signals to the main
-      # process loop
       if read -r RawInput < "$msg_socket"; then
         if [ -n "$RawInput" ]; then
-          # Save command to queue file and issue a localized nudge signal (USR1)
           printf '%s\n' "$RawInput" >> "$QUEUE_FILE"
-          # Increment the counter and prepare the UNIQUE filename
           WORK_COUNTER=$((WORK_COUNTER + 1))
           work_file="${QUEUE_FILE}.${WORK_COUNTER}.work"
-          # Swap the file right here in the reader!
-          # This ensures no new writes can ever contaminate the work file.
           mv "$QUEUE_FILE" "$work_file"
           : > "$QUEUE_FILE"
-          # Tell the main process exactly which unique file to look for
           msg_log "debug" "nudge main shed process '$shed_pid'"
           kill -USR1 "$shed_pid"
         fi
