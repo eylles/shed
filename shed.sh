@@ -574,7 +574,6 @@ daemon_cycle() {
           WORK_COUNTER=$((WORK_COUNTER + 1))
           work_file="${QUEUE_FILE}.${WORK_COUNTER}.work"
           mv "$QUEUE_FILE" "$work_file"
-          : > "$QUEUE_FILE"
           msg_log "debug" "nudge main shed process '$shed_pid'"
           kill -USR1 "$shed_pid"
         fi
