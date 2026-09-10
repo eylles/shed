@@ -545,9 +545,15 @@ ipcHandler() {
   msg_log "debug" "received signal $1"
   for active_work_file in "${QUEUE_FILE}."*.work; do
     if [ -f "$active_work_file" ] &&  [ -s "$active_work_file" ]; then
+      # this is something we do to cope with the reload action causing shed to
+      # exit so quick
+      # shellcheck disable=SC2094
       while read -r Line; do
         process_action "$Line"
         if [ -n "$SHED_RELOAD" ] && [ "$SHED_RELOAD" -ne 0 ]; then
+          # delete the active_work_file if a reload action is initiated
+          # shellcheck disable=SC2094
+          rm -f "$active_work_file"
           # Break out of both the read loop and the file loop
           break 2
         fi
