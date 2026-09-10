@@ -500,7 +500,7 @@ fi
 # sleep 1 second while the ShedSessionDir exists
 wait_exit() {
   while ! is_dir_empty "$ShedSessionDir"; do
-    sleep 0.25
+    msleep 250
   done
 }
 
