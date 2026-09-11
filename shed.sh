@@ -534,8 +534,6 @@ process_action() {
 # path for the internal atomic action queue
 # ${ShedSessionDir}/queue
 QUEUE_FILE="${ShedSessionDir}/queue"
-# initialize the QUEUE_FILE
-: > "$QUEUE_FILE"
 
 # Return type: void
 #       Usage: ipcHandler
@@ -568,8 +566,6 @@ ipcHandler() {
 # --------------------------------------------------
 # this function does not return output whatsoever
 daemon_cycle() {
-  # Ensure queue file is clean before launching background task
-  : > "$QUEUE_FILE"
   # Spin up the non-blocking background reader loop
   (
     WORK_COUNTER=0
