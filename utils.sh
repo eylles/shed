@@ -243,9 +243,14 @@ has_usleep=""
 # type: string
 # description: path if available to sleep that supports floats
 has_fsleep=""
-if [ -z "$has_usleep" ] && is_program "python"; then
-  has_usleep=""
-  has_fsleep=$(command -v python)
+if [ -z "$has_usleep" ]; then
+  if is_program "python"; then
+    has_usleep=""
+    has_fsleep=$(command -v python)
+  elif is_program "python3"; then
+    has_usleep=""
+    has_fsleep=$(command -v python3)
+  fi
 fi
 if [ -z "$has_usleep" ] && is_program "perl"; then
   has_usleep=$(command -v perl)
