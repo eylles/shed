@@ -645,6 +645,8 @@ msg_log "debug" "using start string '$start_str'"
 start_components "$start_str"
 start_services "$start_str"
 
+ipcHandler "BOOT_SWEEP"
+
 trap 'sigHandler "HUP"'  HUP
 trap 'ipcHandler "USR1"' USR1 # exclusively for internal background IPC alerts
 trap 'sigHandler "USR2"' USR2
