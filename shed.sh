@@ -501,13 +501,16 @@ fi
 wait_exit() {
   max_wait_seconds=10
   current_tick=0
-  max_ticks=$((max_wait_seconds * 4))
+  ticsk_per_sec=4
+  max_ticks=$((max_wait_seconds * ticsk_per_sec))
+  one_second=1000
+  milis=$((one_second / ticsk_per_sec))
   while ! is_dir_empty "$ShedSessionDir"; do
     if [ "$current_tick" -ge "$max_ticks" ]; then
       rm -rf "$ShedSessionDir"
     fi
     current_tick=$((current_tick + 1))
-    msleep 250
+    msleep "$milis"
   done
 }
 
