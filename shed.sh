@@ -499,7 +499,14 @@ fi
 # this function does not return output whatsoever
 # sleep 1 second while the ShedSessionDir exists
 wait_exit() {
+  max_wait_seconds=10
+  current_tick=0
+  max_ticks=$((max_wait_seconds * 4))
   while ! is_dir_empty "$ShedSessionDir"; do
+    if [ "$current_tick" -ge "$max_ticks" ]; then
+      rm -rf "$ShedSessionDir"
+    fi
+    current_tick=$((current_tick + 1))
     msleep 250
   done
 }
