@@ -113,7 +113,7 @@ get_shed_ps_s_id() {
 # consolekit session and we can get a usable value from ck-list-sessions
 get_consolekit_session_id() {
   if [ -n "$XDG_SESSION_COOKIE" ]; then
-    ck-list-sessions | awk '/^Session/{print $2; exit}'
+    ck-list-sessions 2>/dev/null | awk '/^Session[0-9]+:/ { sub(":", "", $1); print $1; exit }'
   else
     return "$_false"
   fi
@@ -198,10 +198,23 @@ get_linux_session_identifier() {
   get_fallback_identifier "Linux"
 }
 
+get_freebsd_session_identifier() {
+  for idf in get_loginctl_session_id get_consolekit_session_id get_shed_ps_s_id; do
+    uniqid="$($idf)"
+    if [ -n "$uniqid" ]; then
+      printf '%s' "$uniqid"
+      return
+    fi
+  done
+  # Get a generic fallback as the last resort...
+  get_fallback_identifier "FreeBSD"
+}
+
 # Return type: string
 # --------------------------
 # this is a best attempt effort
 # in linux we use get_linux_session_identifier
+# in freebsd we use get_freebsd_session_identifier
 # in any other platform we use get_fallback_identifier, if that is not enough
 # for your platform/kernel please implement a suitable function that integrates
 # with the correct session tracking semantics of your platform/operating
@@ -220,6 +233,9 @@ get_session_identifier() {
   case "$os_type" in
     Linux)
       get_linux_session_identifier
+      ;;
+    FreeBSD)
+      get_freebsd_session_identifier
       ;;
     *)
       get_fallback_identifier "$os_type"
