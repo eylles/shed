@@ -58,8 +58,6 @@ For details check [PORTING](docs/porting.md)
 
 ## Quick start
 
-clone the repo and cd
-
 ```sh
 git clone https://github.com/eylles/shed
 cd shed
@@ -70,7 +68,7 @@ make install
 make install-examples
 ```
 
-using the default locations you should get a series of examples for either x11
+Using the default locations you should get a series of examples for either x11
 or wayland sessions at `/usr/local/share/doc/shed/examples`, take them as
 inspiration, the shed_awesome and the xsession shed-awesome.desktop are the
 example x11 files, the shed_sway and the wayland-session shed-sway.desktop are
