@@ -159,41 +159,25 @@ get_shed_cgroup() {
 # ------------------------------------------------------------------------------
 # Gets a unique identifier string to use as XDG_SESSION_ID on linux
 get_linux_session_identifier() {
-  # Try loginctl first
-  uniqid="$(get_loginctl_session_id)"
-  if [ -n "$uniqid" ]; then
-    printf '%s' "$uniqid"
-    return
-  fi
-
-  # try consolekit
-  uniqid="$(get_consolekit_session_id)"
-  if [ -n "$uniqid" ]; then
-    printf '%s' "$uniqid"
-    return
-  fi
-
-  # try cgroup
-  uniqid="$(get_shed_cgroup)"
-  if is_str_valid "$uniqid" ; then
-    printf '%s' "$uniqid"
-    return
-  fi
-
-  # Try /proc/sessionid
-  uniqid="$(get_shed_proc_sessionid)"
-  if [ -n "$uniqid" ]; then
-    printf '%s' "$uniqid"
-    return
-  fi
-
-  # Try ps(1) SID
-  uniqid="$(get_shed_ps_s_id)"
-  if [ -n "$uniqid" ]; then
-    printf '%s' "$uniqid"
-    return
-  fi
-
+  for idf in \
+    get_loginctl_session_id \
+    get_consolekit_session_id \
+    get_shed_cgroup \
+    get_shed_proc_sessionid \
+    get_shed_ps_s_id
+  do
+    uniqid="$($idf)"
+    # Use is_str_valid for cgroup, fallback to [ -n ] for others
+    if [ "$idf" = "get_shed_cgroup" ]; then
+      if is_str_valid "$uniqid"; then
+        printf '%s' "$uniqid"
+        return
+      fi
+    elif [ -n "$uniqid" ]; then
+      printf '%s' "$uniqid"
+      return
+    fi
+  done
   # Last resort: generic fallback
   get_fallback_identifier "Linux"
 }
