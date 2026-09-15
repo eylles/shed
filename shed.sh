@@ -199,7 +199,11 @@ get_linux_session_identifier() {
 }
 
 get_freebsd_session_identifier() {
-  for idf in get_loginctl_session_id get_consolekit_session_id get_shed_ps_s_id; do
+  for idf in \
+    get_loginctl_session_id \
+    get_consolekit_session_id \
+    get_shed_ps_s_id
+  do
     uniqid="$($idf)"
     if [ -n "$uniqid" ]; then
       printf '%s' "$uniqid"
