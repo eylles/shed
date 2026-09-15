@@ -183,7 +183,7 @@ get_freebsd_session_identifier() {
     get_shed_ps_s_id
   do
     uniqid="$($idf)"
-    if [ -n "$uniqid" ]; then
+    if is_str_valid "$uniqid"; then
       printf '%s' "$uniqid"
       return
     fi
