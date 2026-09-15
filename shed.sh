@@ -113,7 +113,8 @@ get_shed_ps_s_id() {
 # consolekit session and we can get a usable value from ck-list-sessions
 get_consolekit_session_id() {
   if [ -n "$XDG_SESSION_COOKIE" ]; then
-    ck-list-sessions 2>/dev/null | awk '/^Session[0-9]+:/ { sub(":", "", $1); print $1; exit }'
+    ck-list-sessions 2>/dev/null | \
+      awk '/^Session[0-9]+:/ { sub(":", "", $1); print $1; exit }'
   else
     return "$_false"
   fi
