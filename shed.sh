@@ -167,13 +167,7 @@ get_linux_session_identifier() {
     get_shed_ps_s_id
   do
     uniqid="$($idf)"
-    # Use is_str_valid for cgroup, fallback to [ -n ] for others
-    if [ "$idf" = "get_shed_cgroup" ]; then
-      if is_str_valid "$uniqid"; then
-        printf '%s' "$uniqid"
-        return
-      fi
-    elif [ -n "$uniqid" ]; then
+    if is_str_valid "$uniqid"; then
       printf '%s' "$uniqid"
       return
     fi
