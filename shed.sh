@@ -464,6 +464,7 @@ write_info() {
   printf '%s=%s\n' "DAEMON_VERSION" "$prog_v"
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
+  printf '%s=%s\n' "XDG_SESSION_ID" "$XDG_SESSION_ID"
 }
 
 write_info > "$shed_info"
