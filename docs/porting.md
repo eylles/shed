@@ -39,6 +39,4 @@ method and using get_fallback_identifier if the desired methods fail.
 Worth mentioning that of the functions that may be able to output a suitable
 string the get_shed_ps_s_id function can work on any unix-like operating system
 with any kernel and any set of utilities, if your OS has consolekit available or
-as the main tooling for session tracking then use it, tho consider i have not
-tested the function first hand on linux with consolekit so while it should work
-in it's current state i cannot guarantee it will.
+as the main tooling for session tracking then use it.
