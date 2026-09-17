@@ -467,6 +467,7 @@ write_info() {
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
   printf '%s=%s\n' "XDG_SESSION_ID" "$XDG_SESSION_ID"
+  printf '%s=%s\n' "XDG_SESSION_TYPE" "$XDG_SESSION_TYPE"
 }
 
 write_info > "$shed_info"
