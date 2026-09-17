@@ -36,7 +36,9 @@ else
   fi
 fi
 
+# on modern systems usually starts at 1000
 UserID=""
+# it always is 0
 RootUserID=0
 # cuz $UID is not POSIX ¯\_(ツ)_/¯
 # but it may be defined in the environment
