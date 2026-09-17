@@ -31,7 +31,7 @@ From shed.sh, wrapper function used to get a suitable value for `XDG_SESSION_ID`
 when the env var is not set, the output from uname(1) is used to determine the
 os kernel type, in linux the wrapper function get_linux_session_identifier is
 used to get an identifier, in freebsd the wrapper function
-get_freebsd_session_identifier for other unix-like kernels the
+get_freebsd_session_identifier is used, for other unix-like kernels the
 get_fallback_identifier function is used, when porting it is adviced to create a
 wrapper function that tries to get a suitable identifier in the same way that
 get_linux_session_identifier does, from the most desirsable to least desirable
