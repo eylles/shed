@@ -468,6 +468,8 @@ write_info() {
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
   printf '%s=%s\n' "XDG_SESSION_ID" "$XDG_SESSION_ID"
   printf '%s=%s\n' "XDG_SESSION_TYPE" "$XDG_SESSION_TYPE"
+  printf '%s=%s\n' "XDG_SESSION_DESKTOP" "$XDG_SESSION_DESKTOP"
+  printf '%s=%s\n' "XDG_CURRENT_DESKTOP" "$XDG_CURRENT_DESKTOP"
 }
 
 write_info > "$shed_info"
