@@ -466,6 +466,7 @@ write_info() {
   printf '%s=%s\n' "DAEMON_VERSION" "$prog_v"
   printf '%s=%s\n' "STARTED" "$(date '+%Y-%m-%d-%H:%M:%S')"
   printf '%s=%s\n' "RUNDIR" "$ShedSessionDir"
+  printf '%s=%s\n' "SESSION_PID" "$SHED_SESSION_PID"
   printf '%s=%s\n' "XDG_SESSION_ID" "$XDG_SESSION_ID"
   printf '%s=%s\n' "XDG_SESSION_TYPE" "$XDG_SESSION_TYPE"
   if [ -n "$XDG_SESSION_DESKTOP" ]; then
