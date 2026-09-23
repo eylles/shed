@@ -323,6 +323,9 @@ serv_start() {
   if [ "${6}" -eq "$_true" ]; then
     StartAll="${6}"
   fi
+  # pre-define NAME and LOGFILE before sourcing service definition file
+  NAME="${s_file##*/}"
+  LOGFILE="${shed_logs_dir}/${NAME}.log"
   # source the file to get the variables: EXEC E_ARGS from the service
   . "$s_file"
   NAME="${s_file##*/}"
