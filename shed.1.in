@@ -336,6 +336,17 @@ will fallback to executing itself with
 .B exec "$0"
 to go into the transient phase.
 
+The transient script is expected to be
+.B executable
+and
+.B ONLY WRITEABLE
+by the owner, that is to say the octal permissions for the transient script are
+expected to be at least
+.B 755
+a permission set like 775 will
+.B NOT
+work, this is to ensure only the actual owner is writing the transient script.
+
 The transient program has the resonsability of spawning an instance of shed as
 it's child in order to complete the session initialization.
 
