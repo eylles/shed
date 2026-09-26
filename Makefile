@@ -54,6 +54,8 @@ install: all
 
 install-examples:
 	cp -vrf examples/* $(DOC_LOC)/examples
+	chmod 755 $(DOC_LOC)/examples/shed_sway/transient
+	chmod 755 $(DOC_LOC)/examples/shed_awesome/transient
 
 uninstall:
 	rm -vf $(BIN_LOC)/shed
